@@ -1,6 +1,5 @@
 namespace Kritikos.Configuration.PersistenceTests
 {
-	using System;
 	using System.Diagnostics.CodeAnalysis;
 
 	using Kritikos.Configuration.Persistence.Base;
