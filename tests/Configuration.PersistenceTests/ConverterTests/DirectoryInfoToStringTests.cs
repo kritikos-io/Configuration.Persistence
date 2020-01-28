@@ -9,10 +9,16 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 	using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 	using Xunit;
+	using Xunit.Abstractions;
 
 	[ExcludeFromCodeCoverage]
 	public class DirectoryInfoToStringTests
 	{
+		private readonly ITestOutputHelper output;
+
+		public DirectoryInfoToStringTests(ITestOutputHelper put)
+			=> output = put;
+
 		private static readonly string AssemblyName =
 			typeof(DirectoryInfoToStringConverter).Assembly.GetName().Name ?? string.Empty;
 
@@ -21,18 +27,18 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		private static readonly string BaseFolder = Directory.GetCurrentDirectory()
 			.Substring(0,
 				Directory.GetCurrentDirectory()
-					.IndexOf(AssemblyName.Replace('.', Path.DirectorySeparatorChar),
-						StringComparison.InvariantCulture) + AssemblyName.Length);
+					.IndexOf(AssemblyName, StringComparison.InvariantCulture) + AssemblyName.Length);
 
 		private const string ActualPath = "src/Configuration.Persistence";
 		
 		private static readonly ConverterMappingHints Hints = new ConverterMappingHints(unicode: true);
-
+		
 		[Fact]
 		public void WithBaseFolder()
 		{
 			var converter =
 				new DirectoryInfoToStringConverter($"{BaseFolder}{Path.DirectorySeparatorChar}", '/', Hints);
+
 			var dirToString = converter.ConvertToProviderExpression.Compile();
 			var stringToDir = converter.ConvertFromProviderExpression.Compile();
 
@@ -41,10 +47,6 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
 			var reverse = dirToString(dir);
 			Assert.Equal(ActualPath, reverse);
-
-			var invalidDir = new DirectoryInfo(ActualPath.Replace('/','\\'));
-			var invalidStr = dirToString(invalidDir);
-			Assert.Equal(ActualPath,invalidStr);
 		}
 
 		[Fact]
