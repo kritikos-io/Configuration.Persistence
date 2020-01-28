@@ -1,5 +1,6 @@
 namespace Kritikos.Configuration.PersistenceTests
 {
+	using System;
 	using System.Diagnostics.CodeAnalysis;
 
 	using Kritikos.Configuration.Persistence.Base;
@@ -7,10 +8,12 @@ namespace Kritikos.Configuration.PersistenceTests
 	using Microsoft.EntityFrameworkCore;
 
 	[ExcludeFromCodeCoverage]
-    public class TestContext : DbContext
-    {
-		public DbSet<Person> People { get; set; }
-
+	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+	public class TestContext : DbContext
+	{
+#nullable disable
+		public DbSet<Person> People { get; private set; }
+#nullable enable
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			if (!optionsBuilder.IsConfigured)
@@ -22,6 +25,6 @@ namespace Kritikos.Configuration.PersistenceTests
 
 	public class Person : ConcurrentEntity<long>
 	{
-		public string Name { get; set; }
+		public string Name { get; set; } = string.Empty;
 	}
 }
