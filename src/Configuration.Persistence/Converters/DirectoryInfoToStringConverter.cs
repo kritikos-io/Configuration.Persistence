@@ -25,7 +25,7 @@ namespace Kritikos.Configuration.Persistence.Converters
 				v => v.FullName
 					.Replace(
 						string.IsNullOrWhiteSpace(relativeBase)
-							? Directory.GetCurrentDirectory()
+							? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}"
 							: relativeBase,
 						string.Empty)
 					.Replace(Path.DirectorySeparatorChar, originalSeparator),

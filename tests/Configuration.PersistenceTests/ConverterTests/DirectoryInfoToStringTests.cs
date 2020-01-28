@@ -58,6 +58,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
 			var dir = stringToDir(ActualPath);
 			Assert.False(dir.Exists);
+
 			var sanitized = dirToString(dir).Replace(Path.DirectorySeparatorChar, '/');
 			Assert.Equal(ActualPath,sanitized);
 		}
