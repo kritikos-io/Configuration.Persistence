@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Kritikos.Configuration.PersistenceTests
 {
 	using Xunit;
