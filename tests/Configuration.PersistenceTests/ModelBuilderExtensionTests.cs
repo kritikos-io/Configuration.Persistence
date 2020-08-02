@@ -13,13 +13,13 @@ namespace Kritikos.Configuration.PersistenceTests
 			ctx.Add(person);
 			ctx.SaveChanges();
 
-			Assert.Equal(1, person.Order);
+			Assert.True(person.Order > 0);
 
 			person = new Person { Name = "Someone" };
 			ctx.Add(person);
 			ctx.SaveChanges();
 
-			Assert.Equal(2, person.Order);
+			Assert.True(person.Order > 0);
 		}
 	}
 }

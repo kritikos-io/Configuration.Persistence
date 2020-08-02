@@ -91,7 +91,7 @@ namespace Kritikos.Configuration.PersistenceTests
 		/// <inheritdoc />
 		public DateTimeOffset UpdatedAt { get; set; }
 
-		public int Order { get; set; }
+		public int Order { get; set; } = 0;
 
 		#endregion
 	}
