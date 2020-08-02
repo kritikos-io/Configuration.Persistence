@@ -7,7 +7,7 @@ namespace Kritikos.Configuration.Persistence.Abstractions
 	/// </summary>
 	/// <typeparam name="TKey">Type of primary key.</typeparam>
 	public interface IEntity<TKey>
-		where TKey : IComparable
+		where TKey : IComparable, IComparable<TKey>, IEquatable<TKey>
 	{
 		TKey Id { get; set; }
 	}
