@@ -1,7 +1,6 @@
-namespace Kritikos.Configuration.PersistenceTests
+namespace Kritikos.Configuration.PersistenceTests.EntityTests
 {
 	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
 
 	using Xunit;
 
@@ -9,7 +8,7 @@ namespace Kritikos.Configuration.PersistenceTests
 	public class IdTests
 	{
 		[Fact]
-		public void IdInsertionTests()
+		public void Insertion()
 		{
 			var ctx = new TestContext();
 

@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4FAAB5E4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration.Persistence", "src\Configuration.Persistence\Configuration.Persistence.csproj", "{F48B66E0-9768-46C3-AEFD-E04807D4CC2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration.PersistenceTests", "tests\Configuration.PersistenceTests\Configuration.PersistenceTests.csproj", "{470E9DF1-37DE-4B95-9F32-B2ACEACB1C8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration.PersistenceTests", "tests\Configuration.PersistenceTests\Configuration.PersistenceTests.csproj", "{470E9DF1-37DE-4B95-9F32-B2ACEACB1C8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
