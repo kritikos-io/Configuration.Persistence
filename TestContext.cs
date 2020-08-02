@@ -91,7 +91,12 @@ namespace Kritikos.Configuration.PersistenceTests
 		/// <inheritdoc />
 		public DateTimeOffset UpdatedAt { get; set; }
 
-		public int Order { get; set; } = 0;
+		#endregion
+
+		#region Implementation of IOrderable
+
+		/// <inheritdoc />
+		public int Order { get; set; }
 
 		#endregion
 	}
