@@ -46,14 +46,14 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		[Fact]
 		public void WithoutBaseFolder()
 		{
-			var converter = new DirectoryInfoToStringConverter(string.Empty,Path.DirectorySeparatorChar,Hints);
+			var converter = new DirectoryInfoToStringConverter(string.Empty, '/', Hints);
 			var dirToString = converter.ConvertToProviderExpression.Compile();
 			var stringToDir = converter.ConvertFromProviderExpression.Compile();
 
 			var dir = stringToDir(ActualPath);
 			Assert.False(dir.Exists);
 
-			var sanitized = dirToString(dir).Replace(Path.DirectorySeparatorChar, '/');
+			var sanitized = dirToString(dir);
 			Assert.Equal(ActualPath,sanitized);
 		}
 	}
