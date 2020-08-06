@@ -33,7 +33,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		[InlineData(DateInterval.Milliseconds)]
 		public void LongInterval(DateInterval interval)
 		{
-			var converter = new TimespanToLongConverter(interval);
+			var converter = new TimespanToLongConverter(interval, Hints);
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
@@ -55,7 +55,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		[InlineData(DateInterval.Milliseconds)]
 		public void DoubleInterval(DateInterval interval)
 		{
-			var converter = new TimespanToDoubleConverter(interval);
+			var converter = new TimespanToDoubleConverter(interval, Hints);
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
@@ -78,7 +78,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		[InlineData(DateInterval.Milliseconds)]
 		public void ZeroNumbers(DateInterval interval)
 		{
-			var converter = new TimespanToDoubleConverter(interval);
+			var converter = new TimespanToDoubleConverter(interval, Hints);
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
@@ -99,7 +99,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		[InlineData(DateInterval.Milliseconds)]
 		public void Negative(DateInterval interval)
 		{
-			var converter = new TimespanToDoubleConverter(interval);
+			var converter = new TimespanToDoubleConverter(interval, Hints);
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
