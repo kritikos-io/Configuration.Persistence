@@ -8,7 +8,7 @@ namespace Kritikos.Configuration.Persistence.Converters
 	using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 	/// <summary>
-	/// Handles <see cref="FileInfo"/> to <see cref="string"/> conversion (and back) for persistence layers with EF Core.
+	/// Converts <see cref="FileInfo"/> to and from <see cref="string"/>.
 	/// the relative path.
 	/// </summary>
 	public class FileInfoToStringConverter : ValueConverter<FileInfo, string>
@@ -26,7 +26,7 @@ namespace Kritikos.Configuration.Persistence.Converters
 			= new Dictionary<string, char>();
 
 		/// <summary>
-		/// Handles <see cref="FileInfo"/> to <see cref="string"/> conversion (and back) for persistence layers with EF Core.
+		/// Creates a new instance of this converter.
 		/// </summary>
 		/// <param name="mappingHints">Specifies hints used by the type mapper when using a <see cref="ValueConverter"/>.</param>
 		/// <param name="name">Instance name, to allow substitution lookups.</param>
