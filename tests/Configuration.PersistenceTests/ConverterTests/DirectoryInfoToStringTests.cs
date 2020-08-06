@@ -35,7 +35,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		public void WithBaseFolder()
 		{
 			var converter =
-				new DirectoryInfoToStringConverter(Hints, BaseFolder, "base", '/', new Dictionary<string, string>());
+				new DirectoryInfoToStringConverter(Hints, "base", BaseFolder, '/', new Dictionary<string, string>());
 
 			var dirToString = converter.ConvertToProviderExpression.Compile();
 			var stringToDir = converter.ConvertFromProviderExpression.Compile();
@@ -52,7 +52,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		public void WithoutBaseFolder()
 		{
 			var converter =
-				new DirectoryInfoToStringConverter(Hints, string.Empty, "noBase", '/',
+				new DirectoryInfoToStringConverter(Hints, "noBase", string.Empty, '/',
 					new Dictionary<string, string>());
 			var dirToString = converter.ConvertToProviderExpression.Compile();
 			var stringToDir = converter.ConvertFromProviderExpression.Compile();

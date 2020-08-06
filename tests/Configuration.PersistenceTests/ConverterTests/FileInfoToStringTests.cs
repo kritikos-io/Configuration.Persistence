@@ -33,7 +33,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		public void WithoutBaseFolder()
 		{
 			var converter =
-				new FileInfoToStringConverter(Hints, BaseFolder, "base", '/', new Dictionary<string, string>());
+				new FileInfoToStringConverter(Hints, "base", BaseFolder, '/', new Dictionary<string, string>());
 
 			var fileToString = converter.ConvertToProviderExpression.Compile();
 			var stringToFile = converter.ConvertFromProviderExpression.Compile();
@@ -49,7 +49,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		public void WithBaseFolder()
 		{
 			var converter =
-				new FileInfoToStringConverter(Hints, BaseFolder, "noBase", '/', new Dictionary<string, string>());
+				new FileInfoToStringConverter(Hints, "noBase", BaseFolder, '/', new Dictionary<string, string>());
 
 			var dirToString = converter.ConvertToProviderExpression.Compile();
 			var stringToDir = converter.ConvertFromProviderExpression.Compile();
@@ -66,7 +66,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		public void WithSubstitute()
 		{
 			var substitutions = new Dictionary<string, string> { { @"/mnt/storage/Media/", @"Z:\" }, };
-			var converter = new FileInfoToStringConverter(Hints, string.Empty, "substitutes", '/', substitutions);
+			var converter = new FileInfoToStringConverter(Hints, "substitutes", string.Empty, '/', substitutions);
 
 			var fileToString = converter.ConvertToProviderExpression.Compile();
 			var stringToFile = converter.ConvertFromProviderExpression.Compile();
