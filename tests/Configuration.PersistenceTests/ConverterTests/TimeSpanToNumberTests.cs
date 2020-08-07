@@ -37,15 +37,15 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
-			var days = Random.Next(Convert.ToInt32(Mapping[interval](TimeSpan.MinValue)),
-				Convert.ToInt32(Mapping[interval](TimeSpan.MaxValue)));
+			var value = Random.NextLong(Convert.ToInt64(Mapping[interval](TimeSpan.MinValue)),
+				Convert.ToInt64(Mapping[interval](TimeSpan.MaxValue)));
 
-			var span = spanFromLong(days);
-			Assert.Equal(days, Mapping[interval](span));
+			var span = spanFromLong(value);
+			Assert.Equal(value, Math.Round(Mapping[interval](span), 0));
 
 
 			var daysReverse = longFromSpan(span);
-			Assert.Equal(days, daysReverse);
+			Assert.Equal(value, daysReverse);
 		}
 
 		[Theory]
@@ -60,15 +60,15 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
-			var value = Random.Next(Convert.ToInt32(Mapping[interval](TimeSpan.MinValue)),
-				Convert.ToInt32(Mapping[interval](TimeSpan.MaxValue)));
+			var value = (double)Random.NextLong(Convert.ToInt64(Mapping[interval](TimeSpan.MinValue)),
+				Convert.ToInt64(Mapping[interval](TimeSpan.MaxValue)));
 
 			var span = spanFromLong(value);
-			Assert.Equal(value, Mapping[interval](span));
+			Assert.Equal(Math.Round(value, 0), Math.Round(Mapping[interval](span), 0));
 
 
 			var reverse = longFromSpan(span);
-			Assert.Equal(value, reverse);
+			Assert.Equal(Math.Round(value, 0), Math.Round(reverse, 0));
 		}
 
 
@@ -101,12 +101,13 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		[InlineData(DateInterval.Milliseconds)]
 		public void Negative(DateInterval interval)
 		{
-			var converter = new TimespanToDoubleConverter(interval, Hints);
+			var converter = new TimespanToLongConverter(interval, Hints);
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
-			var value = Random.Next(Convert.ToInt32(Mapping[interval](TimeSpan.MinValue)),
-				Convert.ToInt32(Mapping[interval](TimeSpan.MaxValue))) * -1;
+			var value = Random.NextLong(Convert.ToInt64(Mapping[interval](TimeSpan.MinValue)),
+				Convert.ToInt64(Mapping[interval](TimeSpan.MaxValue))) * -1;
+
 			var span = spanFromLong(value);
 			Assert.Equal(value, Mapping[interval](span));
 
