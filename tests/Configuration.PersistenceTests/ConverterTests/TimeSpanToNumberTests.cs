@@ -37,7 +37,8 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
-			var days = Random.Next(0, 100);
+			var days = Random.Next(Convert.ToInt32(Mapping[interval](TimeSpan.MinValue)),
+				Convert.ToInt32(Mapping[interval](TimeSpan.MaxValue)));
 
 			var span = spanFromLong(days);
 			Assert.Equal(days, Mapping[interval](span));
@@ -83,7 +84,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 			var longFromSpan = converter.ConvertToProviderExpression.Compile();
 			var spanFromLong = converter.ConvertFromProviderExpression.Compile();
 
-			var value = 0;
+			const int value = 0;
 
 			var span = spanFromLong(value);
 			Assert.Equal(value, Mapping[interval](span));
