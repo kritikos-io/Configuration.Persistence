@@ -2,6 +2,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
 
@@ -18,13 +19,20 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
 		// Hack to  make path name work during Live Unit Testing in Visual Studio
 		// since it runs on a different directory
-		private static readonly string BaseFolder = Directory.GetCurrentDirectory()
-														.Substring(0,
-															Directory.GetCurrentDirectory()
-																.IndexOf(AssemblyName,
-																	StringComparison.InvariantCulture)
-															+ AssemblyName.Length)
-													+ Path.DirectorySeparatorChar;
+		//private static readonly string BaseFolder = Directory.GetCurrentDirectory()
+		//												.Substring(0,
+		//													Directory.GetCurrentDirectory()
+		//														.IndexOf(AssemblyName,
+		//															StringComparison.InvariantCulture)
+		//													+ AssemblyName.Length)
+		//											+ Path.DirectorySeparatorChar;
+
+		private static readonly string CurrentDirectory = Directory.GetCurrentDirectory();
+
+		private static readonly string BaseFolder =
+			CurrentDirectory.Substring(0, CurrentDirectory.IndexOf("tests", StringComparison.InvariantCulture));
+
+		private static readonly string AppName = typeof(FileInfoToStringConverter).Assembly.GetName().Name;
 
 		private const string ActualFile = "src/Configuration.Persistence/Configuration.Persistence.csproj";
 
@@ -57,7 +65,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
 			var dir = stringToDir(ActualFile);
 
-			Assert.True(dir.Exists);
+			Assert.True(dir.Exists, $"File {dir.FullName} did not exist!");
 
 			var reverse = dirToString(dir);
 			Assert.EndsWith(ActualFile, reverse, StringComparison.InvariantCulture);
@@ -66,8 +74,11 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 		[Fact]
 		public void WithSubstitute()
 		{
+			var currentDir = Path.Combine(Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar.ToString());
+
 			var substitutions = new Dictionary<string, string> { { @"/mnt/storage/Media/", @"Z:\" }, };
-			var converter = new FileInfoToStringConverter(Hints, "substitutes", string.Empty, '/', substitutions);
+			var converter = new FileInfoToStringConverter(Hints, "substitutes", currentDir, '/',
+				substitutions);
 
 			var fileToString = converter.ConvertToProviderExpression.Compile();
 			var stringToFile = converter.ConvertFromProviderExpression.Compile();
@@ -75,7 +86,9 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 			const string episode = @"/mnt/storage/Media/Big Buck Bunny.avi";
 
 			var file = stringToFile(episode);
-			Assert.StartsWith(substitutions.First().Value, file.FullName);
+
+			Assert.StartsWith(substitutions.First().Value,
+				file.FullName.Replace(currentDir, string.Empty));
 
 			var reverse = fileToString(file);
 			Assert.Equal(episode, reverse);
