@@ -42,7 +42,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
 			var dir = stringToDir(ActualPath);
 
-			Assert.True(dir.Exists);
+			Assert.True(dir.Exists,$"Directory {dir.FullName} did not exist!");
 
 			var reverse = dirToString(dir);
 			Assert.Equal(ActualPath, reverse);

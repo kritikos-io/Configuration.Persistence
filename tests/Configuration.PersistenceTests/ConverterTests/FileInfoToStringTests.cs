@@ -3,6 +3,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Linq;
 
 	using Kritikos.Configuration.Persistence.Converters;
 
@@ -74,7 +75,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 			const string episode = @"/mnt/storage/Media/Big Buck Bunny.avi";
 
 			var file = stringToFile(episode);
-			Assert.False(file.Exists);
+			Assert.StartsWith(substitutions.First().Value, file.FullName);
 
 			var reverse = fileToString(file);
 			Assert.Equal(episode, reverse);
