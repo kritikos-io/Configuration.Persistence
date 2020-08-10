@@ -109,7 +109,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 				Convert.ToInt64(Mapping[interval](TimeSpan.MaxValue))) * -1;
 
 			var span = spanFromLong(value);
-			Assert.Equal(value, Mapping[interval](span));
+			Assert.Equal(value, Math.Round(Mapping[interval](span), 0));
 
 			var reverse = longFromSpan(span);
 			Assert.Equal(value, reverse);

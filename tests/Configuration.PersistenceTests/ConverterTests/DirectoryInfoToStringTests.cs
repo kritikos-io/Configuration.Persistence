@@ -14,18 +14,10 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 	[ExcludeFromCodeCoverage]
 	public class DirectoryInfoToStringTests
 	{
-		private static readonly string AssemblyName =
-			typeof(DirectoryInfoToStringConverter).Assembly.GetName().Name ?? string.Empty;
+		private static readonly string CurrentDirectory = Directory.GetCurrentDirectory();
 
-		// Hack to  make path name work during Live Unit Testing in Visual Studio
-		// since it runs on a different directory
-		private static readonly string BaseFolder = Directory.GetCurrentDirectory()
-														.Substring(0,
-															Directory.GetCurrentDirectory()
-																.IndexOf(AssemblyName,
-																	StringComparison.InvariantCulture)
-															+ AssemblyName.Length)
-													+ Path.DirectorySeparatorChar;
+		private static readonly string BaseFolder =
+			CurrentDirectory.Substring(0, CurrentDirectory.IndexOf("tests", StringComparison.InvariantCulture));
 
 		private const string ActualPath = "src/Configuration.Persistence";
 
