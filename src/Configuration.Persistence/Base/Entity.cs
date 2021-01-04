@@ -27,28 +27,26 @@ namespace Kritikos.Configuration.Persistence.Base
 		/// Field used to track database concurrency hits.
 		/// </summary>
 		[Timestamp]
-#pragma warning disable CA1819 // Proposed way to handle database concurrency in SQL Server.
 		public byte[] RowVersion { get; set; } = Array.Empty<byte>();
-#pragma warning restore CA1819 // Properties should not return arrays
 
 		/// <summary>
 		/// Date of creation.
 		/// </summary>
-		DateTimeOffset ITimestamped.CreatedAt { get; set; }
+		public DateTimeOffset CreatedAt { get; set; }
 
 		/// <summary>
 		/// Date of last change.
 		/// </summary>
-		DateTimeOffset ITimestamped.UpdatedAt { get; set; }
+		public DateTimeOffset UpdatedAt { get; set; }
 
 		/// <summary>
 		/// User that created this entity.
 		/// </summary>
-		string IAuditable<string>.CreatedBy { get; set; } = string.Empty;
+		public string CreatedBy { get; set; } = string.Empty;
 
 		/// <summary>
 		/// User that last changed this entity.
 		/// </summary>
-		string IAuditable<string>.UpdatedBy { get; set; } = string.Empty;
+		public string UpdatedBy { get; set; } = string.Empty;
 	}
 }

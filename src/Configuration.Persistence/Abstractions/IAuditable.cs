@@ -11,8 +11,8 @@ namespace Kritikos.Configuration.Persistence.Abstractions
 	/// </remarks>
 	public interface IAuditable<T>
 	{
-		T CreatedBy { get; internal set; }
+		T CreatedBy { get; set; }
 
-		T UpdatedBy { get; internal set; }
+		T UpdatedBy { get; set; }
 	}
 }

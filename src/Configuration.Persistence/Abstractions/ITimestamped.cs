@@ -12,8 +12,8 @@ namespace Kritikos.Configuration.Persistence.Abstractions
 	/// </remarks>
 	public interface ITimestamped
 	{
-		DateTimeOffset CreatedAt { get; internal set; }
+		DateTimeOffset CreatedAt { get; set; }
 
-		DateTimeOffset UpdatedAt { get; internal set; }
+		DateTimeOffset UpdatedAt { get; set; }
 	}
 }

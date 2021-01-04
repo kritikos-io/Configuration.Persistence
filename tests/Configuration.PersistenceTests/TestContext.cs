@@ -12,7 +12,6 @@ namespace Kritikos.Configuration.PersistenceTests
 	using Microsoft.EntityFrameworkCore.InMemory.ValueGeneration.Internal;
 
 	[ExcludeFromCodeCoverage]
-	[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
 	public class TestContext : DbContext
 	{
 		public const string DefaultUser = "Test";
@@ -32,11 +31,13 @@ namespace Kritikos.Configuration.PersistenceTests
 		public int SaveChanges(DateTimeOffset? now)
 		{
 			now ??= DateTimeOffset.Now;
-
+			
+#pragma warning disable CS0618 // Type or member is obsolete
 			ChangeTracker.Entries()
 				.ToList()
 				.TimeStampEntityEntries(now.Value)
 				.AuditEntities(DefaultUser);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			return base.SaveChanges();
 		}
@@ -47,10 +48,13 @@ namespace Kritikos.Configuration.PersistenceTests
 		public override int SaveChanges()
 		{
 			var now = DateTimeOffset.Now;
+			
+#pragma warning disable CS0618 // Type or member is obsolete
 			ChangeTracker.Entries()
 				.ToList()
 				.TimeStampEntityEntries(now)
 				.AuditEntities(DefaultUser);
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			return base.SaveChanges();
 		}
