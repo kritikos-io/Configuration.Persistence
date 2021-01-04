@@ -34,21 +34,21 @@ namespace Kritikos.Configuration.Persistence.Base
 		/// <summary>
 		/// Date of creation.
 		/// </summary>
-		public DateTimeOffset CreatedAt { get; set; }
+		DateTimeOffset ITimestamped.CreatedAt { get; set; }
 
 		/// <summary>
 		/// Date of last change.
 		/// </summary>
-		public DateTimeOffset UpdatedAt { get; set; }
+		DateTimeOffset ITimestamped.UpdatedAt { get; set; }
 
 		/// <summary>
 		/// User that created this entity.
 		/// </summary>
-		public string CreatedBy { get; set; } = string.Empty;
+		string IAuditable<string>.CreatedBy { get; set; } = string.Empty;
 
 		/// <summary>
 		/// User that last changed this entity.
 		/// </summary>
-		public string UpdatedBy { get; set; } = string.Empty;
+		string IAuditable<string>.UpdatedBy { get; set; } = string.Empty;
 	}
 }
