@@ -41,6 +41,7 @@ namespace Kritikos.Configuration.Persistence
 		/// <param name="entries">The List of <see cref="EntityEntry"/> records to operate on.</param>
 		/// <param name="now"><see cref="DateTimeOffset"/> that will be used for stamping.</param>
 		/// <returns>The list of <see cref="EntityEntry"/> used as input, now timestamped.</returns>
+		[Obsolete("Use TimestampSaveChangesInterceptor instead, method is marked for removal")]
 		public static List<EntityEntry> TimeStampEntityEntries(this List<EntityEntry> entries, DateTimeOffset now)
 			=> entries.ConfigureEntity(new Dictionary<EntityState, Action<ITimestamped>>
 			{
@@ -61,6 +62,7 @@ namespace Kritikos.Configuration.Persistence
 		/// <param name="entries">The List of <see cref="EntityEntry"/> records to operate on.</param>
 		/// <param name="auditor">The auditor that will be set.</param>
 		/// <returns>The list of <see cref="EntityEntry"/> used as input, now audit-timestamped.</returns>
+		[Obsolete("Use AuditSaveChangesInterceptor instead, method is marked for removal")]
 		public static List<EntityEntry> AuditEntities<T>(this List<EntityEntry> entries, T auditor)
 			=> entries.ConfigureEntity(new Dictionary<EntityState, Action<IAuditable<T>>>
 			{
