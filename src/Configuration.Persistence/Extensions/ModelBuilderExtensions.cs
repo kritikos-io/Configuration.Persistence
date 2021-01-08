@@ -1,4 +1,4 @@
-namespace Kritikos.Configuration.Persistence
+namespace Kritikos.Configuration.Persistence.Extensions
 {
 	using System;
 	using System.Linq;

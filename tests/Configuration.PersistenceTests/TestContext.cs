@@ -7,6 +7,7 @@ namespace Kritikos.Configuration.PersistenceTests
 	using Kritikos.Configuration.Persistence;
 	using Kritikos.Configuration.Persistence.Abstractions;
 	using Kritikos.Configuration.Persistence.Base;
+	using Kritikos.Configuration.Persistence.Extensions;
 
 	using Microsoft.EntityFrameworkCore;
 	using Microsoft.EntityFrameworkCore.InMemory.ValueGeneration.Internal;
