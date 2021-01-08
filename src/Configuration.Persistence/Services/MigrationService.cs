@@ -14,6 +14,7 @@ namespace Kritikos.Configuration.Persistence.Services
 	{
 		private readonly IServiceScopeFactory scopeFactory;
 		private readonly ILogger<MigrationService<TContext>> logger;
+		private readonly string contextName = typeof(TContext).Name;
 
 		public MigrationService(IServiceScopeFactory scopeFactory, ILogger<MigrationService<TContext>> logger)
 		{
@@ -31,7 +32,7 @@ namespace Kritikos.Configuration.Persistence.Services
 			var migrations = (await ctx.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
 			if (migrations.Any())
 			{
-				logger.LogInformation("Applying migrations to {DbContext}: {Migrations}", nameof(TContext), migrations);
+				logger.LogInformation("Applying migrations to {DbContext}: {Migrations}", contextName, migrations);
 				await ctx.Database.MigrateAsync(cancellationToken);
 			}
 		}
@@ -39,7 +40,7 @@ namespace Kritikos.Configuration.Persistence.Services
 		/// <inheritdoc />
 		public Task StopAsync(CancellationToken cancellationToken)
 		{
-			logger.LogInformation("Migrations for {DbContext} completed succesfully", nameof(TContext));
+			logger.LogInformation("Migrations for {DbContext} completed succesfully", contextName);
 			return Task.CompletedTask;
 		}
 
