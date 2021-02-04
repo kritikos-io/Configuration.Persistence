@@ -10,9 +10,9 @@
       },
       "coverlet.msbuild": {
         "type": "Direct",
-        "requested": "[2.9.0, )",
-        "resolved": "2.9.0",
-        "contentHash": "t+2du2q+z0FFklyP6HGSoKssRj0NequInLvgQ9rtxHskbgmAENxgt83eTQSRyxJ8DAThW8WOYhOuhuXIs//ZyA=="
+        "requested": "[3.0.0, )",
+        "resolved": "3.0.0",
+        "contentHash": "NR4lbSqBn3o/qj3MjTG2Ppx3v61BD7Qn2jZoiSRnc1ZdPRK2GHE6y3EsnzsXDiRPU8VjR4t24XgvMkrIQG8ryg=="
       },
       "Microsoft.EntityFrameworkCore.InMemory": {
         "type": "Direct",

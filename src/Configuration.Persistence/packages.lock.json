@@ -4,9 +4,9 @@
     ".NETStandard,Version=v2.1": {
       "Microsoft.CodeAnalysis.NetAnalyzers": {
         "type": "Direct",
-        "requested": "[5.0.1, )",
-        "resolved": "5.0.1",
-        "contentHash": "cntr+DrujUBhwa2hYc6KpR5PAeyFHHLPKW6hei2Canjkrme96+ZN9Et/jCLPVERcF/erTqJBpDhx14nuIP4bqg=="
+        "requested": "[5.0.3, )",
+        "resolved": "5.0.3",
+        "contentHash": "7rw0JUPSAVGR0HPekQiQvwGPor44p/Ek21+wZABraG4bVYNrSkx98ZZsxSxG5jJ4oqjACJxea8E62UO0dsKDBw=="
       },
       "Microsoft.EntityFrameworkCore.Relational": {
         "type": "Direct",
@@ -97,9 +97,12 @@
       },
       "StyleCop.Analyzers": {
         "type": "Direct",
-        "requested": "[1.1.118, )",
-        "resolved": "1.1.118",
-        "contentHash": "Onx6ovGSqXSK07n/0eM3ZusiNdB6cIlJdabQhWGgJp3Vooy9AaLS/tigeybOJAobqbtggTamoWndz72JscZBvw=="
+        "requested": "[1.2.0-beta.321, )",
+        "resolved": "1.2.0-beta.321",
+        "contentHash": "immyDIuCjDT2sxv+mAhQ2IH4HyiHJkAvKqK7l1ksJDWAOdeAvkco7EZ14IGWbiWNOEBRm1p7P9UAbfgT9aJSEA==",
+        "dependencies": {
+          "StyleCop.Analyzers.Unstable": "1.2.0.321"
+        }
       },
       "System.ComponentModel.Annotations": {
         "type": "Direct",
@@ -406,6 +409,11 @@
         "type": "Transitive",
         "resolved": "1.0.0",
         "contentHash": "G8DuQY8/DK5NN+3jm5wcMcd9QYD90UV7MiLmdljSJixi3U/vNaeBKmmXUqI4DJCOeWizIUEh4ALhSt58mR+5eg=="
+      },
+      "StyleCop.Analyzers.Unstable": {
+        "type": "Transitive",
+        "resolved": "1.2.0.321",
+        "contentHash": "CLL1cwvzGyXsCDzHQuAV3STrkIfTXqlS/vnxJTlSiRmmFjnTnoNVIZWwv738/hWxoh8MjPyHlp7eLossZIB5kg=="
       },
       "System.Buffers": {
         "type": "Transitive",
