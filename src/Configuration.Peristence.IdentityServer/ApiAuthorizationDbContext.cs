@@ -138,8 +138,8 @@ namespace Kritikos.Configuration.Peristence.IdentityServer
 		{
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.ConfigurePersistedGrantContext(operationalStoreOptions.Value);
-			modelBuilder.ConfigurePersistedGrantContext(operationalStoreOptions.Value);
 			modelBuilder.ConfigureResourcesContext(configurationStoreOptions.Value);
+			modelBuilder.ConfigureClientContext(configurationStoreOptions.Value);
 		}
 
 		#endregion Overrides of IdentityDbContext<TUser,TRole,TKey,IdentityUserClaim<TKey>,IdentityUserRole<TKey>,IdentityUserLogin<TKey>,IdentityRoleClaim<TKey>,IdentityUserToken<TKey>>
