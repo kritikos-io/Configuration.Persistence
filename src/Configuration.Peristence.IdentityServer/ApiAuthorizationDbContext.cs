@@ -2,6 +2,7 @@
 namespace Kritikos.Configuration.Peristence.IdentityServer
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -26,6 +27,7 @@ namespace Kritikos.Configuration.Peristence.IdentityServer
 	/// <seealso cref="DbContext"/>
 	/// <seealso cref="IPersistedGrantDbContext"/>
 	/// <seealso cref="IConfigurationDbContext"/>
+	[ExcludeFromCodeCoverage]
 	public abstract class ApiAuthorizationDbContext<TUser, TRole, TKey> :
 		IdentityDbContext<TUser, TRole, TKey>,
 		IPersistedGrantDbContext,

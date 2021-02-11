@@ -2,6 +2,7 @@
 namespace Kritikos.Configuration.Peristence.IdentityServer
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -29,6 +30,7 @@ namespace Kritikos.Configuration.Peristence.IdentityServer
 	/// <seealso cref="IConfigurationDbContext"/>
 	/// <exception cref="InvalidOperationException">Could not resolve an instance of <seealso cref="ConfigurationStoreOptions"/>.</exception>
 	/// <exception cref="InvalidOperationException">Could not resolve an instance of <seealso cref="OperationalStoreOptions"/>.</exception>
+	[ExcludeFromCodeCoverage]
 	public abstract class ApiAuthorizationPooledDbContext<TUser, TRole, TKey> :
 		IdentityDbContext<TUser, TRole, TKey>,
 		IPersistedGrantDbContext,
