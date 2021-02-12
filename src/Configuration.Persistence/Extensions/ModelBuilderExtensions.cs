@@ -26,8 +26,8 @@ namespace Kritikos.Configuration.Persistence.Extensions
 				throw new ArgumentNullException(nameof(modelBuilder));
 			}
 
-			foreach (var entityType in modelBuilder.Model.GetEntityTypes()
-				.Where(x => typeof(T).IsAssignableFrom(x.ClrType)))
+			var entityTypes = modelBuilder.Model.GetEntityTypes().Where(x => typeof(T).IsAssignableFrom(x.ClrType)).ToList();
+			foreach (var entityType in entityTypes)
 			{
 				buildAction(modelBuilder.Entity(entityType.ClrType));
 			}
@@ -54,7 +54,8 @@ namespace Kritikos.Configuration.Persistence.Extensions
 				throw new ArgumentNullException(nameof(modelBuilder));
 			}
 
-			foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(x => typeof(T).IsAssignableFrom(x.ClrType)))
+			var entityTypes = modelBuilder.Model.GetEntityTypes().Where(x => typeof(T).IsAssignableFrom(x.ClrType)).ToList();
+			foreach (var entityType in entityTypes)
 			{
 				buildAction(modelBuilder.Entity<T>());
 			}
