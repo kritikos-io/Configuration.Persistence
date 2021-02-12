@@ -2,6 +2,7 @@ namespace Kritikos.Configuration.Persistence.Extensions
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 
 	using Kritikos.Configuration.Persistence.Abstractions;
@@ -10,6 +11,7 @@ namespace Kritikos.Configuration.Persistence.Extensions
 	using Microsoft.EntityFrameworkCore;
 	using Microsoft.EntityFrameworkCore.ChangeTracking;
 
+	[ExcludeFromCodeCoverage]
 	public static class ChangeTrackerExtensions
 	{
 		/// <summary>
