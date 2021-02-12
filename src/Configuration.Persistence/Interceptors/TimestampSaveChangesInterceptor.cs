@@ -1,6 +1,7 @@
 namespace Kritikos.Configuration.Persistence.Interceptors
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
 		#region Overrides of SaveChangesInterceptor
 
 		/// <inheritdoc />
+		[ExcludeFromCodeCoverage] // Handled in async method
 		public override InterceptionResult<int> SavingChanges(
 			DbContextEventData eventData,
 			InterceptionResult<int> result)

@@ -1,9 +1,11 @@
 namespace Kritikos.Configuration.Persistence.Base
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 
 	using Kritikos.Configuration.Persistence.Abstractions;
 
+	[ExcludeFromCodeCoverage]
 	public abstract class BasicEntity<TKey> : IEntity<TKey>
 		where TKey : IComparable, IComparable<TKey>, IEquatable<TKey>
 	{

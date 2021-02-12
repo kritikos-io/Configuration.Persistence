@@ -12,6 +12,7 @@ namespace Kritikos.Configuration.Persistence.Base
 	/// </summary>
 	/// <typeparam name="TKey">Type of primary key.</typeparam>
 	/// <remarks>Created/Updated properties should be handled by Entity Framework, not business logic.</remarks>
+	[ExcludeFromCodeCoverage]
 	public abstract class Entity<TKey> : IEntity<TKey>, IConcurrent, ITimestamped, IAuditable<string>
 		where TKey : IComparable, IComparable<TKey>, IEquatable<TKey>
 	{

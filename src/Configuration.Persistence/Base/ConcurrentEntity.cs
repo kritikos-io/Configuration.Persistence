@@ -4,9 +4,11 @@ namespace Kritikos.Configuration.Persistence.Base
 	using System;
 	using System.ComponentModel.DataAnnotations;
 	using System.ComponentModel.DataAnnotations.Schema;
+	using System.Diagnostics.CodeAnalysis;
 
 	using Kritikos.Configuration.Persistence.Abstractions;
 
+	[ExcludeFromCodeCoverage]
 	public abstract class ConcurrentEntity<TKey> : IEntity<TKey>, IConcurrent
 		where TKey : IComparable, IComparable<TKey>, IEquatable<TKey>
 	{

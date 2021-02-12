@@ -1,6 +1,7 @@
 namespace Kritikos.Configuration.Persistence.Interceptors
 {
 	using System;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Threading;
 	using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
 
 	using Microsoft.EntityFrameworkCore;
 	using Microsoft.EntityFrameworkCore.Diagnostics;
+	using Microsoft.Extensions.Options;
 
 	/// <summary>
 	/// Populates audit values for <see cref="IAuditable{T}"/> entities.
@@ -25,6 +27,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
 		#region Overrides of SaveChangesInterceptor
 
 		/// <inheritdoc />
+		[ExcludeFromCodeCoverage] // Handled in async method
 		public override InterceptionResult<int> SavingChanges(
 			DbContextEventData eventData,
 			InterceptionResult<int> result)
