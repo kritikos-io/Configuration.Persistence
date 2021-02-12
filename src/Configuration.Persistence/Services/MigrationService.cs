@@ -9,6 +9,11 @@ namespace Kritikos.Configuration.Persistence.Services
 	using Microsoft.Extensions.Hosting;
 	using Microsoft.Extensions.Logging;
 
+	/// <summary>
+	/// A simple HostedService that applies pending migrations at the start of an <seealso cref="IHost"/>.
+	/// </summary>
+	/// <typeparam name="TContext">The <seealso cref="DbContext"/> to operate on.</typeparam>
+	/// <remarks>This will prevent kestrel from serving requests until migrations have been applied.</remarks>
 	public class MigrationService<TContext> : IHostedService
 		where TContext : DbContext
 	{
