@@ -1,4 +1,3 @@
-#nullable disable
 #pragma warning disable SA1402 // File may only contain a single type
 namespace Kritikos.Configuration.Persistence.Converters
 {
@@ -17,7 +16,7 @@ namespace Kritikos.Configuration.Persistence.Converters
 	public class TimeSpanToNumberConverter<T> : ValueConverter<TimeSpan, T>
 		where T : unmanaged, IConvertible, IComparable, IComparable<T>, IEquatable<T>
 	{
-		public TimeSpanToNumberConverter(DateInterval interval, ConverterMappingHints mappingHints = null)
+		public TimeSpanToNumberConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(
 				v => NumberFromTimeSpan(interval, v),
 				v => TimeSpanToNumber(interval, v),
@@ -94,7 +93,7 @@ namespace Kritikos.Configuration.Persistence.Converters
 	/// </summary>
 	public class TimeSpanToDoubleConverter : TimeSpanToNumberConverter<double>
 	{
-		public TimeSpanToDoubleConverter(DateInterval interval, ConverterMappingHints mappingHints = null)
+		public TimeSpanToDoubleConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(interval, mappingHints)
 		{
 		}
@@ -105,7 +104,7 @@ namespace Kritikos.Configuration.Persistence.Converters
 	/// </summary>
 	public class TimeSpanToLongConverter : TimeSpanToNumberConverter<long>
 	{
-		public TimeSpanToLongConverter(DateInterval interval, ConverterMappingHints mappingHints = null)
+		public TimeSpanToLongConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(interval, mappingHints)
 		{
 		}
@@ -118,7 +117,7 @@ namespace Kritikos.Configuration.Persistence.Converters
 	/// <exception cref="OverflowException"><seealso cref="DateInterval"/> requested exceeds the max value of <see cref="int"/>.</exception>
 	public class TimeSpanToIntConverter : TimeSpanToNumberConverter<int>
 	{
-		public TimeSpanToIntConverter(DateInterval interval, ConverterMappingHints mappingHints = null)
+		public TimeSpanToIntConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(interval, mappingHints)
 		{
 		}
