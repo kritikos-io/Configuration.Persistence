@@ -1,40 +1,58 @@
 namespace Kritikos.Configuration.Persistence.Converters
 {
-	using System;
 	using System.IO;
 
+	using Microsoft.EntityFrameworkCore.Storage;
 	using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 	/// <summary>
-	/// Handles DirectoryInfo to string conversion (and back) for persistence layers that save only
-	/// the relative path.
+	/// Converts from <seealso cref="DirectoryInfo"/> to and from string.
 	/// </summary>
 	public class DirectoryInfoToStringConverter : ValueConverter<DirectoryInfo, string>
 	{
 		/// <summary>
-		/// Handles DirectoryInfo to string conversion (and back) for persistence layers that save only relative paths.
+		/// Initializes a new instance of the <seealso cref="DirectoryInfoToStringConverter"/> class.
 		/// </summary>
-		/// <param name="relativeBase">The actual folder that relative paths are based on.</param>
-		/// <param name="originalSeparator">Path separator character used in string.</param>
-		/// <param name="mappingHints">Specifies hints used by the type mapper when using a <see cref="ValueConverter"/>.</param>
+		/// <param name="separator">Character used as directory separator in the persistence layer.</param>
+		/// <param name="basePath"><seealso cref="DirectoryInfo"/> used as path base when handling relative paths.</param>
+		/// <param name="mappingHints">
+		/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+		/// facets for the converted data.
+		/// </param>
 		public DirectoryInfoToStringConverter(
-			string relativeBase,
-			char originalSeparator,
+			char separator,
+			FileSystemInfo? basePath = null,
 			ConverterMappingHints? mappingHints = null)
 			: base(
-				v => v.FullName
-					.Replace(
-						string.IsNullOrWhiteSpace(relativeBase)
-							? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}"
-							: relativeBase,
-						string.Empty)
-					.Replace(Path.DirectorySeparatorChar, originalSeparator),
-				v => v.StartsWith(relativeBase, StringComparison.InvariantCulture)
-					? new DirectoryInfo(v.Replace(originalSeparator, Path.DirectorySeparatorChar))
-					: new DirectoryInfo(
-						Path.Combine(relativeBase, v.Replace(originalSeparator, Path.DirectorySeparatorChar))),
+				v => FromDirectoryInfo(basePath, v, separator),
+				v => FromPath(basePath, v, separator),
 				mappingHints)
 		{
+		}
+
+		private static DirectoryInfo FromPath(FileSystemInfo? basePath, string directoryPath, char separator)
+		{
+			var path = (basePath == null
+					? directoryPath
+					: Path.Combine(basePath.FullName, directoryPath))
+				.Replace(separator, Path.DirectorySeparatorChar);
+
+			return new DirectoryInfo(path);
+		}
+
+		private static string FromDirectoryInfo(FileSystemInfo? basePath, FileSystemInfo directory, char separator)
+		{
+			var path = directory.FullName;
+			path = basePath != null
+				? path.Replace(basePath?.FullName ?? string.Empty, string.Empty)[1..]
+				: path;
+
+			path = separator != '\\' && Path.DirectorySeparatorChar == '\\' && Path.GetPathRoot(path).Length - 1 > 0
+				? path[(Path.GetPathRoot(path).Length - 1)..]
+				: path;
+			path = path.Replace(Path.DirectorySeparatorChar, separator);
+
+			return path;
 		}
 	}
 }
