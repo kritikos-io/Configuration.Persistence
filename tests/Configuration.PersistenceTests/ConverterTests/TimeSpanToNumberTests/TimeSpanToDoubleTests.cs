@@ -7,7 +7,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
 
 	using Xunit;
 
-	public class TimeSpanToDoubleConverterTests : TimeSpanToNumberConverterTests<double>
+	public class TimeSpanToDoubleTests : TimeSpanToNumberConverterTests<double>
 	{
 		/// <inheritdoc />
 		protected override TimeSpanToDoubleConverter CreateConverter(DateInterval interval) => new(interval, MappingHints);

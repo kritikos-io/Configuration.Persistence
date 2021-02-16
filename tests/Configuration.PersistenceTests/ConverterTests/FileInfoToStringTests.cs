@@ -8,7 +8,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
 	using Xunit;
 
-	public class FileInfoToStringConverter
+	public class FileInfoToStringTests
 	{
 		private const string WindowsBase = @"C:\Windows\System32";
 		private const string WindowsRelative = @"drivers\etc\hosts";

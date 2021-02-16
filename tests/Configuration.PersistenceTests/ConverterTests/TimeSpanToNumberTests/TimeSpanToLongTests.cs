@@ -7,7 +7,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
 
 	using Xunit;
 
-	public class TimeSpanToLongConverterTests : TimeSpanToNumberConverterTests<long>
+	public class TimeSpanToLongTests : TimeSpanToNumberConverterTests<long>
 	{
 		private static new readonly Func<TimeSpan, DateInterval, long> FromTimespan = ((span, interval) =>
 			Convert.ToInt64(TimeSpanToNumberConverterTests.FromTimespan(span, interval)));

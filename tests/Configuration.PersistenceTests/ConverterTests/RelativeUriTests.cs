@@ -10,7 +10,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
 	using Xunit;
 
-	public class RelativeUriConverterTests
+	public class RelativeUriTests
 	{
 		private const string AbsoluteUri = "https://github.com/kritikos-io";
 		private const string Base = "https://github.com";
