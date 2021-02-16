@@ -2,10 +2,10 @@
 namespace Kritikos.Configuration.Persistence.Converters
 {
 	using System;
-	using System.Diagnostics;
 
 	using Kritikos.Configuration.Persistence.Enums;
 
+	using Microsoft.EntityFrameworkCore.Storage;
 	using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 	/// <summary>
@@ -16,6 +16,14 @@ namespace Kritikos.Configuration.Persistence.Converters
 	public class TimeSpanToNumberConverter<T> : ValueConverter<TimeSpan, T>
 		where T : unmanaged, IConvertible, IComparable, IComparable<T>, IEquatable<T>
 	{
+		/// <summary>
+		/// Initializes a new instance of the <seealso cref="TimeSpanToNumberConverter{T}"/> class.
+		/// </summary>
+		/// <param name="interval">The interval used in the numeric representation.</param>
+		/// <param name="mappingHints">
+		/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+		/// facets for the converted data.
+		/// </param>
 		public TimeSpanToNumberConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(
 				v => NumberFromTimeSpan(interval, v),
@@ -93,6 +101,14 @@ namespace Kritikos.Configuration.Persistence.Converters
 	/// </summary>
 	public class TimeSpanToDoubleConverter : TimeSpanToNumberConverter<double>
 	{
+		/// <summary>
+		/// Initializes a new instance of the <seealso cref="TimeSpanToDoubleConverter"/> class.
+		/// </summary>
+		/// <param name="interval">The interval used in the numeric double representation.</param>
+		/// <param name="mappingHints">
+		/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+		/// facets for the converted data.
+		/// </param>
 		public TimeSpanToDoubleConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(interval, mappingHints)
 		{
@@ -104,6 +120,14 @@ namespace Kritikos.Configuration.Persistence.Converters
 	/// </summary>
 	public class TimeSpanToLongConverter : TimeSpanToNumberConverter<long>
 	{
+		/// <summary>
+		/// Initializes a new instance of the <seealso cref="TimeSpanToLongConverter"/> class.
+		/// </summary>
+		/// <param name="interval">The interval used in the numeric double representation.</param>
+		/// <param name="mappingHints">
+		/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+		/// facets for the converted data.
+		/// </param>
 		public TimeSpanToLongConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(interval, mappingHints)
 		{
@@ -117,6 +141,14 @@ namespace Kritikos.Configuration.Persistence.Converters
 	/// <exception cref="OverflowException"><seealso cref="DateInterval"/> requested exceeds the max value of <see cref="int"/>.</exception>
 	public class TimeSpanToIntConverter : TimeSpanToNumberConverter<int>
 	{
+		/// <summary>
+		/// Initializes a new instance of the <seealso cref="TimeSpanToIntConverter"/> class.
+		/// </summary>
+		/// <param name="interval">The interval used in the numeric double representation.</param>
+		/// <param name="mappingHints">
+		/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+		/// facets for the converted data.
+		/// </param>
 		public TimeSpanToIntConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
 			: base(interval, mappingHints)
 		{
