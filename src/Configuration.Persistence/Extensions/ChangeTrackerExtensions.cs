@@ -1,17 +1,19 @@
-namespace Kritikos.Configuration.Persistence
+namespace Kritikos.Configuration.Persistence.Extensions
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 
 	using Kritikos.Configuration.Persistence.Abstractions;
+	using Kritikos.Configuration.Persistence.Interceptors;
 
 	using Microsoft.EntityFrameworkCore;
 	using Microsoft.EntityFrameworkCore.ChangeTracking;
 
+	[ExcludeFromCodeCoverage]
 	public static class ChangeTrackerExtensions
 	{
-#pragma warning disable CS0419 // Ambiguous reference in cref attribute
 		/// <summary>
 		/// Configures preset actions that will be applied on all matching entities.
 		/// </summary>
@@ -19,8 +21,8 @@ namespace Kritikos.Configuration.Persistence
 		/// <param name="entries">The List of <see cref="EntityEntry"/> records to operate on.</param>
 		/// <param name="actions">A mapping of actions to each state.</param>
 		/// <returns>The list of <see cref="EntityEntry"/> used as input, now modified as per <paramref name="actions"></paramref>.</returns>
-		/// <remarks>This is meant to be used on overloaded <see cref="DbContext.SaveChanges"/>.</remarks>
-#pragma warning restore CS0419 // Ambiguous reference in cref attribute
+		/// <remarks>This is meant to be used on overloaded <seealso cref="DbContext.SaveChanges()"/>.</remarks>
+		[Obsolete("Prefer interceptors for performance and extensibility friendly functionality.")]
 		public static List<EntityEntry> ConfigureEntity<T>(
 			this List<EntityEntry> entries,
 			Dictionary<EntityState, Action<T>> actions)
@@ -41,6 +43,8 @@ namespace Kritikos.Configuration.Persistence
 		/// <param name="entries">The List of <see cref="EntityEntry"/> records to operate on.</param>
 		/// <param name="now"><see cref="DateTimeOffset"/> that will be used for stamping.</param>
 		/// <returns>The list of <see cref="EntityEntry"/> used as input, now timestamped.</returns>
+		/// <remarks>Fully replaced by <see cref="TimestampSaveChangesInterceptor"/>.</remarks>
+		[Obsolete("Use TimestampSaveChangesInterceptor instead, method is marked for removal", false)]
 		public static List<EntityEntry> TimeStampEntityEntries(this List<EntityEntry> entries, DateTimeOffset now)
 			=> entries.ConfigureEntity(new Dictionary<EntityState, Action<ITimestamped>>
 			{
@@ -61,6 +65,8 @@ namespace Kritikos.Configuration.Persistence
 		/// <param name="entries">The List of <see cref="EntityEntry"/> records to operate on.</param>
 		/// <param name="auditor">The auditor that will be set.</param>
 		/// <returns>The list of <see cref="EntityEntry"/> used as input, now audit-timestamped.</returns>
+		/// <remarks>Replaced by <see cref="AuditSaveChangesInterceptor{T}"/>.</remarks>
+		[Obsolete("Use AuditSaveChangesInterceptor instead, method is marked for removal", false)]
 		public static List<EntityEntry> AuditEntities<T>(this List<EntityEntry> entries, T auditor)
 			=> entries.ConfigureEntity(new Dictionary<EntityState, Action<IAuditable<T>>>
 			{

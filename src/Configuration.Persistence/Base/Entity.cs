@@ -12,6 +12,7 @@ namespace Kritikos.Configuration.Persistence.Base
 	/// </summary>
 	/// <typeparam name="TKey">Type of primary key.</typeparam>
 	/// <remarks>Created/Updated properties should be handled by Entity Framework, not business logic.</remarks>
+	[ExcludeFromCodeCoverage]
 	public abstract class Entity<TKey> : IEntity<TKey>, IConcurrent, ITimestamped, IAuditable<string>
 		where TKey : IComparable, IComparable<TKey>, IEquatable<TKey>
 	{
@@ -27,9 +28,7 @@ namespace Kritikos.Configuration.Persistence.Base
 		/// Field used to track database concurrency hits.
 		/// </summary>
 		[Timestamp]
-#pragma warning disable CA1819 // Proposed way to handle database concurrency in SQL Server.
 		public byte[] RowVersion { get; set; } = Array.Empty<byte>();
-#pragma warning restore CA1819 // Properties should not return arrays
 
 		/// <summary>
 		/// Date of creation.
