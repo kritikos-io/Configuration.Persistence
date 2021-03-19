@@ -1,9 +1,9 @@
 namespace Kritikos.Configuration.TestData.Base
 {
-	using System;
+  using System;
 
-	public interface IObfuscated
-	{
-		public Guid Order { get; set; }
-	}
+  public interface IObfuscated
+  {
+    public Guid Order { get; set; }
+  }
 }

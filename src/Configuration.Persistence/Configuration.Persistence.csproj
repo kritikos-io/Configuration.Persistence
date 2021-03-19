@@ -2,6 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Basic EF core contracts, c</Description>
+    <PackageProjectUrl>https://github.com/kritikos-io/Configuration.Persistence</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/kritikos-io/Configuration.Persistence</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
