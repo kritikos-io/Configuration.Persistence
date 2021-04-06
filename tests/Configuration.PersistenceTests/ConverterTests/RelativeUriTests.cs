@@ -23,7 +23,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
       var converter = new RelativeUriToStringConverter(new Uri(Base), MappingHints);
 
       var uri = converter.ConvertFromProvider(Relative) as Uri;
-      uri.ToString().Should().Be(AbsoluteUri);
+      uri!.ToString().Should().Be(AbsoluteUri);
 
       var str = converter.ConvertToProvider(uri) as string;
       str.Should().Be(Relative);
@@ -38,7 +38,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
       var converter = new RelativeUriToStringConverter(new Uri(Base), MappingHints);
 
       var uri = converter.ConvertFromProvider(repo) as Uri;
-      uri.ToString().Should().Be(absolute);
+      uri!.ToString().Should().Be(absolute);
     }
   }
 }

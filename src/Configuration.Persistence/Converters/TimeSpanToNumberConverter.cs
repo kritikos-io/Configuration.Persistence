@@ -11,7 +11,7 @@ namespace Kritikos.Configuration.Persistence.Converters
   /// <summary>
   /// Converts <seealso cref="TimeSpan"/> to and from numeric types with specified <seealso cref="DateInterval"/>.
   /// </summary>
-  /// <typeparam name="T">The numeric value to convert to and from.</typeparam>
+  /// <typeparam name="T">The numeric value type to convert to and from.</typeparam>
   /// <exception cref="OverflowException"><seealso cref="DateInterval"/> requested exceeds the max value of <typeparamref name="T"/>.</exception>
   public class TimeSpanToNumberConverter<T> : ValueConverter<TimeSpan, T>
     where T : unmanaged, IConvertible, IComparable, IComparable<T>, IEquatable<T>

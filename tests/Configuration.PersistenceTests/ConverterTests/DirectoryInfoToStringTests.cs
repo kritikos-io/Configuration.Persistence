@@ -32,7 +32,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
       var file = converter.ConvertFromProvider(WindowsRelative) as DirectoryInfo;
       var foo = converter.ConvertToProvider(file) as string;
 
-      file.FullName.Should().Be(WindowsPath);
+      file!.FullName.Should().Be(WindowsPath);
       foo.Should().Be(WindowsRelative);
     }
 
@@ -45,7 +45,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
       var file = converter.ConvertFromProvider(WindowsPath) as DirectoryInfo;
       var foo = converter.ConvertToProvider(file) as string;
 
-      file.FullName.Should().Be(WindowsPath);
+      file!.FullName.Should().Be(WindowsPath);
       foo.Should().Be(WindowsPath);
     }
 
