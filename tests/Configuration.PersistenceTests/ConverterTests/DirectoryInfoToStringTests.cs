@@ -1,5 +1,6 @@
 namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 {
+  using System;
   using System.IO;
 
   using FluentAssertions;
@@ -23,9 +24,12 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 
     private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
-    [Fact]
+    [SkippableFact]
     public void Relative_path_windows()
     {
+      Skip.If(Environment.OSVersion.Platform != PlatformID.Win32NT,
+        "Environment.OSVersion.Platform != PlatformID.Win32NT");
+
       var converter =
         new DirectoryInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
 
@@ -36,9 +40,12 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
       foo.Should().Be(WindowsRelative);
     }
 
-    [Fact]
+    [SkippableFact]
     public void Absolute_path_windows()
     {
+      Skip.If(Environment.OSVersion.Platform != PlatformID.Win32NT,
+        "Environment.OSVersion.Platform != PlatformID.Win32NT");
+
       var converter =
         new DirectoryInfoToStringConverter('\\', mappingHints: MappingHints);
 
@@ -49,9 +56,12 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
       foo.Should().Be(WindowsPath);
     }
 
-    [Fact]
+    [SkippableFact]
     public void Relative_path_linux()
     {
+      Skip.If(Environment.OSVersion.Platform == PlatformID.Win32NT,
+        "Environment.OSVersion.Platform == PlatformID.Win32NT");
+
       var converter =
         new DirectoryInfoToStringConverter('/', new DirectoryInfo(LinuxBase),
           mappingHints: MappingHints);
@@ -62,9 +72,12 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
       foo.Should().Be(LinuxRelative);
     }
 
-    [Fact]
+    [SkippableFact]
     public void Absolute_path_linux()
     {
+      Skip.If(Environment.OSVersion.Platform == PlatformID.Win32NT,
+        "Environment.OSVersion.Platform == PlatformID.Win32NT");
+
       var converter =
         new DirectoryInfoToStringConverter('/', mappingHints: MappingHints);
 
