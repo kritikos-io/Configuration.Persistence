@@ -1,12 +1,12 @@
 namespace Kritikos.Configuration.Persistence.Abstractions
 {
-	using System;
+  using System;
 
-	/// <summary>
-	/// Exposes barebones auditing functionality on a multi-user system.
-	/// </summary>
-	[Obsolete("Replaced by IAuditable<string>.")]
-	public interface IAuditable : IAuditable<string>
-	{
-	}
+  /// <summary>
+  /// Exposes barebones auditing functionality on a multi-user system.
+  /// </summary>
+  [Obsolete("Replaced by IAuditable<string>.")]
+  public interface IAuditable : IAuditable<string>
+  {
+  }
 }

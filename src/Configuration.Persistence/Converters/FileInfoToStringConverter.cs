@@ -6,12 +6,12 @@ namespace Kritikos.Configuration.Persistence.Converters
   using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
   /// <summary>
-  /// Converts from <seealso cref="DirectoryInfo"/> to and from string.
+  /// Converts from <seealso cref="FileInfo"/> to and from string.
   /// </summary>
-  public class DirectoryInfoToStringConverter : ValueConverter<DirectoryInfo, string>
+  public class FileInfoToStringConverter : ValueConverter<FileInfo, string>
   {
     /// <summary>
-    /// Initializes a new instance of the <seealso cref="DirectoryInfoToStringConverter"/> class.
+    /// Initializes a new instance of the <seealso cref="FileInfoToStringConverter"/> class.
     /// </summary>
     /// <param name="separator">Character used as directory separator in the persistence layer.</param>
     /// <param name="basePath"><seealso cref="DirectoryInfo"/> used as path base when handling relative paths.</param>
@@ -19,32 +19,33 @@ namespace Kritikos.Configuration.Persistence.Converters
     /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
     /// facets for the converted data.
     /// </param>
-    public DirectoryInfoToStringConverter(
+    public FileInfoToStringConverter(
       char separator,
       FileSystemInfo? basePath = null,
       ConverterMappingHints? mappingHints = null)
       : base(
-        v => FromDirectoryInfo(basePath, v, separator),
+        v => FromFileInfo(basePath, v, separator),
         v => FromPath(basePath, v, separator),
         mappingHints)
     {
     }
 
-    private static DirectoryInfo FromPath(FileSystemInfo? basePath, string directoryPath, char separator)
+    private static FileInfo FromPath(FileSystemInfo? basePath, string filePath, char separator)
     {
       var path = (basePath == null
-          ? directoryPath
-          : Path.Combine(basePath.FullName, directoryPath))
+          ? filePath
+          : Path.Combine(basePath.FullName, filePath))
         .Replace(separator, Path.DirectorySeparatorChar);
 
-      return new DirectoryInfo(path);
+      return new FileInfo(path);
     }
 
-    private static string FromDirectoryInfo(FileSystemInfo? basePath, FileSystemInfo directory, char separator)
+    private static string FromFileInfo(FileSystemInfo? basePath, FileSystemInfo file, char separator)
     {
-      var path = directory.FullName;
+      var path = file.FullName;
       path = basePath != null
-        ? path.Replace(basePath?.FullName ?? string.Empty, string.Empty)[1..]
+        ? path
+          .Replace(basePath?.FullName ?? string.Empty, string.Empty)[1..]
         : path;
 
       path = separator != '\\' && Path.DirectorySeparatorChar == '\\' && Path.GetPathRoot(path).Length - 1 > 0

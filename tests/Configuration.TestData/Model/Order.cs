@@ -1,8 +1,8 @@
 namespace Kritikos.Configuration.TestData.Model
 {
-	using Kritikos.Configuration.TestData.Base;
+  using Kritikos.Configuration.TestData.Base;
 
-	public class Order : OrderedEntity<long>
-	{
-	}
+  public class Order : OrderedEntity<long>
+  {
+  }
 }
