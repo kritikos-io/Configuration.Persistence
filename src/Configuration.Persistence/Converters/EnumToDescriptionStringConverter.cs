@@ -5,7 +5,6 @@ namespace Kritikos.Configuration.Persistence.Converters
   using System.ComponentModel;
   using System.Linq;
   using System.Reflection;
-  using System.Security.Cryptography.X509Certificates;
 
   using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 

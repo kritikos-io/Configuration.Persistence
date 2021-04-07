@@ -1,6 +1,5 @@
 namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 {
-  using System;
   using System.ComponentModel;
 
   using FluentAssertions;
