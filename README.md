@@ -38,7 +38,9 @@ Please refrain from using ChangeTracker extensions, they are considered obsolete
 
 ## Additional Features
 
-Library ```Kritikos.Configuration.Peristence.IdentityServer``` contains an ApiAuthorizationDbContext wrapper for ```Microsoft.AspNetCore.ApiAuthorization.IdentityServer``` handling the missing overload for ```IdentityDbContext<TUser,TRole,TKey>```
+Library ```Kritikos.Configuration.Peristence.IdentityServer``` contains an ApiAuthorizationDbContext wrapper for ```Microsoft.AspNetCore.ApiAuthorization.IdentityServer``` handling the missing overload for ```IdentityDbContext<TUser,TRole,TKey>```.
+
+```KritikosConfiguration.Persistence.HealthCheck``` offers a basic DbContext IHealthCheck for use with ASP .NET Core.
 
 ## Converters
 
