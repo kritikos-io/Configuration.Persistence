@@ -43,18 +43,19 @@ namespace Kritikos.Configuration.PersistenceTests
       return new MigratedDbContext(opts);
     }
 
-    public static IEnumerable<int> Naturals()
+    private static IEnumerable<int> Naturals()
     {
       var i = 0;
       while (true)
       {
         yield return i++;
       }
+      // ReSharper disable once IteratorNeverReturns
     }
 
-    public static List<T> GetEntries<T>(int count = 10)
+    public static List<T> GetEntries<T>(int count = 100)
       where T : class, new()
-      => Naturals().Take(count).Select(x => new T()).ToList();
+      => Naturals().Take(count).Select(_ => new T()).ToList();
 
     public void Dispose()
     {

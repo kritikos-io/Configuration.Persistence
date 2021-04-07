@@ -50,16 +50,16 @@ namespace Kritikos.Configuration.TestData
       base.OnModelCreating(modelBuilder);
       modelBuilder.EntitiesOfType<TestEntity<long>>(entity =>
       {
-        entity.HasKey(entity => entity.Id);
+        entity.HasKey(e => e.Id);
         entity.HasBaseType((Type)null);
       });
 
-      modelBuilder.EntitiesOfType<IObfuscated>(entity =>
-        entity.Property(typeof(Guid), nameof(IObfuscated.Order))
-          .HasValueGenerator((p, t) => new GuidValueGenerator()));
+      modelBuilder.EntitiesOfType<IObfuscated>(e =>
+        e.Property(typeof(Guid), nameof(IObfuscated.Order))
+          .HasValueGenerator((_, _) => new GuidValueGenerator()));
 
-      modelBuilder.EntitiesOfType<OrderedEntity<long>>(entity =>
-        entity.Property(e => e.Order).HasValueGenerator((p, t) => new GuidValueGenerator()));
+      modelBuilder.EntitiesOfType<OrderedEntity<long>>(e =>
+        e.Property(p => p.Order).HasValueGenerator((_, _) => new GuidValueGenerator()));
 
       modelBuilder.Entity<Person>(e => e.ToTable("People"));
 

@@ -55,7 +55,7 @@ namespace Kritikos.Configuration.Persistence.Extensions
       }
 
       var entityTypes = modelBuilder.Model.GetEntityTypes().Where(x => typeof(T).IsAssignableFrom(x.ClrType)).ToList();
-      foreach (var entityType in entityTypes)
+      foreach (var unused in entityTypes)
       {
         buildAction(modelBuilder.Entity<T>());
       }
