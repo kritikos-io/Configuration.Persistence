@@ -54,7 +54,7 @@ namespace Kritikos.Configuration.Persistence.HealthCheck
         {
           var data = pendingMigrations.ToDictionary<string, string, object>(
             migration => migration,
-            migration => string.Empty);
+            _ => string.Empty);
 
           logger.LogWarning(
             DbContextHealthLogTemplates.PendingMigrations,

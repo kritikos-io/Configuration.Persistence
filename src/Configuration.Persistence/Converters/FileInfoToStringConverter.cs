@@ -45,7 +45,7 @@ namespace Kritikos.Configuration.Persistence.Converters
       var path = file.FullName;
       path = basePath != null
         ? path
-          .Replace(basePath?.FullName ?? string.Empty, string.Empty)[1..]
+          .Replace(basePath.FullName, string.Empty)[1..]
         : path;
 
       path = separator != '\\' && Path.DirectorySeparatorChar == '\\' && Path.GetPathRoot(path).Length - 1 > 0

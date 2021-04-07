@@ -32,7 +32,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
       InterceptionResult<int> result)
     {
       var auditor = auditorProvider.GetAuditor() ?? auditorProvider.GetFallbackAuditor();
-      var entries = eventData?.Context.ChangeTracker.Entries<IAuditable<T>>()
+      var entries = eventData.Context.ChangeTracker.Entries<IAuditable<T>>()
                     ?? throw new ArgumentNullException(nameof(eventData));
 
       foreach (var entry in entries)
@@ -55,7 +55,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
       CancellationToken cancellationToken = default)
     {
       var auditor = auditorProvider.GetAuditor() ?? auditorProvider.GetFallbackAuditor();
-      var entries = eventData?.Context.ChangeTracker.Entries<IAuditable<T>>()
+      var entries = eventData.Context.ChangeTracker.Entries<IAuditable<T>>()
                     ?? throw new ArgumentNullException(nameof(eventData));
 
       foreach (var entry in entries)

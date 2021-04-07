@@ -1,3 +1,4 @@
+// ReSharper disable InconsistentNaming
 namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 {
   using System.ComponentModel;

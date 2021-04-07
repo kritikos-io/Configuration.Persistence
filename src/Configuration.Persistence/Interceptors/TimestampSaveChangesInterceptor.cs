@@ -23,7 +23,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
       DbContextEventData eventData,
       InterceptionResult<int> result)
     {
-      var entries = eventData?.Context.ChangeTracker.Entries<ITimestamped>()
+      var entries = eventData.Context.ChangeTracker.Entries<ITimestamped>()
                     ?? throw new ArgumentNullException(nameof(eventData));
       var now = DateTimeOffset.Now;
 
@@ -46,7 +46,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
       InterceptionResult<int> result,
       CancellationToken cancellationToken = default)
     {
-      var entries = eventData?.Context.ChangeTracker.Entries<ITimestamped>()
+      var entries = eventData.Context.ChangeTracker.Entries<ITimestamped>()
                     ?? throw new ArgumentNullException(nameof(eventData));
       var now = DateTimeOffset.Now;
 

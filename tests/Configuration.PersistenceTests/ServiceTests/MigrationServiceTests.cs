@@ -35,7 +35,7 @@ namespace Kritikos.Configuration.PersistenceTests.ServiceTests
     [Fact]
     public async Task Ensure_Context_IsMigrated()
     {
-      await using var ctx = await fixture.GetContext("migrate");
+      var ctx = await fixture.GetContext("migrate");
 
       var builder = new WebHostBuilder()
         .ConfigureServices(sp =>
@@ -43,7 +43,7 @@ namespace Kritikos.Configuration.PersistenceTests.ServiceTests
           sp.AddScoped(_ => ctx);
           sp.AddHostedService<MigrationService<MigratedDbContext>>();
         })
-        .Configure(app => app.Run(async ctx => await ctx.Response.WriteAsync("Hello world!")));
+        .Configure(app => app.Run(async context => await context.Response.WriteAsync("Hello world!")));
 
       var server = new TestServer(builder);
       var client = server.CreateClient();
