@@ -124,24 +124,24 @@ namespace Kritikos.Configuration.Peristence.IdentityServer
     /// exposed in <see cref="T:Microsoft.EntityFrameworkCore.DbSet`1" /> properties on your derived context. The resulting model may be cached
     /// and re-used for subsequent instances of your derived context.
     /// </summary>
-    /// /// <param name="modelBuilder">The builder being used to construct the model for this context. Databases (and other extensions) typically
+    /// /// <param name="builder">The builder being used to construct the model for this context. Databases (and other extensions) typically
     /// define extension methods on this object that allow you to configure aspects of the model that are specific
     /// to a given database.</param>
     /// <remarks>
     /// /// If a model is explicitly set on the options for this context (via <see cref="M:Microsoft.EntityFrameworkCore.DbContextOptionsBuilder.UseModel(Microsoft.EntityFrameworkCore.Metadata.IModel)" />)
     /// then this method will not be run.
     /// </remarks>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-      base.OnModelCreating(modelBuilder);
+      base.OnModelCreating(builder);
       var configurationStoreOptions = this.GetService<IOptions<ConfigurationStoreOptions>>()?.Value
                                       ?? throw new InvalidOperationException(nameof(ConfigurationStoreOptions));
       var operationalStoreOptions = this.GetService<IOptions<OperationalStoreOptions>>()?.Value
                                     ?? throw new InvalidOperationException(nameof(OperationalStoreOptions));
 
-      modelBuilder.ConfigurePersistedGrantContext(operationalStoreOptions);
-      modelBuilder.ConfigureResourcesContext(configurationStoreOptions);
-      modelBuilder.ConfigureClientContext(configurationStoreOptions);
+      builder.ConfigurePersistedGrantContext(operationalStoreOptions);
+      builder.ConfigureResourcesContext(configurationStoreOptions);
+      builder.ConfigureClientContext(configurationStoreOptions);
     }
 
     #endregion Overrides of IdentityDbContext<TUser,TRole,TKey,IdentityUserClaim<TKey>,IdentityUserRole<TKey>,IdentityUserLogin<TKey>,IdentityRoleClaim<TKey>,IdentityUserToken<TKey>>
