@@ -12,17 +12,11 @@ namespace Kritikos.Configuration.Persistence.Converters
   public class EnumToDescriptionStringConverter<TEnum> : ValueConverter<TEnum, string>
     where TEnum : struct, Enum
   {
-    private static readonly Dictionary<TEnum, string> EnumString;
-
-    static EnumToDescriptionStringConverter()
-    {
-      var values = Enum.GetValues(typeof(TEnum)).Cast<TEnum>();
-
-      EnumString = values?.ToDictionary(
-                     x => x,
-                     GetDescription)
-                   ?? new Dictionary<TEnum, string>();
-    }
+    private static readonly Dictionary<TEnum, string> EnumString = Enum.GetValues(typeof(TEnum))
+      .Cast<TEnum>()
+      .ToDictionary(
+        x => x,
+        GetDescription);
 
     public EnumToDescriptionStringConverter(ConverterMappingHints? mappingHints = null)
       : base(
