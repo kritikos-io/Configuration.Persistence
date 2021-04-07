@@ -1,6 +1,6 @@
 # Configuration.Persistence
 
-[![Build Status](https://dev.azure.com/kritikos/DotNet%20Libaries/_apis/build/status/Configuration.Persistence?repoName=kritikos-io%2FConfiguration.Persistence&branchName=refs%2Fpull%2F9%2Fmerge)](https://dev.azure.com/kritikos/DotNet%20Libaries/_build/latest?definitionId=14&repoName=kritikos-io%2FConfiguration.Persistence&branchName=refs%2Fpull%2F9%2Fmerge)
+[![Build Status](https://dev.azure.com/kritikos/DotNet%20Libaries/_apis/build/status/Configuration.Persistence?repoName=kritikos-io%2FConfiguration.Persistence&branchName=master)](https://dev.azure.com/kritikos/DotNet%20Libaries/_build/latest?definitionId=14&repoName=kritikos-io%2FConfiguration.Persistence&branchName=master)
 [![codecov](https://codecov.io/gh/kritikos-io/Configuration.Persistence/branch/master/graph/badge.svg?token=zUKGBEw0Hs)](https://codecov.io/gh/kritikos-io/Configuration.Persistence)
 [![Coverage Status](https://coveralls.io/repos/github/kritikos-io/Configuration.Persistence/badge.svg?branch=master)](https://coveralls.io/github/kritikos-io/Configuration.Persistence?branch=master)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kritikos-io_Configuration.Persistence&metric=alert_status)](https://sonarcloud.io/dashboard?id=kritikos-io_Configuration.Persistence)
