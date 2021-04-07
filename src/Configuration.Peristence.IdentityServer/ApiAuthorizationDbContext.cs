@@ -117,17 +117,17 @@ namespace Kritikos.Configuration.Peristence.IdentityServer
     #region Overrides of IdentityDbContext<TUser,TRole,TKey,IdentityUserClaim<TKey>,IdentityUserRole<TKey>,IdentityUserLogin<TKey>,IdentityRoleClaim<TKey>,IdentityUserToken<TKey>>
 
     /// <inheritdoc cref="DbContext"/>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-      base.OnModelCreating(modelBuilder);
+      base.OnModelCreating(builder);
       var configurationStoreOptions = this.GetService<IOptions<ConfigurationStoreOptions>>()?.Value
                                       ?? throw new InvalidOperationException(nameof(ConfigurationStoreOptions));
       var operationalStoreOptions = this.GetService<IOptions<OperationalStoreOptions>>()?.Value
                                     ?? throw new InvalidOperationException(nameof(OperationalStoreOptions));
 
-      modelBuilder.ConfigurePersistedGrantContext(operationalStoreOptions);
-      modelBuilder.ConfigureResourcesContext(configurationStoreOptions);
-      modelBuilder.ConfigureClientContext(configurationStoreOptions);
+      builder.ConfigurePersistedGrantContext(operationalStoreOptions);
+      builder.ConfigureResourcesContext(configurationStoreOptions);
+      builder.ConfigureClientContext(configurationStoreOptions);
     }
 
     #endregion Overrides of IdentityDbContext<TUser,TRole,TKey,IdentityUserClaim<TKey>,IdentityUserRole<TKey>,IdentityUserLogin<TKey>,IdentityRoleClaim<TKey>,IdentityUserToken<TKey>>
