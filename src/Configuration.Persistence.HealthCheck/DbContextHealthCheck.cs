@@ -66,7 +66,7 @@ namespace Kritikos.Configuration.Persistence.HealthCheck
 
         logger.LogInformation(DbContextHealthLogTemplates.DatabaseMigrated, DbName);
 
-        return HealthCheckResult.Healthy($"{DbName} is operating and healthy");
+        return HealthCheckResult.Healthy();
       }
       catch (Exception ex)
       {
