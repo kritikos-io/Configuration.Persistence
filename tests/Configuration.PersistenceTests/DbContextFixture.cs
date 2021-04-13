@@ -14,13 +14,17 @@ namespace Kritikos.Configuration.PersistenceTests
   using Microsoft.EntityFrameworkCore;
   using Microsoft.EntityFrameworkCore.Diagnostics;
 
-  public class DbContextFixture : IDisposable
+  public sealed class DbContextFixture : IDisposable
   {
-    private readonly ConcurrentDictionary<string, SqliteConnection> sqlConnections = new();
-
     public static readonly TimestampSaveChangesInterceptor TimestampInterceptor = new();
 
     public static readonly ReadOnlyDbCommandInterceptor ReadOnlyInterceptor = new();
+
+    private readonly ConcurrentDictionary<string, SqliteConnection> sqlConnections = new();
+
+    public static List<T> GetEntries<T>(int count = 100)
+      where T : class, new()
+      => Naturals().Take(count).Select(_ => new T()).ToList();
 
     public async Task<MigratedDbContext> GetContext(string databaseName, params IInterceptor[] interceptors)
     {
@@ -43,20 +47,6 @@ namespace Kritikos.Configuration.PersistenceTests
       return new MigratedDbContext(opts);
     }
 
-    private static IEnumerable<int> Naturals()
-    {
-      var i = 0;
-      while (true)
-      {
-        yield return i++;
-      }
-      // ReSharper disable once IteratorNeverReturns
-    }
-
-    public static List<T> GetEntries<T>(int count = 100)
-      where T : class, new()
-      => Naturals().Take(count).Select(_ => new T()).ToList();
-
     public void Dispose()
     {
       foreach (var (key, sqlite) in sqlConnections)
@@ -66,6 +56,17 @@ namespace Kritikos.Configuration.PersistenceTests
       }
 
       GC.SuppressFinalize(this);
+    }
+
+    private static IEnumerable<int> Naturals()
+    {
+      var i = 0;
+      while (true)
+      {
+        yield return i++;
+      }
+
+      // ReSharper disable once IteratorNeverReturns
     }
   }
 }

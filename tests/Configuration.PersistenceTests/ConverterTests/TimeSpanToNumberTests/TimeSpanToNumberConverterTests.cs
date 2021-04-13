@@ -1,3 +1,4 @@
+#pragma warning disable SA1402 // File may only contain a single type
 namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumberTests
 {
   using System;
@@ -13,7 +14,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
   {
     protected static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
-    protected static readonly Func<double, DateInterval, TimeSpan> ToTimeSpan = ((value, interval) => interval switch
+    protected static readonly Func<double, DateInterval, TimeSpan> ToTimeSpan = (value, interval) => interval switch
     {
       DateInterval.Days => TimeSpan.FromDays(value),
       DateInterval.Hours => TimeSpan.FromHours(value),
@@ -22,9 +23,9 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
       DateInterval.Milliseconds => TimeSpan.FromMilliseconds(value),
       DateInterval.Ticks => TimeSpan.FromTicks(Convert.ToInt64(value)),
       _ => throw new NotImplementedException($"{nameof(interval)} not supported!"),
-    });
+    };
 
-    protected static readonly Func<TimeSpan, DateInterval, double> FromTimespan = ((value, interval) => interval switch
+    protected static readonly Func<TimeSpan, DateInterval, double> FromTimespan = (value, interval) => interval switch
     {
       DateInterval.Days => value.TotalDays,
       DateInterval.Hours => value.TotalHours,
@@ -32,8 +33,12 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
       DateInterval.Seconds => value.TotalSeconds,
       DateInterval.Milliseconds => value.TotalMilliseconds,
       DateInterval.Ticks => value.Ticks,
-      _ => throw new NotImplementedException($"{nameof(interval)} not supported!")
-    });
+      _ => throw new NotImplementedException($"{nameof(interval)} not supported!"),
+    };
+
+    protected TimeSpanToNumberConverterTests()
+    {
+    }
   }
 
   public abstract class TimeSpanToNumberConverterTests<T> : TimeSpanToNumberConverterTests

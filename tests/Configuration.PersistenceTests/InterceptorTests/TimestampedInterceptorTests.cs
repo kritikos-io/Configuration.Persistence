@@ -14,8 +14,10 @@ namespace Kritikos.Configuration.PersistenceTests.InterceptorTests
 
   public class TimestampedInterceptorTests : IClassFixture<DbContextFixture>
   {
-    private readonly DbContextFixture fixture;
     private const int Count = 10;
+
+    private readonly DbContextFixture fixture;
+
     public TimestampedInterceptorTests(DbContextFixture fixture) => this.fixture = fixture;
 
     [Fact]
@@ -50,8 +52,8 @@ namespace Kritikos.Configuration.PersistenceTests.InterceptorTests
 
       foreach (var auditRecord in records)
       {
-        auditRecord.CreatedBy = new Guid();
-        auditRecord.UpdatedBy = new Guid();
+        auditRecord.CreatedBy = Guid.NewGuid();
+        auditRecord.UpdatedBy = Guid.NewGuid();
       }
 
       var (createdAt, updatedAt) = records.Select(x => (x.CreatedAt, x.UpdatedAt)).First();
