@@ -6,20 +6,23 @@ namespace Kritikos.Configuration.Persistence.HealthCheck
   using System.Threading.Tasks;
 
   using Microsoft.EntityFrameworkCore;
+  using Microsoft.Extensions.DependencyInjection;
   using Microsoft.Extensions.Diagnostics.HealthChecks;
   using Microsoft.Extensions.Logging;
 
-  public class DbContextHealthCheck<TDbContext> : IHealthCheck
+  public class DbContextHealthCheck<TDbContext> : IHealthCheck, IDisposable
     where TDbContext : DbContext
   {
     private static readonly string DbName = typeof(TDbContext).Name;
 
     private readonly TDbContext dbContext;
-    private readonly ILogger logger;
+    private readonly ILogger<DbContextHealthCheck<TDbContext>> logger;
+    private readonly IServiceScope scope;
 
-    public DbContextHealthCheck(TDbContext context, ILogger<DbContextHealthCheck<TDbContext>> logger)
+    public DbContextHealthCheck(IServiceScopeFactory scopeFactory, ILogger<DbContextHealthCheck<TDbContext>> logger)
     {
-      dbContext = context;
+      scope = scopeFactory.CreateScope();
+      dbContext = scope.ServiceProvider.GetRequiredService<TDbContext>();
       this.logger = logger;
     }
 
@@ -76,6 +79,12 @@ namespace Kritikos.Configuration.Persistence.HealthCheck
           $"Unknown error while connecting to database {DbName}",
           ex);
       }
+    }
+
+    public void Dispose()
+    {
+      scope.Dispose();
+      GC.SuppressFinalize(this);
     }
 
     #endregion
