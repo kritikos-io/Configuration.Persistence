@@ -1,7 +1,6 @@
 namespace Kritikos.Configuration.PersistenceTests.EntityTests
 {
   using System;
-  using System.Runtime.InteropServices.ComTypes;
 
   using Kritikos.Configuration.PersistenceTests.Faker;
   using Kritikos.Configuration.TestData;
@@ -12,7 +11,7 @@ namespace Kritikos.Configuration.PersistenceTests.EntityTests
 
   public class ModelBuilderTests
   {
-    [Fact]
+    [SkippableFact]
     public void EntitiesOfType_Interface()
     {
       Skip.If(true, "WIP");
