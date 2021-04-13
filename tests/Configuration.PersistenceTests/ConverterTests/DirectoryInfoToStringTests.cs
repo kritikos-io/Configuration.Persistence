@@ -27,7 +27,8 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
     [SkippableFact]
     public void Relative_path_windows()
     {
-      Skip.If(Environment.OSVersion.Platform != PlatformID.Win32NT,
+      Skip.If(
+        Environment.OSVersion.Platform != PlatformID.Win32NT,
         "Environment.OSVersion.Platform != PlatformID.Win32NT");
 
       var converter =
@@ -43,7 +44,8 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
     [SkippableFact]
     public void Absolute_path_windows()
     {
-      Skip.If(Environment.OSVersion.Platform != PlatformID.Win32NT,
+      Skip.If(
+        Environment.OSVersion.Platform != PlatformID.Win32NT,
         "Environment.OSVersion.Platform != PlatformID.Win32NT");
 
       var converter =
@@ -59,11 +61,14 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
     [SkippableFact]
     public void Relative_path_linux()
     {
-      Skip.If(Environment.OSVersion.Platform == PlatformID.Win32NT,
+      Skip.If(
+        Environment.OSVersion.Platform == PlatformID.Win32NT,
         "Environment.OSVersion.Platform == PlatformID.Win32NT");
 
       var converter =
-        new DirectoryInfoToStringConverter('/', new DirectoryInfo(LinuxBase),
+        new DirectoryInfoToStringConverter(
+          '/',
+          new DirectoryInfo(LinuxBase),
           mappingHints: MappingHints);
 
       var file = converter.ConvertFromProvider(LinuxRelative) as DirectoryInfo;
@@ -75,7 +80,8 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
     [SkippableFact]
     public void Absolute_path_linux()
     {
-      Skip.If(Environment.OSVersion.Platform == PlatformID.Win32NT,
+      Skip.If(
+        Environment.OSVersion.Platform == PlatformID.Win32NT,
         "Environment.OSVersion.Platform == PlatformID.Win32NT");
 
       var converter =

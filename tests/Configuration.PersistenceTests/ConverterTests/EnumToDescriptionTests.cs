@@ -1,4 +1,7 @@
 // ReSharper disable InconsistentNaming
+#pragma warning disable SA1201 // Elements should appear in the correct order
+#pragma warning disable SA1402 // File may only contain a single type
+
 namespace Kritikos.Configuration.PersistenceTests.ConverterTests
 {
   using System.ComponentModel;
@@ -32,6 +35,7 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests
     }
   }
 
+#pragma warning disable SA1300 // Element should begin with upper-case letter
   public enum Foobar
   {
     None,

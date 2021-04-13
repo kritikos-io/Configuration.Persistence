@@ -95,6 +95,12 @@
         "resolved": "1.1.31",
         "contentHash": "2f2k7bbhDd132ArglCKpzKoWBcp3uzbIFcb4aosnlqIKlfYKDE2HevBVRNVa+LkWFnjXFFWs47Bo96fu8iS//Q=="
       },
+      "SonarAnalyzer.CSharp": {
+        "type": "Direct",
+        "requested": "[8.20.0.28934, )",
+        "resolved": "8.20.0.28934",
+        "contentHash": "7sorg1+g8sDdzyysEy/fwidXTjVhaVJbu/XZ//bkZJW9BOhXAdb2NV/ZS6VHl3ur2fYUQCFGkb9cZ6NbOI71FA=="
+      },
       "StyleCop.Analyzers": {
         "type": "Direct",
         "requested": "[1.2.0-beta.333, )",

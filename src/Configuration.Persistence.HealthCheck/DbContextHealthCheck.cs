@@ -10,7 +10,7 @@ namespace Kritikos.Configuration.Persistence.HealthCheck
   using Microsoft.Extensions.Diagnostics.HealthChecks;
   using Microsoft.Extensions.Logging;
 
-  public class DbContextHealthCheck<TDbContext> : IHealthCheck, IDisposable
+  public sealed class DbContextHealthCheck<TDbContext> : IHealthCheck, IDisposable
     where TDbContext : DbContext
   {
     private static readonly string DbName = typeof(TDbContext).Name;
@@ -81,12 +81,12 @@ namespace Kritikos.Configuration.Persistence.HealthCheck
       }
     }
 
+    #endregion
+
     public void Dispose()
     {
       scope.Dispose();
       GC.SuppressFinalize(this);
     }
-
-    #endregion
   }
 }

@@ -1,3 +1,4 @@
+#pragma warning disable S2699 // Tests should include assertions
 namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumberTests
 {
   using System;
@@ -9,14 +10,11 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
 
   public class TimeSpanToIntConverterTests : TimeSpanToNumberConverterTests<int>
   {
-    private static new readonly Func<TimeSpan, DateInterval, int> FromTimespan = ((span, interval) =>
-      Convert.ToInt32(TimeSpanToNumberConverterTests.FromTimespan(span, interval)));
+    private static new readonly Func<TimeSpan, DateInterval, int> FromTimespan = (span, interval) =>
+      Convert.ToInt32(TimeSpanToNumberConverterTests.FromTimespan(span, interval));
 
-    private static new readonly Func<int, DateInterval, TimeSpan> ToTimeSpan = ((value, interval) =>
-      TimeSpanToNumberConverterTests.ToTimeSpan(Convert.ToDouble(value), interval));
-
-    /// <inheritdoc />
-    protected override TimeSpanToIntConverter CreateConverter(DateInterval interval) => new(interval, MappingHints);
+    private static new readonly Func<int, DateInterval, TimeSpan> ToTimeSpan = (value, interval) =>
+      TimeSpanToNumberConverterTests.ToTimeSpan(Convert.ToDouble(value), interval);
 
     [Fact]
     public void Check_TimeSpan_in_total_days()
@@ -33,5 +31,8 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
       Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
       Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
     }
+
+    /// <inheritdoc />
+    protected override TimeSpanToIntConverter CreateConverter(DateInterval interval) => new(interval, MappingHints);
   }
 }
