@@ -1,3 +1,4 @@
+#pragma warning disable S2699 // Tests should include assertions
 namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumberTests
 {
   using System;
@@ -14,9 +15,6 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
 
     private static new readonly Func<long, DateInterval, TimeSpan> ToTimeSpan = (value, interval) =>
       TimeSpanToNumberConverterTests.ToTimeSpan(Convert.ToDouble(value), interval);
-
-    /// <inheritdoc />
-    protected override TimeSpanToLongConverter CreateConverter(DateInterval interval) => new(interval, MappingHints);
 
     [Fact]
     public void Check_TimeSpan_in_total_days()
@@ -65,5 +63,8 @@ namespace Kritikos.Configuration.PersistenceTests.ConverterTests.TimeSpanToNumbe
       Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
       Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
     }
+
+    /// <inheritdoc />
+    protected override TimeSpanToLongConverter CreateConverter(DateInterval interval) => new(interval, MappingHints);
   }
 }

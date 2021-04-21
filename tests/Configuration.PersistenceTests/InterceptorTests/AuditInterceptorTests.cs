@@ -16,10 +16,10 @@ namespace Kritikos.Configuration.PersistenceTests.InterceptorTests
 
   public class AuditInterceptorTests : IClassFixture<DbContextFixture>
   {
-    private readonly DbContextFixture fixture;
-
     private static readonly Guid Creator = Guid.Parse("1813b30a-a352-416e-adee-282362f7ba4e");
     private static readonly Guid Editor = Guid.Parse("364b3527-0282-4fc7-aafc-547f2c87f641");
+
+    private readonly DbContextFixture fixture;
 
     public AuditInterceptorTests(DbContextFixture fixture) => this.fixture = fixture;
 

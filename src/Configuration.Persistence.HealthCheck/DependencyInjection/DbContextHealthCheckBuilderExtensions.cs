@@ -22,7 +22,7 @@ namespace Kritikos.Configuration.Persistence.HealthCheck.DependencyInjection
       => builder.Add(new HealthCheckRegistration(
         name ?? Name,
         sp => new DbContextHealthCheck<TDbContext>(
-          sp.GetRequiredService<TDbContext>(),
+          sp.GetRequiredService<IServiceScopeFactory>(),
           sp.GetRequiredService<ILogger<DbContextHealthCheck<TDbContext>>>()),
         failureStatus,
         tags,
