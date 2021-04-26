@@ -1,17 +1,21 @@
 namespace Kritikos.Configuration.Persistence.Interceptors
 {
   using System;
+  using System.Collections.Generic;
   using System.Diagnostics.CodeAnalysis;
+  using System.Linq;
+  using System.Security.Cryptography.X509Certificates;
   using System.Threading;
   using System.Threading.Tasks;
 
   using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
   using Microsoft.EntityFrameworkCore;
+  using Microsoft.EntityFrameworkCore.ChangeTracking;
   using Microsoft.EntityFrameworkCore.Diagnostics;
 
   /// <summary>
-  /// Populates timestamp values for <see cref="ITimestamped"/> entities.
+  /// Populates timestamp values for <see cref="ITimestamped"/>, <see cref="ICreateTimestamped"/> and <see cref="IUpdateTimestamped"/> entities.
   /// </summary>
   public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
   {
@@ -23,20 +27,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
       DbContextEventData eventData,
       InterceptionResult<int> result)
     {
-      var entries = eventData.Context.ChangeTracker.Entries<ITimestamped>()
-                    ?? throw new ArgumentNullException(nameof(eventData));
-      var now = DateTimeOffset.Now;
-
-      foreach (var entry in entries)
-      {
-        if (entry.State == EntityState.Added)
-        {
-          entry.Entity.CreatedAt = now;
-        }
-
-        entry.Entity.UpdatedAt = now;
-      }
-
+      StampEntries(eventData.Context.ChangeTracker);
       return base.SavingChanges(eventData, result);
     }
 
@@ -46,23 +37,32 @@ namespace Kritikos.Configuration.Persistence.Interceptors
       InterceptionResult<int> result,
       CancellationToken cancellationToken = default)
     {
-      var entries = eventData.Context.ChangeTracker.Entries<ITimestamped>()
-                    ?? throw new ArgumentNullException(nameof(eventData));
-      var now = DateTimeOffset.Now;
-
-      foreach (var entry in entries)
-      {
-        if (entry.State == EntityState.Added)
-        {
-          entry.Entity.CreatedAt = now;
-        }
-
-        entry.Entity.UpdatedAt = now;
-      }
+      StampEntries(eventData.Context.ChangeTracker);
 
       return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
     #endregion
+
+    private static void StampEntries(ChangeTracker tracker)
+    {
+      var now = DateTime.UtcNow;
+
+      var created = tracker.Entries<ICreateTimestamped>()
+        .Where(x => x.State == EntityState.Added)
+        .ToList();
+      foreach (var x in created)
+      {
+        x.Entity.CreatedAt = now;
+      }
+
+      var updated = tracker.Entries<IUpdateTimestamped>()
+        .Where(x => x.State is EntityState.Added or EntityState.Modified)
+        .ToList();
+      foreach (var x in updated)
+      {
+        x.Entity.UpdatedAt = now;
+      }
+    }
   }
 }
