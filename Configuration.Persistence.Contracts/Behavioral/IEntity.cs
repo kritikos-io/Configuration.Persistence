@@ -1,4 +1,4 @@
-namespace Kritikos.Configuration.Persistence.Abstractions
+namespace Kritikos.Configuration.Persistence.Contracts.Behavioral
 {
   using System;
 
