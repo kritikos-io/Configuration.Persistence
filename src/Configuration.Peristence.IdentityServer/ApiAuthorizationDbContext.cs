@@ -11,7 +11,7 @@ namespace Kritikos.Configuration.Peristence.IdentityServer
   using IdentityServer4.EntityFramework.Interfaces;
   using IdentityServer4.EntityFramework.Options;
 
-  using Kritikos.Configuration.Persistence.Abstractions;
+  using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
   using Microsoft.AspNetCore.Identity;
   using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

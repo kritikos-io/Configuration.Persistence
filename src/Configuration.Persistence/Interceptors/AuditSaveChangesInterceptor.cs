@@ -5,7 +5,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors
   using System.Threading;
   using System.Threading.Tasks;
 
-  using Kritikos.Configuration.Persistence.Abstractions;
+  using Kritikos.Configuration.Persistence.Contracts.Behavioral;
   using Kritikos.Configuration.Persistence.Services;
 
   using Microsoft.EntityFrameworkCore;
