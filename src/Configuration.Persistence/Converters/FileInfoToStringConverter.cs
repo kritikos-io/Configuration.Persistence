@@ -43,13 +43,15 @@ namespace Kritikos.Configuration.Persistence.Converters
     private static string FromFileInfo(FileSystemInfo? basePath, FileSystemInfo file, char separator)
     {
       var path = file.FullName;
+      var rootPath = Path.GetPathRoot(path) ?? string.Empty;
+
       path = basePath != null
         ? path
           .Replace(basePath.FullName, string.Empty)[1..]
         : path;
 
-      path = separator != '\\' && Path.DirectorySeparatorChar == '\\' && Path.GetPathRoot(path).Length - 1 > 0
-        ? path[(Path.GetPathRoot(path).Length - 1)..]
+      path = separator != '\\' && Path.DirectorySeparatorChar == '\\' && rootPath.Length - 1 > 0
+        ? path[(rootPath.Length - 1)..]
         : path;
       path = path.Replace(Path.DirectorySeparatorChar, separator);
 

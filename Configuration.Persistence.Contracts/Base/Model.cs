@@ -26,6 +26,8 @@ namespace Kritikos.Configuration.Persistence.Contracts.Base
 
     /// <inheritdoc />
     public override int GetHashCode()
+
+      // ReSharper disable once NonReadonlyMemberInGetHashCode
       => EqualityComparer<TKey>.Default.GetHashCode(Id);
   }
 }

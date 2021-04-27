@@ -1,10 +1,8 @@
-namespace Kritikos.Configuration.Persistence.Interceptors
+namespace Kritikos.Configuration.Persistence.Interceptors.SaveChanges
 {
   using System;
-  using System.Collections.Generic;
   using System.Diagnostics.CodeAnalysis;
   using System.Linq;
-  using System.Security.Cryptography.X509Certificates;
   using System.Threading;
   using System.Threading.Tasks;
 

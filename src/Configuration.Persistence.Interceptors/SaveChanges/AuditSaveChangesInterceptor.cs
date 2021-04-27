@@ -57,7 +57,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors.SaveChanges
 
     #endregion Overrides of SaveChangesInterceptor
 
-    private static void StampEntities<T>(ChangeTracker tracker, T auditor)
+    private static void StampEntities(ChangeTracker tracker, T auditor)
     {
       var created = tracker.Entries<ICreateAuditable<T>>().Where(x => x.State == EntityState.Added).ToList();
       foreach (var x in created)
