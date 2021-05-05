@@ -1,3 +1,4 @@
+#pragma warning disable S1186 // Methods should not be empty
 #pragma warning disable SA1402 // File may only contain a single type
 #nullable disable
 namespace Kritikos.Samples.CityCensus.Base
