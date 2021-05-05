@@ -1,4 +1,4 @@
-namespace Kritikos.Configuration.Persistence.Enums
+namespace Kritikos.Configuration.Persistence.Converters.Enums
 {
   public enum DateInterval
   {

@@ -1,9 +1,9 @@
 #pragma warning disable SA1402 // File may only contain a single type
-namespace Kritikos.Configuration.Persistence.Converters
+namespace Kritikos.Configuration.Persistence.Converters.Primitive
 {
   using System;
 
-  using Kritikos.Configuration.Persistence.Enums;
+  using Kritikos.Configuration.Persistence.Converters.Enums;
 
   using Microsoft.EntityFrameworkCore.Storage;
   using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

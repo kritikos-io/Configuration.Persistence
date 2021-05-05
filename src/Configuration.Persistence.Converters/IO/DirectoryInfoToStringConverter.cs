@@ -1,4 +1,4 @@
-namespace Kritikos.Configuration.Persistence.Converters
+namespace Kritikos.Configuration.Persistence.Converters.IO
 {
   using System.IO;
 

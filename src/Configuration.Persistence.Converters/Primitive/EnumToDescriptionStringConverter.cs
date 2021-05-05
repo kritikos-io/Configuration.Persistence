@@ -1,4 +1,4 @@
-namespace Kritikos.Configuration.Persistence.Converters
+namespace Kritikos.Configuration.Persistence.Converters.Primitive
 {
   using System;
   using System.Collections.Generic;
