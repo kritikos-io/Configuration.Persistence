@@ -1644,6 +1644,7 @@
         "type": "Project",
         "dependencies": {
           "Kritikos.Configuration.Persistence": "1.0.0",
+          "Microsoft.EntityFrameworkCore": "5.0.5",
           "System.Text.Json": "5.0.2"
         }
       },

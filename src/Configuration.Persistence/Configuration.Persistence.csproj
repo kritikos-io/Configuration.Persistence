@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Configuration.Persistence.Contracts\Configuration.Persistence.Contracts.csproj" />
+    <ProjectReference Include="..\Configuration.Persistence.Contracts\Configuration.Persistence.Contracts.csproj" />
   </ItemGroup>
 
 </Project>
