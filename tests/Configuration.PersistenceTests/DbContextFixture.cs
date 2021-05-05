@@ -7,7 +7,8 @@ namespace Kritikos.Configuration.PersistenceTests
   using System.Threading.Tasks;
 
   using Kritikos.Configuration.Persistence.Extensions;
-  using Kritikos.Configuration.Persistence.Interceptors;
+  using Kritikos.Configuration.Persistence.Interceptors.Command;
+  using Kritikos.Configuration.Persistence.Interceptors.SaveChanges;
   using Kritikos.Configuration.TestData;
 
   using Microsoft.Data.Sqlite;

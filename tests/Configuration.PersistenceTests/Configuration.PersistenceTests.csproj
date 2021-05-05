@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Configuration.Persistence.Interceptors\Configuration.Persistence.Interceptors.csproj" />
     <ProjectReference Include="..\Configuration.TestData\Configuration.TestData.csproj" />
   </ItemGroup>
 
