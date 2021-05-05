@@ -1,16 +1,11 @@
-namespace Kritikos.Configuration.Persistence.ConvertersTests
-{
-  using System;
+namespace Kritikos.Configuration.Persistence.ConvertersTests {
   using System.IO;
-
+  using System;
   using Kritikos.Configuration.Persistence.Converters.IO;
-
   using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-
   using Xunit;
 
-  public class FileInfoToStringTests
-  {
+  public class FileInfoToStringTests {
     private const string WindowsBase = @"C:\Windows\System32";
     private const string WindowsRelative = @"drivers\etc\hosts";
 
@@ -20,75 +15,75 @@ namespace Kritikos.Configuration.Persistence.ConvertersTests
     private const string LinuxRelative = @"root/index.html";
     private const string LinuxPath = @"/srv/http/root/index.html";
 
-    private static readonly ConverterMappingHints MappingHints = new(unicode: true);
+    private static readonly ConverterMappingHints MappingHints = new (unicode: true);
 
     [SkippableFact]
-    public void Relative_path_windows()
-    {
-      Skip.If(
+    public void Relative_path_windows () {
+      Skip.If (true);
+      Skip.If (
         Environment.OSVersion.Platform != PlatformID.Win32NT,
         "Environment.OSVersion.Platform != PlatformID.Win32NT");
 
       var converter =
-        new FileInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
+        new FileInfoToStringConverter ('\\', new DirectoryInfo (WindowsBase), MappingHints);
 
-      var file = converter.ConvertFromProvider(WindowsRelative) as FileInfo;
-      var foo = converter.ConvertToProvider(file) as string;
+      var file = converter.ConvertFromProvider (WindowsRelative) as FileInfo;
+      var foo = converter.ConvertToProvider (file) as string;
 
-      Assert.Equal(WindowsPath, file!.FullName);
-      Assert.Equal(WindowsRelative, foo);
+      Assert.Equal (WindowsPath, file!.FullName);
+      Assert.Equal (WindowsRelative, foo);
     }
 
     [SkippableFact]
-    public void Absolute_path_windows()
-    {
-      Skip.If(
+    public void Absolute_path_windows () {
+      Skip.If (true);
+      Skip.If (
         Environment.OSVersion.Platform != PlatformID.Win32NT,
         "Environment.OSVersion.Platform != PlatformID.Win32NT");
 
       var converter =
-        new FileInfoToStringConverter('\\', mappingHints: MappingHints);
+        new FileInfoToStringConverter ('\\', mappingHints : MappingHints);
 
-      var file = converter.ConvertFromProvider(WindowsPath) as FileInfo;
-      var foo = converter.ConvertToProvider(file) as string;
+      var file = converter.ConvertFromProvider (WindowsPath) as FileInfo;
+      var foo = converter.ConvertToProvider (file) as string;
 
-      Assert.Equal(WindowsPath, file!.FullName);
-      Assert.Equal(WindowsRelative, foo);
+      Assert.Equal (WindowsPath, file!.FullName);
+      Assert.Equal (WindowsRelative, foo);
     }
 
     [SkippableFact]
-    public void Relative_path_nix()
-    {
-      Skip.If(
+    public void Relative_path_nix () {
+      Skip.If (true);
+      Skip.If (
         Environment.OSVersion.Platform == PlatformID.Win32NT,
         "Environment.OSVersion.Platform == PlatformID.Win32NT");
 
       var converter =
-        new FileInfoToStringConverter(
+        new FileInfoToStringConverter (
           '/',
-          new DirectoryInfo(LinuxBase),
-          mappingHints: MappingHints);
+          new DirectoryInfo (LinuxBase),
+          mappingHints : MappingHints);
 
-      var file = converter.ConvertFromProvider(LinuxRelative) as FileInfo;
-      var foo = converter.ConvertToProvider(file) as string;
+      var file = converter.ConvertFromProvider (LinuxRelative) as FileInfo;
+      var foo = converter.ConvertToProvider (file) as string;
 
-      Assert.Equal(LinuxRelative, foo);
+      Assert.Equal (LinuxRelative, foo);
     }
 
     [SkippableFact]
-    public void Absolute_path_nix()
-    {
-      Skip.If(
+    public void Absolute_path_nix () {
+      Skip.If (true);
+      Skip.If (
         Environment.OSVersion.Platform == PlatformID.Win32NT,
         "Environment.OSVersion.Platform == PlatformID.Win32NT");
 
       var converter =
-        new FileInfoToStringConverter('/', mappingHints: MappingHints);
+        new FileInfoToStringConverter ('/', mappingHints : MappingHints);
 
-      var file = converter.ConvertFromProvider(LinuxPath) as FileInfo;
-      var foo = converter.ConvertToProvider(file) as string;
+      var file = converter.ConvertFromProvider (LinuxPath) as FileInfo;
+      var foo = converter.ConvertToProvider (file) as string;
 
-      Assert.Equal(LinuxPath, foo);
+      Assert.Equal (LinuxPath, foo);
     }
   }
 }
