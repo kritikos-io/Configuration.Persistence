@@ -14,10 +14,10 @@ namespace Kritikos.Samples.CityCensus.Base
   {
     public TKey Id { get; set; }
 
-    internal static void OnModelCreating(EntityTypeBuilder<TEntity> entity)
+    internal static new void OnModelCreating(EntityTypeBuilder<TEntity> entity)
     {
       entity.HasKey(e => e.Id);
-      //CityEntity<TEntity>.OnModelCreating(entity);
+      CityEntity<TEntity>.OnModelCreating(entity);
     }
   }
 
