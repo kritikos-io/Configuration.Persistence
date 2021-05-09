@@ -36,6 +36,7 @@ stages:
   - template: /ci/azure-pipelines/stages/general/00. gitversion.yml@templates
     parameters:
       updateAssemblyInfo: true
+      createTag: true
   - template: /ci/azure-pipelines/stages/dotnet/00. build.yml@templates
     parameters:
       useCache: true
