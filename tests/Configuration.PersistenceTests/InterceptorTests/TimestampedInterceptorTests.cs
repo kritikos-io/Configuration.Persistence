@@ -29,11 +29,11 @@ namespace Kritikos.Configuration.PersistenceTests.InterceptorTests
       await ctx.Database.MigrateAsync();
       ctx.Records.AddRange(records);
 
-      var before = DateTimeOffset.UtcNow;
+      var before = DateTime.UtcNow;
 
       await ctx.SaveChangesAsync();
 
-      var after = DateTimeOffset.UtcNow;
+      var after = DateTime.UtcNow;
 
       _ = records.Select(x => x.CreatedAt.Should().BeAfter(before)).ToList();
       _ = records.Select(x => x.UpdatedAt.Should().BeBefore(after)).ToList();
