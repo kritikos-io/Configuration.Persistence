@@ -23,7 +23,6 @@ trigger:
       - azure-pipelines.yml
       - src/*
       - tests/*
-
 variables:
   - group: Environment
   - group: DotNet
