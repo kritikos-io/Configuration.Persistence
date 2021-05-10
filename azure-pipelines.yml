@@ -71,3 +71,6 @@ stages:
       environmentRelease: Release
       jobNameRelease: Release
       feedNameRelease: NugetOrgKritikos
+      tagOnGitMaster: true
+      tagOnGitDevelop: true
+      gitHubConnection: kritikos-io
