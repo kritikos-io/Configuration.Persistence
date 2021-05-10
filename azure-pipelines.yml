@@ -23,7 +23,6 @@ trigger:
       - azure-pipelines.yml
       - src/*
       - tests/*
-
 variables:
   - group: Environment
   - group: DotNet
@@ -36,6 +35,7 @@ stages:
   - template: /ci/azure-pipelines/stages/general/00. gitversion.yml@templates
     parameters:
       updateAssemblyInfo: true
+      createTag: true
   - template: /ci/azure-pipelines/stages/dotnet/00. build.yml@templates
     parameters:
       useCache: true
@@ -70,3 +70,6 @@ stages:
       environmentRelease: Release
       jobNameRelease: Release
       feedNameRelease: NugetOrgKritikos
+      tagOnGitMaster: true
+      tagOnGitDevelop: true
+      gitHubConnection: github.com_akritikos

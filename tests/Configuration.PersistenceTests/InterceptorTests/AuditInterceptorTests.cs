@@ -7,6 +7,8 @@ namespace Kritikos.Configuration.PersistenceTests.InterceptorTests
   using FluentAssertions;
 
   using Kritikos.Configuration.Persistence.Interceptors;
+  using Kritikos.Configuration.Persistence.Interceptors.SaveChanges;
+  using Kritikos.Configuration.Persistence.Interceptors.Services;
   using Kritikos.Configuration.Persistence.Services;
   using Kritikos.Configuration.TestData.Model;
 
@@ -63,7 +65,7 @@ namespace Kritikos.Configuration.PersistenceTests.InterceptorTests
       _ = records = await editCtx.Records.ToListAsync();
       foreach (var rec in records)
       {
-        rec.CreatedAt = DateTimeOffset.UtcNow;
+        rec.CreatedAt = DateTime.UtcNow;
       }
 
       await editCtx.SaveChangesAsync();
