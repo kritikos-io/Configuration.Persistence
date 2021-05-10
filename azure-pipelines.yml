@@ -73,4 +73,4 @@ stages:
       feedNameRelease: NugetOrgKritikos
       tagOnGitMaster: true
       tagOnGitDevelop: true
-      gitHubConnection: akritikos
+      gitHubConnection: github.com_akritikos
