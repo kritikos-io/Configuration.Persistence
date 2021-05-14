@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Description>A simple set of contracts to describe database entities and Dtos</Description>
   </PropertyGroup>
 
 </Project>
