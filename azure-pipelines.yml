@@ -6,7 +6,7 @@ resources:
         lfs: true
     - repository: templates
       type: github
-      name: kritikos-io/.config
+      name: kritikos-io/PipelineTemplates
       endpoint: kritikos-io
 
 trigger:
@@ -32,11 +32,11 @@ variables:
 
 
 stages:
-  - template: /ci/azure-pipelines/stages/general/00. gitversion.yml@templates
+  - template: /azure-pipelines/stages/general/00. gitversion.yml@templates
     parameters:
       updateAssemblyInfo: true
       createTag: true
-  - template: /ci/azure-pipelines/stages/dotnet/00. build.yml@templates
+  - template: /azure-pipelines/stages/dotnet/00. build.yml@templates
     parameters:
       useCache: true
       configuration: Release
@@ -45,7 +45,7 @@ stages:
       buildOnLinux: true
       buildOnWindows: true
       packOnLinux: true
-  - template: /ci/azure-pipelines/stages/dotnet/01. test.yml@templates
+  - template: /azure-pipelines/stages/dotnet/01. test.yml@templates
     parameters:
       useCache: true
       configuration: Debug
@@ -55,12 +55,12 @@ stages:
       sonarOnLinux: true
       codecovOnLinux: true
       coverallsOnLinux: true
-  - template: /ci/azure-pipelines/stages/dotnet/03. intellicode.yml@templates
+  - template: /azure-pipelines/stages/dotnet/03. intellicode.yml@templates
     parameters:
       useCache: true
       updateAssemblyInfo: true
       branch: develop
-  - template: /ci/azure-pipelines/stages/dotnet/02. nuget-deploy.yml@templates
+  - template: /azure-pipelines/stages/dotnet/02. nuget-deploy.yml@templates
     parameters:
       packagesToPush: '*.nupkg'
       artifact: nuget
