@@ -1,8 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29509.3
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 15.0.26124.0
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{C78AC8C6-8CE2-4C77-9493-3E6F22D4F82B}"
+	ProjectSection(SolutionItems) = preProject
+		.config\assets\nuget.png = .config\assets\nuget.png
+		README.md = README.md
+	EndProjectSection
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{0577A3E6-642A-4865-90E7-70103A1B0880}"
 	ProjectSection(SolutionItems) = preProject
 		.config\.editorconfig = .config\.editorconfig
@@ -11,11 +17,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configurat
 		.config\Directory.Build.props = .config\Directory.Build.props
 		.config\Directory.Build.targets = .config\Directory.Build.targets
 		.config\dotnet.ruleset = .config\dotnet.ruleset
-		.config\gulpfile.js = .config\gulpfile.js
+		.config\GitVersion.yml = .config\GitVersion.yml
+		LICENSE.md = LICENSE.md
 		.config\stylecop.json = .config\stylecop.json
+		.config\xunit.runner.json = .config\xunit.runner.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{52270E06-D3BB-4B8E-A261-377E460B5FD5}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.build.props = src\Directory.build.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4FAAB5E4-2D81-4062-90D2-6F68DF746BD2}"
 EndProject
@@ -31,7 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{4C02
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples.CityCensus", "samples\Samples.CityCensus\Samples.CityCensus.csproj", "{193BF37C-0646-43D4-B80A-D4D8E325A924}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration.Persistence.Converters", "src\Configuration.Persistence.Converters\Configuration.Persistence.Converters.csproj", "{97D616D8-1AA7-4E73-97F9-1BC76E1A4900}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration.Persistence.Converters", "src\Configuration.Persistence.Converters\Configuration.Persistence.Converters.csproj", "{97D616D8-1AA7-4E73-97F9-1BC76E1A4900}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration.Persistence.ConvertersTests", "tests\Configuration.Persistence.ConvertersTests\Configuration.Persistence.ConvertersTests.csproj", "{DDB981FE-A84F-43E4-8BC2-B26D034FC682}"
 EndProject
