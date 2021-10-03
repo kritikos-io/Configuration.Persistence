@@ -1,5 +1,6 @@
 namespace Kritikos.Configuration.Persistence.Interceptors.SaveChanges
 {
+  using System.Diagnostics.CodeAnalysis;
   using System.Linq;
   using System.Threading;
   using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Kritikos.Configuration.Persistence.Interceptors.SaveChanges
   public class SoftDeleteSaveChangesInterceptor : SaveChangesInterceptor
   {
     /// <inheritdoc />
+    [ExcludeFromCodeCoverage]
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
       UpdateSoftDeleteStatus(eventData.Context.ChangeTracker);

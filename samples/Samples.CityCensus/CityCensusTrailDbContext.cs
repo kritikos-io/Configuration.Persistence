@@ -3,8 +3,14 @@ namespace Kritikos.Samples.CityCensus
 {
   using Kritikos.Configuration.Persistence.Contracts;
   using Kritikos.Configuration.Persistence.Entities;
+  using Kritikos.Configuration.Persistence.Extensions;
+  using Kritikos.Samples.CityCensus.Base;
+  using Kritikos.Samples.CityCensus.Contracts;
+  using Kritikos.Samples.CityCensus.Joins;
+  using Kritikos.Samples.CityCensus.Model;
 
   using Microsoft.EntityFrameworkCore;
+  using Microsoft.EntityFrameworkCore.ValueGeneration;
 
   public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
   {
@@ -25,12 +31,15 @@ namespace Kritikos.Samples.CityCensus
 
     public DbSet<CountyCorporation> CountyCorporations { get; set; }
 
+    public DbSet<Person> People { get; set; }
+
     /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       if (!optionsBuilder.IsConfigured)
       {
-        optionsBuilder.UseNpgsql("foobar");
+        optionsBuilder.UseSqlite("DataSource=transient;mode=memory;cache=shared")
+          .EnableCommonOptions(true);
       }
 
       base.OnConfiguring(optionsBuilder);
@@ -40,6 +49,19 @@ namespace Kritikos.Samples.CityCensus
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
+
+      modelBuilder.EntitiesOfType<IOrdered<Guid>>(entity =>
+      {
+        entity.Property(typeof(Guid), nameof(IOrdered<Guid>.Order))
+          .HasValueGenerator((_, _) => new GuidValueGenerator());
+      });
+
+      modelBuilder.EntitiesOfType<OrderedCityEntity<long, Corporation>>(e =>
+      {
+        e.Property(e => e.Order)
+        .HasValueGenerator((_, _) => new GuidValueGenerator());
+      });
+
       AuditRecord.OnModelCreating(modelBuilder);
       County.OnModelCreating(modelBuilder);
       Corporation.OnModelCreating(modelBuilder);

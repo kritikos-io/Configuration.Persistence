@@ -3,6 +3,8 @@ namespace Kritikos.Configuration.Persistence.Contracts.Behavioral
 {
   using System;
 
+  using Microsoft.EntityFrameworkCore;
+
   /// <summary>
   /// Marker interface used to decorate join entities.
   /// </summary>

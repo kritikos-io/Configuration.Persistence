@@ -2,6 +2,7 @@ namespace Kritikos.Configuration.Persistence.Contracts.Base
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics.CodeAnalysis;
 
   using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
@@ -9,6 +10,7 @@ namespace Kritikos.Configuration.Persistence.Contracts.Base
   /// Base model for Dtos to allow comparsions after updating from the server.
   /// </summary>
   /// <typeparam name="TKey">Type of primary identity.</typeparam>
+  [ExcludeFromCodeCoverage]
   public abstract class Model<TKey> : IEntity<TKey>, IEquatable<Model<TKey>>
     where TKey : IEquatable<TKey>, IComparable<TKey>, IComparable
   {

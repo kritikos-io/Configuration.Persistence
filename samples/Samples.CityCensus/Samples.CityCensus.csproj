@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bogus" Version="33.0.2" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.6" />
+    <PackageReference Include="Bogus" Version="33.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.10" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Configuration.Persistence.Interceptors\Configuration.Persistence.Interceptors.csproj" />
     <ProjectReference Include="..\..\src\Configuration.Persistence\Configuration.Persistence.csproj" />
   </ItemGroup>
 
