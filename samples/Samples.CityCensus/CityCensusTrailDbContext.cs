@@ -1,6 +1,8 @@
 #nullable disable
 namespace Kritikos.Samples.CityCensus
 {
+  using System;
+
   using Kritikos.Configuration.Persistence.Contracts;
   using Kritikos.Configuration.Persistence.Entities;
   using Kritikos.Configuration.Persistence.Extensions;

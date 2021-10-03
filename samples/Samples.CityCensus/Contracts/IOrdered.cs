@@ -1,5 +1,7 @@
 namespace Kritikos.Samples.CityCensus.Contracts
 {
+  using System;
+
   public interface IOrdered<TKey>
     where TKey : IComparable, IComparable<TKey>
   {

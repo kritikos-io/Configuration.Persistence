@@ -1,5 +1,8 @@
 namespace Kritikos.Configuration.Persistence.AspNetCoreTests.ExtensionTests
 {
+  using System.Linq;
+  using System.Threading.Tasks;
+
   using Kritikos.Configuration.Persistence.Extensions;
   using Kritikos.Configuration.PersistenceTests;
   using Kritikos.Samples.CityCensus;

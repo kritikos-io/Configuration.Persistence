@@ -1,6 +1,7 @@
 namespace Kritikos.Configuration.PersistenceTests.EntityTests
 {
   using System;
+  using System.Threading.Tasks;
 
   using Kritikos.Samples.CityCensus.Provider;
 

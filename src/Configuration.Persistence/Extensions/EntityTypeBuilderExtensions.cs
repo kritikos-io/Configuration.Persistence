@@ -1,5 +1,7 @@
 namespace Kritikos.Configuration.Persistence.Extensions
 {
+  using System;
+  using System.Collections.Generic;
   using System.Linq.Expressions;
 
   using Kritikos.Configuration.Persistence.Contracts.Behavioral;

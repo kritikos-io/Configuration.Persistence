@@ -1,5 +1,7 @@
 namespace Kritikos.Samples.CityCensus.Model
 {
+  using System;
+
   using Kritikos.Configuration.Persistence.Contracts.Behavioral;
   using Kritikos.Samples.CityCensus.Base;
 

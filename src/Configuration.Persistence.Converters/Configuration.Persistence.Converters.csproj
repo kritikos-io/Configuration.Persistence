@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Description>ValueConverters for use with EF Core, handle responsibly.</Description>
   </PropertyGroup>
 
   <ItemGroup>

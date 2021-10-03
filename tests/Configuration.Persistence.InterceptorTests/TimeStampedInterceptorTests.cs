@@ -1,5 +1,8 @@
 namespace Kritikos.Configuration.Persistence.InterceptorTests
 {
+  using System;
+  using System.Threading.Tasks;
+
   using Kritikos.Configuration.Persistence.Interceptors.SaveChanges;
   using Kritikos.Configuration.PersistenceTests;
   using Kritikos.Samples.CityCensus.Provider;

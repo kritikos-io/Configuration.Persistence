@@ -1,5 +1,7 @@
 namespace Kritikos.Samples.CityCensus.Services
 {
+  using System;
+
   using Kritikos.Configuration.Persistence.Interceptors.Services;
 
   public class DummyAuditProvider : IAuditorProvider<Guid>

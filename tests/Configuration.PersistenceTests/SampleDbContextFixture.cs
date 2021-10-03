@@ -2,6 +2,7 @@ namespace Kritikos.Configuration.PersistenceTests
 {
   using System;
   using System.Collections.Concurrent;
+  using System.Threading.Tasks;
 
   using Kritikos.Configuration.Persistence.Extensions;
   using Kritikos.Samples.CityCensus;
