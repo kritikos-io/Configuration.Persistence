@@ -5,6 +5,7 @@ VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{C78AC8C6-8CE2-4C77-9493-3E6F22D4F82B}"
 	ProjectSection(SolutionItems) = preProject
+		LICENSE.md = LICENSE.md
 		.config\assets\nuget.png = .config\assets\nuget.png
 		README.md = README.md
 	EndProjectSection
