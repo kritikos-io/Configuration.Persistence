@@ -13,8 +13,4 @@
     <ProjectReference Include="..\Configuration.Persistence\Configuration.Persistence.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Command\" />
-  </ItemGroup>
-
 </Project>

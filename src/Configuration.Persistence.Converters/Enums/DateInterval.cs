@@ -1,12 +1,11 @@
-namespace Kritikos.Configuration.Persistence.Converters.Enums
+namespace Kritikos.Configuration.Persistence.Converters.Enums;
+
+public enum DateInterval
 {
-  public enum DateInterval
-  {
-    Days,
-    Hours,
-    Minutes,
-    Seconds,
-    Milliseconds,
-    Ticks,
-  }
+  Days,
+  Hours,
+  Minutes,
+  Seconds,
+  Milliseconds,
+  Ticks,
 }

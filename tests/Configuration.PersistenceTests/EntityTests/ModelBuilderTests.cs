@@ -1,51 +1,50 @@
-namespace Kritikos.Configuration.PersistenceTests.EntityTests
+namespace Kritikos.Configuration.PersistenceTests.EntityTests;
+
+using System;
+using System.Threading.Tasks;
+
+using Kritikos.Samples.CityCensus;
+
+using Microsoft.EntityFrameworkCore;
+
+using Xunit;
+
+public class ModelBuilderTests : IClassFixture<SampleDbContextFixture>
 {
-  using System;
-  using System.Threading.Tasks;
+  private readonly SampleDbContextFixture fixture;
 
-  using Kritikos.Samples.CityCensus.Provider;
-
-  using Microsoft.EntityFrameworkCore;
-
-  using Xunit;
-
-  public class ModelBuilderTests : IClassFixture<SampleDbContextFixture>
+  public ModelBuilderTests(SampleDbContextFixture fixture)
   {
-    private readonly SampleDbContextFixture fixture;
+    this.fixture = fixture;
+  }
 
-    public ModelBuilderTests(SampleDbContextFixture fixture)
-    {
-      this.fixture = fixture;
-    }
+  [Fact]
+  public async Task EntitiesOfType_by_Interface()
+  {
+    await using var ctx = await fixture.GetContext("ofType_interface");
+    await ctx.Database.MigrateAsync();
 
-    [Fact]
-    public async Task EntitiesOfType_by_Interface()
-    {
-      await using var ctx = await fixture.GetContext("ofType_interface");
-      await ctx.Database.MigrateAsync();
+    var counties = CityDataFaker.Counties.Generate(20);
+    Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
 
-      var counties = CountyProvider.Provider.Generate(20);
-      Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
+    ctx.Counties.AddRange(counties);
+    await ctx.SaveChangesAsync();
 
-      ctx.Counties.AddRange(counties);
-      await ctx.SaveChangesAsync();
+    Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
+  }
 
-      Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
-    }
+  [Fact]
+  public async Task EntitiesOfType_by_BaseClass()
+  {
+    await using var ctx = await fixture.GetContext("ofType_base");
+    await ctx.Database.MigrateAsync();
 
-    [Fact]
-    public async Task EntitiesOfType_by_BaseClass()
-    {
-      await using var ctx = await fixture.GetContext("ofType_base");
-      await ctx.Database.MigrateAsync();
+    var counties = CityDataFaker.Counties.Generate(20);
+    Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
 
-      var counties = CountyProvider.Provider.Generate(20);
-      Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
+    ctx.Counties.AddRange(counties);
+    await ctx.SaveChangesAsync();
 
-      ctx.Counties.AddRange(counties);
-      await ctx.SaveChangesAsync();
-
-      Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
-    }
+    Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
   }
 }

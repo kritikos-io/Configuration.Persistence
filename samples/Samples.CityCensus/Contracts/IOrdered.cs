@@ -1,10 +1,9 @@
-namespace Kritikos.Samples.CityCensus.Contracts
-{
-  using System;
+namespace Kritikos.Samples.CityCensus.Contracts;
 
-  public interface IOrdered<TKey>
-    where TKey : IComparable, IComparable<TKey>
-  {
-    public TKey Order { get; set; }
-  }
+using System;
+
+public interface IOrdered<TKey>
+  where TKey : IComparable, IComparable<TKey>
+{
+  public TKey Order { get; set; }
 }

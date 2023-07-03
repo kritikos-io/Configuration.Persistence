@@ -1,19 +1,18 @@
-namespace Kritikos.Samples.CityCensus.Services
+namespace Kritikos.Samples.CityCensus.Services;
+
+using System;
+
+using Kritikos.Configuration.Persistence.Interceptors.Services;
+
+public class DummyAuditProvider : IAuditorProvider<Guid>
 {
-  using System;
+  private readonly Func<Guid> fetchAuditor;
 
-  using Kritikos.Configuration.Persistence.Interceptors.Services;
+  public DummyAuditProvider(Func<Guid> fetchAuditor) => this.fetchAuditor = fetchAuditor;
 
-  public class DummyAuditProvider : IAuditorProvider<Guid>
-  {
-    private readonly Func<Guid> fetchAuditor;
+  /// <inheritdoc />
+  public Guid GetAuditor() => fetchAuditor();
 
-    public DummyAuditProvider(Func<Guid> fetchAuditor) => this.fetchAuditor = fetchAuditor;
-
-    /// <inheritdoc />
-    public Guid GetAuditor() => fetchAuditor();
-
-    /// <inheritdoc />
-    public Guid GetFallbackAuditor() => Guid.Empty;
-  }
+  /// <inheritdoc />
+  public Guid GetFallbackAuditor() => Guid.Empty;
 }

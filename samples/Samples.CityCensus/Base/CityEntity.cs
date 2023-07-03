@@ -1,35 +1,31 @@
 #pragma warning disable SA1402 // File may only contain a single type
 #nullable disable
-namespace Kritikos.Samples.CityCensus.Base
+namespace Kritikos.Samples.CityCensus.Base;
+
+using System;
+
+using Kritikos.Configuration.Persistence.Contracts.Behavioral;
+
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+public abstract class CityEntity<TKey, TEntity> : CityEntity<TEntity>, IEntity<TKey>
+  where TKey : IEquatable<TKey>, IComparable<TKey>, IComparable
+  where TEntity : CityEntity<TKey, TEntity>
 {
-  using System;
+  public TKey Id { get; set; }
 
-  using Kritikos.Configuration.Persistence.Contracts.Behavioral;
-
-  using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-  public abstract class CityEntity<TKey, TEntity> : CityEntity<TEntity>, IEntity<TKey>
-    where TKey : IEquatable<TKey>, IComparable<TKey>, IComparable
-    where TEntity : CityEntity<TKey, TEntity>
+  internal static new void OnModelCreating(EntityTypeBuilder<TEntity> entity)
   {
-    public TKey Id { get; set; }
-
-    internal static new void OnModelCreating(EntityTypeBuilder<TEntity> entity)
-    {
-      entity.HasKey(e => e.Id);
-      CityEntity<TEntity>.OnModelCreating(entity);
-    }
+    entity.HasKey(e => e.Id);
+    CityEntity<TEntity>.OnModelCreating(entity);
   }
+}
 
-  public abstract class CityEntity<TEntity> : ITraceableAudit
-    where TEntity : class
+public abstract class CityEntity<TEntity> : ITraceableAudit
+  where TEntity : class
+{
+  internal static void OnModelCreating(EntityTypeBuilder<TEntity> entity)
   {
-    internal static void OnModelCreating(EntityTypeBuilder<TEntity> entity)
-    {
-      if (entity is null)
-      {
-        throw new ArgumentNullException(nameof(entity));
-      }
-    }
+    ArgumentNullException.ThrowIfNull(entity);
   }
 }
