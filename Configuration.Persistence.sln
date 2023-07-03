@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{C78AC8
 		LICENSE.md = LICENSE.md
 		.config\assets\nuget.png = .config\assets\nuget.png
 		README.md = README.md
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{0577A3E6-642A-4865-90E7-70103A1B0880}"
@@ -17,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configurat
 		azure-pipelines.yml = azure-pipelines.yml
 		.config\Directory.Build.props = .config\Directory.Build.props
 		.config\Directory.Build.targets = .config\Directory.Build.targets
+				Directory.Packages.props = Directory.Packages.props
 		.config\dotnet.ruleset = .config\dotnet.ruleset
 		.config\GitVersion.yml = .config\GitVersion.yml
 		LICENSE.md = LICENSE.md
@@ -34,8 +36,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration.Persistence", "src\Configuration.Persistence\Configuration.Persistence.csproj", "{F48B66E0-9768-46C3-AEFD-E04807D4CC2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration.PersistenceTests", "tests\Configuration.PersistenceTests\Configuration.PersistenceTests.csproj", "{470E9DF1-37DE-4B95-9F32-B2ACEACB1C8F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration.Peristence.IdentityServer", "src\Configuration.Peristence.IdentityServer\Configuration.Peristence.IdentityServer.csproj", "{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{4C02DD63-BFCB-4700-B03F-25B8F40714AC}"
 EndProject
@@ -89,18 +89,6 @@ Global
 		{470E9DF1-37DE-4B95-9F32-B2ACEACB1C8F}.Release|x64.Build.0 = Release|Any CPU
 		{470E9DF1-37DE-4B95-9F32-B2ACEACB1C8F}.Release|x86.ActiveCfg = Release|Any CPU
 		{470E9DF1-37DE-4B95-9F32-B2ACEACB1C8F}.Release|x86.Build.0 = Release|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Debug|x64.Build.0 = Debug|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Debug|x86.Build.0 = Debug|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Release|x64.ActiveCfg = Release|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Release|x64.Build.0 = Release|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Release|x86.ActiveCfg = Release|Any CPU
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78}.Release|x86.Build.0 = Release|Any CPU
 		{193BF37C-0646-43D4-B80A-D4D8E325A924}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{193BF37C-0646-43D4-B80A-D4D8E325A924}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{193BF37C-0646-43D4-B80A-D4D8E325A924}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -204,7 +192,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F48B66E0-9768-46C3-AEFD-E04807D4CC2B} = {52270E06-D3BB-4B8E-A261-377E460B5FD5}
 		{470E9DF1-37DE-4B95-9F32-B2ACEACB1C8F} = {4FAAB5E4-2D81-4062-90D2-6F68DF746BD2}
-		{7FE53649-E01F-4E1C-A0A9-AD0984FE9F78} = {52270E06-D3BB-4B8E-A261-377E460B5FD5}
 		{193BF37C-0646-43D4-B80A-D4D8E325A924} = {4C02DD63-BFCB-4700-B03F-25B8F40714AC}
 		{97D616D8-1AA7-4E73-97F9-1BC76E1A4900} = {52270E06-D3BB-4B8E-A261-377E460B5FD5}
 		{DDB981FE-A84F-43E4-8BC2-B26D034FC682} = {4FAAB5E4-2D81-4062-90D2-6F68DF746BD2}
