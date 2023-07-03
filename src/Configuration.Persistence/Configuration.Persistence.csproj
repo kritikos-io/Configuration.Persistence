@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <Description>A starting point for EF Core persistance providing extension methods for migrating, hosted services and the infrastructure needed to setup an auditing system for any DbContext</Description>
     <PackageProjectUrl>https://github.com/kritikos-io/Configuration.Persistence</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kritikos-io/Configuration.Persistence</RepositoryUrl>
