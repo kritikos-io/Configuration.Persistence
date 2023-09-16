@@ -1,3 +1,4 @@
+// ReSharper disable NonReadonlyMemberInGetHashCode
 namespace Kritikos.Configuration.Persistence.Contracts.Base;
 
 using System;
@@ -12,7 +13,7 @@ using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 /// <typeparam name="TKey">Type of primary identity.</typeparam>
 [ExcludeFromCodeCoverage]
 public abstract class Model<TKey> : IEntity<TKey>, IEquatable<Model<TKey>>
-  where TKey : IEquatable<TKey>, IComparable<TKey>, IComparable
+  where TKey : IComparable<TKey>, IEquatable<TKey>
 {
   public TKey Id { get; set; } = default!;
 
@@ -28,7 +29,5 @@ public abstract class Model<TKey> : IEntity<TKey>, IEquatable<Model<TKey>>
 
   /// <inheritdoc />
   public override int GetHashCode()
-
-    // ReSharper disable once NonReadonlyMemberInGetHashCode
     => EqualityComparer<TKey>.Default.GetHashCode(Id);
 }

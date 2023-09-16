@@ -16,7 +16,25 @@ public interface IEntity
 /// </summary>
 /// <typeparam name="TKey">Type of primary key.</typeparam>
 public interface IEntity<TKey> : IEntity
-  where TKey : IComparable, IComparable<TKey>, IEquatable<TKey>
+  where TKey : IComparable<TKey>, IEquatable<TKey>
 {
   TKey Id { get; set; }
+}
+
+public interface IJoinEntity : IEntity
+{
+}
+
+public interface IJoinEntity<TLeft, TRight> : IJoinEntity
+  where TLeft : IEntity
+  where TRight : IEntity
+{
+}
+
+public interface IJoinEntity<TLeft, TKeyLeft, TRight, TKeyRight> : IJoinEntity<TLeft, TRight>
+  where TLeft : IEntity<TKeyLeft>
+  where TRight : IEntity<TKeyRight>
+  where TKeyLeft : IComparable<TKeyLeft>, IEquatable<TKeyLeft>
+  where TKeyRight : IComparable<TKeyRight>, IEquatable<TKeyRight>
+{
 }
