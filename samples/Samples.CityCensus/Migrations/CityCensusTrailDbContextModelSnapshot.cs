@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Kritikos.Samples.CityCensus.Migrations
 {
     [DbContext(typeof(CityCensusTrailDbContext))]
@@ -13,8 +15,22 @@ namespace Kritikos.Samples.CityCensus.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.8");
+
+            modelBuilder.Entity("CorporationCounty", b =>
+                {
+                    b.Property<long>("CorporationsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("CountiesId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CorporationsId", "CountiesId");
+
+                    b.HasIndex("CountiesId");
+
+                    b.ToTable("CorporationCounty");
+                });
 
             modelBuilder.Entity("Kritikos.Configuration.Persistence.Entities.AuditRecord", b =>
                 {
@@ -32,9 +48,8 @@ namespace Kritikos.Samples.CityCensus.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Modification")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Modification")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("NewValues")
                         .IsRequired()
@@ -71,22 +86,27 @@ namespace Kritikos.Samples.CityCensus.Migrations
                     b.ToTable("OrderedCityEntity<long, Corporation>");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("OrderedCityEntity<long, Corporation>");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Kritikos.Samples.CityCensus.Joins.CountyCorporation", b =>
                 {
-                    b.Property<long>("CountyId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<long>("CorporationId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("CountyId", "CorporationId");
+                    b.Property<long?>("CorporationId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("CountyId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CorporationId");
+
+                    b.HasIndex("CountyId");
 
                     b.ToTable("CountyCorporations");
                 });
@@ -160,19 +180,30 @@ namespace Kritikos.Samples.CityCensus.Migrations
                     b.HasDiscriminator().HasValue("Corporation");
                 });
 
+            modelBuilder.Entity("CorporationCounty", b =>
+                {
+                    b.HasOne("Kritikos.Samples.CityCensus.Model.Corporation", null)
+                        .WithMany()
+                        .HasForeignKey("CorporationsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kritikos.Samples.CityCensus.Model.County", null)
+                        .WithMany()
+                        .HasForeignKey("CountiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Kritikos.Samples.CityCensus.Joins.CountyCorporation", b =>
                 {
                     b.HasOne("Kritikos.Samples.CityCensus.Model.Corporation", "Corporation")
                         .WithMany()
-                        .HasForeignKey("CorporationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CorporationId");
 
                     b.HasOne("Kritikos.Samples.CityCensus.Model.County", "County")
                         .WithMany()
-                        .HasForeignKey("CountyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CountyId");
 
                     b.Navigation("Corporation");
 
