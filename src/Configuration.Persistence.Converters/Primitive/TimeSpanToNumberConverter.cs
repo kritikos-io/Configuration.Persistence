@@ -43,7 +43,7 @@ public class TimeSpanToNumberConverter<T> : ValueConverter<TimeSpan, T>
       DateInterval.Seconds => span.TotalSeconds,
       DateInterval.Milliseconds => span.TotalMilliseconds,
       DateInterval.Ticks => Convert.ToDouble(span.Ticks),
-      _ => throw new NotImplementedException($"{nameof(interval)} is not supported."),
+      _ => throw new InvalidOperationException($"{nameof(interval)} is not supported."),
     };
 
     var result = (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
@@ -92,7 +92,7 @@ public class TimeSpanToNumberConverter<T> : ValueConverter<TimeSpan, T>
           nameof(val),
           value,
           $"Maximum amount of {interval} supported is {TimeSpan.MaxValue.Ticks}"),
-      _ => throw new NotImplementedException($"{nameof(interval)} is not supported."),
+      _ => throw new InvalidOperationException($"{nameof(interval)} is not supported."),
     };
   }
 }

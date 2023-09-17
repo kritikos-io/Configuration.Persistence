@@ -22,7 +22,7 @@ public abstract class TimeSpanToNumberConverterTests
     DateInterval.Seconds => TimeSpan.FromSeconds(value),
     DateInterval.Milliseconds => TimeSpan.FromMilliseconds(value),
     DateInterval.Ticks => TimeSpan.FromTicks(Convert.ToInt64(value)),
-    _ => throw new NotImplementedException($"{nameof(interval)} not supported!"),
+    _ => throw new InvalidOperationException($"{nameof(interval)} not supported!"),
   };
 
   protected static readonly Func<TimeSpan, DateInterval, double> FromTimespan = (value, interval) => interval switch
@@ -33,7 +33,7 @@ public abstract class TimeSpanToNumberConverterTests
     DateInterval.Seconds => value.TotalSeconds,
     DateInterval.Milliseconds => value.TotalMilliseconds,
     DateInterval.Ticks => value.Ticks,
-    _ => throw new NotImplementedException($"{nameof(interval)} not supported!"),
+    _ => throw new InvalidOperationException($"{nameof(interval)} not supported!"),
   };
 }
 
