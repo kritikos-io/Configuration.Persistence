@@ -1,13 +1,14 @@
 #nullable disable
 namespace Kritikos.Samples.CityCensus.Joins;
 
+using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 using Kritikos.Configuration.Persistence.Extensions;
 using Kritikos.Samples.CityCensus.Base;
 using Kritikos.Samples.CityCensus.Model;
 
 using Microsoft.EntityFrameworkCore;
 
-public class CountyCorporation : CityEntity<long, CountyCorporation>
+public class CountyCorporation : CityEntity<long, CountyCorporation>, IJoinEntity<Corporation, long, County, long>
 {
   public County County { get; set; }
 
@@ -18,6 +19,6 @@ public class CountyCorporation : CityEntity<long, CountyCorporation>
     {
       OnModelCreating(entity);
 
-      entity.ManyToManyTable(x => x.County, x => x.Corporation);
+      entity.ManyToManyWithJoinEntity(x => x.Corporation, x => x.County);
     });
 }

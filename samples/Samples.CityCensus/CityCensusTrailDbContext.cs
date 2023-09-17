@@ -55,7 +55,9 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
     ArgumentNullException.ThrowIfNull(modelBuilder);
     base.OnModelCreating(modelBuilder);
 
-    modelBuilder.EntitiesOfType<IOrdered<Guid>>(entity =>
+    modelBuilder.ApplyEntityConfiguration();
+
+    modelBuilder.EntitiesImplementing<IOrdered<Guid>>(entity =>
     {
       entity.Property(typeof(Guid), nameof(IOrdered<Guid>.Order))
         .HasValueGenerator((_, _) => new GuidValueGenerator());
@@ -66,10 +68,5 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
       entity.Property(e => e.Order)
         .HasValueGenerator((_, _) => new GuidValueGenerator());
     });
-
-    AuditRecord.OnModelCreating(modelBuilder);
-    County.OnModelCreating(modelBuilder);
-    Corporation.OnModelCreating(modelBuilder);
-    CountyCorporation.OnModelCreating(modelBuilder);
   }
 }
