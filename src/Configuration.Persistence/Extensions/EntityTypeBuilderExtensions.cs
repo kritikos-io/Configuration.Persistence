@@ -59,7 +59,6 @@ public static class EntityTypeBuilderExtensions
       : leftKeyBuilder.WithMany(reverseLeft);
     leftReferenceCollection.HasForeignKey(leftKey);
 
-
     var rightKeyBuilder = entity.HasOne(right);
     rightKey = string.IsNullOrWhiteSpace(rightKey)
       ? $"{typeof(TRight).Name}Id"
