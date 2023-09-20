@@ -4,10 +4,8 @@ using System;
 
 using Kritikos.Configuration.Persistence.Contracts;
 using Kritikos.Configuration.Persistence.Contracts.Behavioral;
-using Kritikos.Configuration.Persistence.Extensions;
 using Kritikos.Samples.CityCensus.Base;
 using Kritikos.Samples.CityCensus.Contracts;
-using Kritikos.Samples.CityCensus.Joins;
 
 using Microsoft.EntityFrameworkCore;
 

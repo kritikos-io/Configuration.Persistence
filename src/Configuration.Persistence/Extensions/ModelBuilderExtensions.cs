@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 
 using Kritikos.Configuration.Persistence.Contracts;
-using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
