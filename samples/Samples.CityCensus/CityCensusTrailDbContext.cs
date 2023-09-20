@@ -25,7 +25,7 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
   {
   }
 
-  public DbSet<AuditRecord> AuditRecords { get; set; }
+  public DbSet<AuditRecord> AuditRecords { get; set; } = null!;
 
   public DbSet<County> Counties { get; set; }
 
