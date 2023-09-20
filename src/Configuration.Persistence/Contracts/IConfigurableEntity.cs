@@ -12,7 +12,7 @@ public interface IConfigurableEntity : IEntity
 {
   /// <summary>
   /// Applies model configuration to the provided builder.
-  /// Applied on <see cref="ModelBuilder"/> via <see cref="ModelBuilderExtensions.ApplyEntityConfiguration"/>
+  /// Applied on <see cref="ModelBuilder"/> via <see cref="ModelBuilderExtensions.ApplyEntityConfiguration"/>.
   /// </summary>
   /// <remarks>Use by either defining a public method, or hide by creating an internal one.</remarks>
   /// <param name="builder">The builder being used to construct the model for this context.
