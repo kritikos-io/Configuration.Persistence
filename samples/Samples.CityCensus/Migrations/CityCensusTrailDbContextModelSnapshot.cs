@@ -4,7 +4,8 @@ using Kritikos.Samples.CityCensus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+
+#nullable disable
 
 namespace Kritikos.Samples.CityCensus.Migrations
 {
@@ -14,111 +15,214 @@ namespace Kritikos.Samples.CityCensus.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.5")
-                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.11");
+
+            modelBuilder.Entity("CorporationCounty", b =>
+                {
+                    b.Property<long>("CorporationsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("CountiesId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CorporationsId", "CountiesId");
+
+                    b.HasIndex("CountiesId");
+
+                    b.ToTable("CorporationCounty");
+                });
 
             modelBuilder.Entity("Kritikos.Configuration.Persistence.Entities.AuditRecord", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("TEXT");
 
                     b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uuid");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
-                    b.Property<string>("Modification")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Modification")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("NewValues")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("OldValues")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Table")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("AuditRecords");
                 });
 
-            modelBuilder.Entity("Kritikos.Samples.CityCensus.Corporation", b =>
+            modelBuilder.Entity("Kritikos.Samples.CityCensus.Base.OrderedCityEntity<long, Kritikos.Samples.CityCensus.Model.Corporation>", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("INTEGER");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("Order")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Corporations");
+                    b.ToTable("OrderedCityEntity<long, Corporation>");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("OrderedCityEntity<long, Corporation>");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("Kritikos.Samples.CityCensus.County", b =>
+            modelBuilder.Entity("Kritikos.Samples.CityCensus.Joins.CountyCorporation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("CorporationId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long?>("CountyId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CorporationId");
+
+                    b.HasIndex("CountyId");
+
+                    b.ToTable("CountyCorporations");
+                });
+
+            modelBuilder.Entity("Kritikos.Samples.CityCensus.Model.County", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("Order")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.ToTable("Counties");
                 });
 
-            modelBuilder.Entity("Kritikos.Samples.CityCensus.CountyCorporation", b =>
+            modelBuilder.Entity("Kritikos.Samples.CityCensus.Model.Person", b =>
                 {
-                    b.Property<long>("CountyId")
-                        .HasColumnType("bigint");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-                    b.Property<long>("CorporationId")
-                        .HasColumnType("bigint");
+                    b.Property<long?>("CountyId")
+                        .HasColumnType("INTEGER");
 
-                    b.HasKey("CountyId", "CorporationId");
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("CorporationId");
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("CountyCorporations");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountyId");
+
+                    b.ToTable("People");
                 });
 
-            modelBuilder.Entity("Kritikos.Samples.CityCensus.CountyCorporation", b =>
+            modelBuilder.Entity("Kritikos.Samples.CityCensus.Model.Corporation", b =>
                 {
-                    b.HasOne("Kritikos.Samples.CityCensus.Corporation", "Corporation")
+                    b.HasBaseType("Kritikos.Samples.CityCensus.Base.OrderedCityEntity<long, Kritikos.Samples.CityCensus.Model.Corporation>");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasDiscriminator().HasValue("Corporation");
+                });
+
+            modelBuilder.Entity("CorporationCounty", b =>
+                {
+                    b.HasOne("Kritikos.Samples.CityCensus.Model.Corporation", null)
                         .WithMany()
-                        .HasForeignKey("CorporationId")
+                        .HasForeignKey("CorporationsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Kritikos.Samples.CityCensus.County", "County")
+                    b.HasOne("Kritikos.Samples.CityCensus.Model.County", null)
                         .WithMany()
-                        .HasForeignKey("CountyId")
+                        .HasForeignKey("CountiesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Kritikos.Samples.CityCensus.Joins.CountyCorporation", b =>
+                {
+                    b.HasOne("Kritikos.Samples.CityCensus.Model.Corporation", "Corporation")
+                        .WithMany()
+                        .HasForeignKey("CorporationId");
+
+                    b.HasOne("Kritikos.Samples.CityCensus.Model.County", "County")
+                        .WithMany()
+                        .HasForeignKey("CountyId");
 
                     b.Navigation("Corporation");
+
+                    b.Navigation("County");
+                });
+
+            modelBuilder.Entity("Kritikos.Samples.CityCensus.Model.Person", b =>
+                {
+                    b.HasOne("Kritikos.Samples.CityCensus.Model.County", "County")
+                        .WithMany()
+                        .HasForeignKey("CountyId");
 
                     b.Navigation("County");
                 });

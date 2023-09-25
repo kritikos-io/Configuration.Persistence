@@ -1,31 +1,44 @@
-namespace Kritikos.Configuration.PersistenceTests.EntityTests
+namespace Kritikos.Configuration.PersistenceTests.EntityTests;
+
+using System;
+using System.Threading.Tasks;
+
+using Kritikos.Samples.CityCensus;
+
+using Microsoft.EntityFrameworkCore;
+
+using Xunit;
+
+public class ModelBuilderTests(SampleDbContextFixture fixture)
+  : IClassFixture<SampleDbContextFixture>
 {
-  using System;
-
-  using Kritikos.Configuration.PersistenceTests.Faker;
-  using Kritikos.Configuration.TestData;
-
-  using Microsoft.EntityFrameworkCore;
-
-  using Xunit;
-
-  public class ModelBuilderTests
+  [Fact]
+  public async Task EntitiesOfType_by_Interface()
   {
-    [SkippableFact]
-    public void EntitiesOfType_Interface()
-    {
-      Skip.If(true, "WIP");
-      var builder = new DbContextOptionsBuilder<MigratedDbContext>()
-        .UseSqlite("DataSource=transient;mode=memory");
-      var ctx = new MigratedDbContext(builder.Options);
-      ctx.Database.Migrate();
+    await using var ctx = await fixture.GetContextAsync("ofType_interface");
+    await ctx.Database.MigrateAsync();
 
-      var faker = new PersonFaker();
-      var people = faker.Generate(10);
-      ctx.People.AddRange(people);
-      ctx.SaveChanges();
+    var counties = CityDataFaker.Counties.Generate(20);
+    Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
 
-      Assert.All(people, p => Assert.True(p.Order != Guid.Empty));
-    }
+    ctx.Counties.AddRange(counties);
+    await ctx.SaveChangesAsync();
+
+    Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
+  }
+
+  [Fact]
+  public async Task EntitiesOfType_by_BaseClass()
+  {
+    await using var ctx = await fixture.GetContextAsync("ofType_base");
+    await ctx.Database.MigrateAsync();
+
+    var counties = CityDataFaker.Counties.Generate(20);
+    Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
+
+    ctx.Counties.AddRange(counties);
+    await ctx.SaveChangesAsync();
+
+    Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
   }
 }

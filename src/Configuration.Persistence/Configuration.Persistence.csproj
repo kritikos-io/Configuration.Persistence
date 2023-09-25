@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-    <Description>A starting point for EF Core persistance, including custom contracts, converters, interceptors. Also included is a proof of concept for a HostedService taking care of migrations</Description>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+    <Description>A starting point for EF Core persistance providing extension methods for migrating, hosted services and the infrastructure needed to setup an auditing system for any DbContext</Description>
     <PackageProjectUrl>https://github.com/kritikos-io/Configuration.Persistence</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kritikos-io/Configuration.Persistence</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="System.ComponentModel.Annotations" />
   </ItemGroup>
 
   <ItemGroup>
