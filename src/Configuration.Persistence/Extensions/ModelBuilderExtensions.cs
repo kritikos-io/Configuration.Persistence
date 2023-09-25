@@ -2,9 +2,11 @@ namespace Kritikos.Configuration.Persistence.Extensions;
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 using Kritikos.Configuration.Persistence.Contracts;
+using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -18,6 +20,7 @@ public static class ModelBuilderExtensions
   /// <param name="modelBuilder">The builder being used to construct the model for this context.
   /// Databases (and other extensions) typically define extension methods on this object
   /// that allow you to configure aspects of the model that are specific to a given database.</param>
+  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
   public static void ApplyEntityConfiguration(this ModelBuilder modelBuilder)
   {
     ArgumentNullException.ThrowIfNull(modelBuilder);
@@ -33,6 +36,30 @@ public static class ModelBuilderExtensions
 
       method?.Invoke(null, new object[] { modelBuilder });
     }
+  }
+
+  /// <summary>
+  /// Registers RowVersion to be used as a concurrency token for entities implementing <see cref="IConcurrent"/>.
+  /// </summary>
+  /// <param name="modelBuilder">The builder being used to construct the model for this context.
+  /// Databases (and other extensions) typically define extension methods on this object
+  /// that allow you to configure aspects of the model that are specific to a given database.</param>
+  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
+  public static void ApplyConcurrencyTokens(this ModelBuilder modelBuilder)
+  {
+    ArgumentNullException.ThrowIfNull(modelBuilder);
+
+    modelBuilder
+      .EntitiesImplementing<ISqlServerConcurrent>(x =>
+      {
+        x.Property<byte[]>(nameof(ISqlServerConcurrent))
+          .IsRowVersion();
+      })
+      .EntitiesImplementing<IPostgreSqlConcurrent>(x =>
+      {
+        x.Property<uint>(nameof(IPostgreSqlConcurrent.RowVersion))
+          .IsRowVersion();
+      });
   }
 
   /// <summary>
