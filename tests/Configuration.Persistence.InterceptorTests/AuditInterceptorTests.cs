@@ -21,7 +21,7 @@ public class AuditInterceptorTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task CreatedBy_Is_Populated()
   {
-    await using var ctx = await fixture.GetContext(
+    await using var ctx = await fixture.GetContextAsync(
       "createdBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Creator)));
     await ctx.Database.MigrateAsync();
@@ -39,13 +39,13 @@ public class AuditInterceptorTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task UpdatedBy_Is_Populated()
   {
-    await using var ctx = await fixture.GetContext(
+    await using var ctx = await fixture.GetContextAsync(
       "updatedBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Creator)));
     await ctx.Database.MigrateAsync();
     await ctx.SaveChangesAsync();
 
-    await using var ctx2 = await fixture.GetContext(
+    await using var ctx2 = await fixture.GetContextAsync(
       "updatedBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Editor)));
 

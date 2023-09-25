@@ -5,7 +5,7 @@ using System;
 using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 using Kritikos.Samples.CityCensus.Base;
 
-public class Person : CityEntity<long, Person>, IAuditable<Guid>
+public class Person : CityEntity<long, Person>, IAuditable<Guid>, ISoftDeletable
 {
   public string FirstName { get; set; } = string.Empty;
 
@@ -18,4 +18,9 @@ public class Person : CityEntity<long, Person>, IAuditable<Guid>
   public Guid CreatedBy { get; set; }
 
   public Guid UpdatedBy { get; set; }
+
+  /// <inheritdoc />
+  public bool IsDeleted { get; set; }
+
+  public DateTime? DeletedAt { get; set; }
 }

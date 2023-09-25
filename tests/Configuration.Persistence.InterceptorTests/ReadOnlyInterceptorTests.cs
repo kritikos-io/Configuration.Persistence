@@ -16,7 +16,7 @@ public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task Ensure_Database_is_unwritable()
   {
-    await using var ctx = await fixture.GetContext("readonly_db", new ReadOnlyDbSaveChangesInterceptor());
+    await using var ctx = await fixture.GetContextAsync("readonly_db", new ReadOnlyDbSaveChangesInterceptor());
     await ctx.Database.MigrateAsync();
     var people = CityDataFaker.People.Generate(30);
 
@@ -31,14 +31,14 @@ public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
   public async Task Ensure_read_only()
   {
     var people = CityDataFaker.People.Generate(30);
-    await using var ctx = await fixture.GetContext("readonly");
+    await using var ctx = await fixture.GetContextAsync("readonly");
     await ctx.Database.MigrateAsync();
 
     ctx.People.AddRange(people);
     await ctx.SaveChangesAsync();
 
     await using var readOnly =
-      await fixture.GetContext("readonly", new ReadOnlyDbSaveChangesInterceptor());
+      await fixture.GetContextAsync("readonly", new ReadOnlyDbSaveChangesInterceptor());
 
     var newPeople = await ctx.People.ToListAsync();
     foreach (var person in newPeople)

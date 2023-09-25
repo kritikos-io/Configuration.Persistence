@@ -22,7 +22,7 @@ public class MigrationExtensionTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task Ensure_HostExtension_Migrates()
   {
-    await using var ctx = await fixture.GetContext("migrate_extension");
+    await using var ctx = await fixture.GetContextAsync("migrate_extension");
     var migrations = (await ctx.Database.GetPendingMigrationsAsync()).ToList();
     Assert.NotEmpty(migrations);
 
@@ -42,7 +42,7 @@ public class MigrationExtensionTests(SampleDbContextFixture fixture)
       await host.MigrateAsync<CityCensusTrailDbContext>();
     }
 
-    await using var ctx2 = await fixture.GetContext("migrate_extension");
+    await using var ctx2 = await fixture.GetContextAsync("migrate_extension");
 
     migrations = (await ctx2.Database.GetPendingMigrationsAsync()).ToList();
     Assert.Empty(migrations);

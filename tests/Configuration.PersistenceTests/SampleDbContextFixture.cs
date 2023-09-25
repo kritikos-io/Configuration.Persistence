@@ -15,7 +15,7 @@ public class SampleDbContextFixture : IDisposable
 {
   private readonly ConcurrentDictionary<string, SqliteConnection> sqlConnections = new();
 
-  public async Task<CityCensusTrailDbContext> GetContext(string databaseName, params IInterceptor[] interceptors)
+  public async Task<CityCensusTrailDbContext> GetContextAsync(string databaseName, params IInterceptor[] interceptors)
   {
     var sqlConnection = new SqliteConnection($"DataSource={databaseName};mode=memory;cache=shared");
     if (!sqlConnections.TryAdd(databaseName, sqlConnection))

@@ -17,7 +17,7 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task CreatedAt_Is_Populated()
   {
-    await using var ctx = await fixture.GetContext("createdAt", new TimestampSaveChangesInterceptor());
+    await using var ctx = await fixture.GetContextAsync("createdAt", new TimestampSaveChangesInterceptor());
     await ctx.Database.MigrateAsync();
     var counties = CityDataFaker.Counties.Generate(10);
     ctx.AddRange(counties);
@@ -37,7 +37,7 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task UpdatedAt_Is_Altered()
   {
-    await using var ctx = await fixture.GetContext("createdAt", new TimestampSaveChangesInterceptor());
+    await using var ctx = await fixture.GetContextAsync("createdAt", new TimestampSaveChangesInterceptor());
     await ctx.Database.MigrateAsync();
     var counties = CityDataFaker.Counties.Generate(10);
     ctx.AddRange(counties);
