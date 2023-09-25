@@ -1,8 +1,6 @@
 <Project>
-  <ImportGroup
-    Condition="Exists($([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))) == 'true'">
-    <Import
-      Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))" />
+  <ImportGroup Condition="Exists($([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))) == 'true'">
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))" />
   </ImportGroup>
   <ItemGroup Label="Common Packages">
     <PackageVersion Include="Bogus" Version="34.0.2" />
@@ -26,8 +24,11 @@
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.507" />
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageVersion Include="System.Text.Json" Version="7.0.3" />
-    <PackageVersion Include="xunit" Version="2.5.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
+    <PackageVersion Include="xunit" Version="2.5.1" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
     <PackageVersion Include="Xunit.SkippableFact" Version="1.4.13" />
   </ItemGroup>
 </Project>
