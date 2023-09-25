@@ -38,13 +38,15 @@ public class SoftDeleteSaveChangesInterceptor : SaveChangesInterceptor
   private static void UpdateSoftDeleteStatus(ChangeTracker tracker)
   {
     var deleted = tracker.Entries<ISoftDeletable>()
-      .Where(x => x.State == EntityState.Modified)
+      .Where(x => x.State == EntityState.Deleted)
       .Where(x => !x.Entity.IsDeleted)
       .ToList();
 
+    var now = DateTime.UtcNow;
     foreach (var entry in deleted)
     {
       entry.Entity.IsDeleted = true;
+      entry.Entity.DeletedAt = now;
       entry.State = EntityState.Modified;
     }
   }
