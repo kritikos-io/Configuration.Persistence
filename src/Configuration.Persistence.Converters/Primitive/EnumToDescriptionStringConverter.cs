@@ -8,7 +8,11 @@ using System.Reflection;
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-public class EnumToDescriptionStringConverter<TEnum> : ValueConverter<TEnum, string>
+public class EnumToDescriptionStringConverter<TEnum>(ConverterMappingHints? mappingHints = null)
+  : ValueConverter<TEnum, string>(
+    v => EnumString[v],
+    v => EnumString.FirstOrDefault(y => y.Value == v).Key,
+    mappingHints)
   where TEnum : struct, Enum
 {
   private static readonly Dictionary<TEnum, string> EnumString = Enum.GetValues(typeof(TEnum))
@@ -16,14 +20,6 @@ public class EnumToDescriptionStringConverter<TEnum> : ValueConverter<TEnum, str
     .ToDictionary(
       x => x,
       GetDescription);
-
-  public EnumToDescriptionStringConverter(ConverterMappingHints? mappingHints = null)
-    : base(
-      v => EnumString[v],
-      v => EnumString.FirstOrDefault(y => y.Value == v).Key,
-      mappingHints)
-  {
-  }
 
   private static string GetDescription(TEnum value)
     => value.GetType().GetField(value.ToString())?.GetCustomAttribute<DescriptionAttribute>()?.Description

@@ -10,15 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 using Xunit;
 
-public class ReadOnlyInterceptorTests : IClassFixture<SampleDbContextFixture>
+public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
+  : IClassFixture<SampleDbContextFixture>
 {
-  private readonly SampleDbContextFixture fixture;
-
-  public ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
-  {
-    this.fixture = fixture;
-  }
-
   [Fact]
   public async Task Ensure_Database_is_unwritable()
   {

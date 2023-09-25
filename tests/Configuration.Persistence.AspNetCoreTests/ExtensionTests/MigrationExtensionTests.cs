@@ -16,12 +16,9 @@ using Microsoft.Extensions.Hosting;
 
 using Xunit;
 
-public class MigrationExtensionTests : IClassFixture<SampleDbContextFixture>
+public class MigrationExtensionTests(SampleDbContextFixture fixture)
+  : IClassFixture<SampleDbContextFixture>
 {
-  private readonly SampleDbContextFixture fixture;
-
-  public MigrationExtensionTests(SampleDbContextFixture fixture) => this.fixture = fixture;
-
   [Fact]
   public async Task Ensure_HostExtension_Migrates()
   {

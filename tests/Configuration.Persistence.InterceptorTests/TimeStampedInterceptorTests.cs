@@ -11,12 +11,9 @@ using Microsoft.EntityFrameworkCore;
 
 using Xunit;
 
-public class TimeStampedInterceptorTests : IClassFixture<SampleDbContextFixture>
+public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
+  : IClassFixture<SampleDbContextFixture>
 {
-  private readonly SampleDbContextFixture fixture;
-
-  public TimeStampedInterceptorTests(SampleDbContextFixture fixture) => this.fixture = fixture;
-
   [Fact]
   public async Task CreatedAt_Is_Populated()
   {

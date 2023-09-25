@@ -26,9 +26,6 @@ public class County : CityEntity<long, County>, ITimestamped, IOrdered<Guid>, IC
   {
     ArgumentNullException.ThrowIfNull(builder);
 
-    builder.Entity<County>(entity =>
-    {
-      OnModelCreating(entity);
-    });
+    builder.Entity<County>(OnModelCreating);
   }
 }

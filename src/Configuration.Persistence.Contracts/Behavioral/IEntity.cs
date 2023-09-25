@@ -1,3 +1,5 @@
+// ReSharper disable RedundantTypeDeclarationBody
+// ReSharper disable UnusedTypeParameter
 #pragma warning disable SA1402 // File may only contain a single type
 #pragma warning disable CA1040 // Avoid empty interfaces
 namespace Kritikos.Configuration.Persistence.Contracts.Behavioral;

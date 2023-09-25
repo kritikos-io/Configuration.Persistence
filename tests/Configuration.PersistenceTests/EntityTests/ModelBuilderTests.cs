@@ -9,15 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 using Xunit;
 
-public class ModelBuilderTests : IClassFixture<SampleDbContextFixture>
+public class ModelBuilderTests(SampleDbContextFixture fixture)
+  : IClassFixture<SampleDbContextFixture>
 {
-  private readonly SampleDbContextFixture fixture;
-
-  public ModelBuilderTests(SampleDbContextFixture fixture)
-  {
-    this.fixture = fixture;
-  }
-
   [Fact]
   public async Task EntitiesOfType_by_Interface()
   {

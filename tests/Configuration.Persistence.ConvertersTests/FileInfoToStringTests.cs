@@ -16,9 +16,9 @@ public class FileInfoToStringTests
 
   private const string WindowsPath = @"C:\Windows\System32\drivers\etc\hosts";
 
-  private const string LinuxBase = @"/srv/http";
-  private const string LinuxRelative = @"root/index.html";
-  private const string LinuxPath = @"/srv/http/root/index.html";
+  private const string LinuxBase = "/srv/http";
+  private const string LinuxRelative = "root/index.html";
+  private const string LinuxPath = "/srv/http/root/index.html";
 
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 

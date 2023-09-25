@@ -16,9 +16,9 @@ public class DirectoryInfoToStringTests
 
   private const string WindowsPath = @"C:\Windows\System32\drivers\etc";
 
-  private const string LinuxBase = @"/srv/http";
-  private const string LinuxRelative = @"root";
-  private const string LinuxPath = @"/srv/http/root";
+  private const string LinuxBase = "/srv/http";
+  private const string LinuxRelative = "root";
+  private const string LinuxPath = "/srv/http/root";
 
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 

@@ -12,14 +12,11 @@ using Microsoft.EntityFrameworkCore;
 
 using Xunit;
 
-public class AuditInterceptorTests : IClassFixture<SampleDbContextFixture>
+public class AuditInterceptorTests(SampleDbContextFixture fixture)
+  : IClassFixture<SampleDbContextFixture>
 {
   private static readonly Guid Creator = Guid.Parse("1813b30a-a352-416e-adee-282362f7ba4e");
   private static readonly Guid Editor = Guid.Parse("364b3527-0282-4fc7-aafc-547f2c87f641");
-  private readonly SampleDbContextFixture fixture;
-
-  public AuditInterceptorTests(SampleDbContextFixture fixture)
-    => this.fixture = fixture;
 
   [Fact]
   public async Task CreatedBy_Is_Populated()

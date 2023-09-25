@@ -17,18 +17,10 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 /// Populates audit values for <see cref="IAuditable{T}"/>, <see cref="ICreateAuditable{T}"/> and <see cref="IUpdateAuditable{T}"/> entities.
 /// </summary>
 /// <typeparam name="T">Type of audit field.</typeparam>
-public class AuditSaveChangesInterceptor<T> : SaveChangesInterceptor
+public class AuditSaveChangesInterceptor<T>(IAuditorProvider<T> auditorProvider)
+  : SaveChangesInterceptor
   where T : IComparable, IComparable<T>, IEquatable<T>
 {
-  private readonly IAuditorProvider<T> auditorProvider;
-
-  /// <summary>
-  /// Constructs a new instalce of <see cref="AuditSaveChangesInterceptor{T}"/>.
-  /// </summary>
-  /// <param name="auditorProvider">Service that will provide auditors.</param>
-  public AuditSaveChangesInterceptor(IAuditorProvider<T> auditorProvider) =>
-    this.auditorProvider = auditorProvider;
-
   /// <inheritdoc />
   [ExcludeFromCodeCoverage] // Handled in async method
   public override InterceptionResult<int> SavingChanges(
