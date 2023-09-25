@@ -63,6 +63,30 @@ public static class ModelBuilderExtensions
   }
 
   /// <summary>
+  /// Registers <see cref="ISoftDeletable"/> as a global query filter.
+  /// </summary>
+  /// <param name="modelBuilder">The builder being used to construct the model for this context.
+  /// Databases (and other extensions) typically define extension methods on this object
+  /// that allow you to configure aspects of the model that are specific to a given database.</param>
+  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
+  public static void ApplySoftDeletableFilters(this ModelBuilder modelBuilder)
+  {
+    ArgumentNullException.ThrowIfNull(modelBuilder);
+
+    modelBuilder.EntitiesImplementing<ISoftDeletable>(x =>
+    {
+      x.Property<bool>(nameof(ISoftDeletable.IsDeleted))
+        .HasDefaultValue(false);
+
+      var param = Expression.Parameter(x.Metadata.ClrType, "x");
+      var body = Expression.Equal(
+        Expression.Property(param, nameof(ISoftDeletable.IsDeleted)),
+        Expression.Constant(false));
+      x.HasQueryFilter(Expression.Lambda(body, param));
+    });
+  }
+
+  /// <summary>
   /// Allows configuring all instances inheriting the specified interface simultaneously.
   /// </summary>
   /// <typeparam name="T"><see langword="interface"/> to configure.</typeparam>
