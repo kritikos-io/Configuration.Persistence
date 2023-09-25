@@ -15,7 +15,7 @@ public class ModelBuilderTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task EntitiesOfType_by_Interface()
   {
-    await using var ctx = await fixture.GetContext("ofType_interface");
+    await using var ctx = await fixture.GetContextAsync("ofType_interface");
     await ctx.Database.MigrateAsync();
 
     var counties = CityDataFaker.Counties.Generate(20);
@@ -30,7 +30,7 @@ public class ModelBuilderTests(SampleDbContextFixture fixture)
   [Fact]
   public async Task EntitiesOfType_by_BaseClass()
   {
-    await using var ctx = await fixture.GetContext("ofType_base");
+    await using var ctx = await fixture.GetContextAsync("ofType_base");
     await ctx.Database.MigrateAsync();
 
     var counties = CityDataFaker.Counties.Generate(20);

@@ -56,7 +56,7 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
     base.OnModelCreating(modelBuilder);
 
     modelBuilder.ApplyEntityConfiguration();
-
+    modelBuilder.ApplySoftDeletableFilters();
     modelBuilder.EntitiesImplementing<IOrdered<Guid>>(entity =>
     {
       entity.Property(typeof(Guid), nameof(IOrdered<Guid>.Order))
