@@ -1,4 +1,5 @@
-﻿#pragma warning disable SA1402
+﻿// ReSharper disable RedundantTypeDeclarationBody
+#pragma warning disable SA1402
 namespace Kritikos.Configuration.Persistence.Contracts;
 
 using Kritikos.Configuration.Persistence.Extensions;

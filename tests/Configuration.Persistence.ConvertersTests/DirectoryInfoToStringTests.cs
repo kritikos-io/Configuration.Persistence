@@ -13,7 +13,6 @@ public class DirectoryInfoToStringTests
 {
   private const string WindowsBase = @"C:\Windows\System32";
   private const string WindowsRelative = @"drivers\etc";
-
   private const string WindowsPath = @"C:\Windows\System32\drivers\etc";
 
   private const string LinuxBase = "/srv/http";
