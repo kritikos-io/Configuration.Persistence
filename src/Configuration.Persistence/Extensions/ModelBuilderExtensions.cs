@@ -26,15 +26,15 @@ public static class ModelBuilderExtensions
     ArgumentNullException.ThrowIfNull(modelBuilder);
 
     var eTypes = modelBuilder.Model.GetEntityTypes()
-      .Where(x => typeof(IConfigurableEntity).IsAssignableFrom(x.ClrType))
-      .Select(x => x.ClrType);
+        .Where(x => typeof(IConfigurableEntity).IsAssignableFrom(x.ClrType))
+        .Select(x => x.ClrType);
 
     foreach (var entityType in eTypes)
     {
       var methods = entityType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
       var method = methods.SingleOrDefault(x => x.Name == nameof(IConfigurableEntity.OnModelCreating));
 
-      method?.Invoke(null, new object[] { modelBuilder });
+      method?.Invoke(null, [modelBuilder]);
     }
   }
 
@@ -50,16 +50,18 @@ public static class ModelBuilderExtensions
     ArgumentNullException.ThrowIfNull(modelBuilder);
 
     modelBuilder
-      .EntitiesImplementing<ISqlServerConcurrent>(x =>
-      {
-        x.Property<byte[]>(nameof(ISqlServerConcurrent))
-          .IsRowVersion();
-      })
-      .EntitiesImplementing<IPostgreSqlConcurrent>(x =>
-      {
-        x.Property<uint>(nameof(IPostgreSqlConcurrent.RowVersion))
-          .IsRowVersion();
-      });
+        .EntitiesImplementing<ISqlServerConcurrent>(
+            x =>
+            {
+              x.Property<byte[]>(nameof(ISqlServerConcurrent))
+                  .IsRowVersion();
+            })
+        .EntitiesImplementing<IPostgreSqlConcurrent>(
+            x =>
+            {
+              x.Property<uint>(nameof(IPostgreSqlConcurrent.RowVersion))
+                  .IsRowVersion();
+            });
   }
 
   /// <summary>
@@ -73,17 +75,18 @@ public static class ModelBuilderExtensions
   {
     ArgumentNullException.ThrowIfNull(modelBuilder);
 
-    modelBuilder.EntitiesImplementing<ISoftDeletable>(x =>
-    {
-      x.Property<bool>(nameof(ISoftDeletable.IsDeleted))
-        .HasDefaultValue(false);
+    modelBuilder.EntitiesImplementing<ISoftDeletable>(
+        x =>
+        {
+          x.Property<bool>(nameof(ISoftDeletable.IsDeleted))
+              .HasDefaultValue(false);
 
-      var param = Expression.Parameter(x.Metadata.ClrType, "x");
-      var body = Expression.Equal(
-        Expression.Property(param, nameof(ISoftDeletable.IsDeleted)),
-        Expression.Constant(false));
-      x.HasQueryFilter(Expression.Lambda(body, param));
-    });
+          var param = Expression.Parameter(x.Metadata.ClrType, "x");
+          var body = Expression.Equal(
+              Expression.Property(param, nameof(ISoftDeletable.IsDeleted)),
+              Expression.Constant(false));
+          x.HasQueryFilter(Expression.Lambda(body, param));
+        });
   }
 
   /// <summary>
@@ -96,8 +99,8 @@ public static class ModelBuilderExtensions
   /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
   /// <remarks>This overload is meant to be used with interfaces, if you have a base class prefer the strongly typed version <seealso cref="EntitiesOfType{T}(ModelBuilder,Action{EntityTypeBuilder{T}})"/>.</remarks>
   public static ModelBuilder EntitiesImplementing<T>(
-    this ModelBuilder modelBuilder,
-    Action<EntityTypeBuilder> buildAction)
+      this ModelBuilder modelBuilder,
+      Action<EntityTypeBuilder> buildAction)
   {
     ArgumentNullException.ThrowIfNull(modelBuilder);
     ArgumentNullException.ThrowIfNull(buildAction);
@@ -121,9 +124,9 @@ public static class ModelBuilderExtensions
   /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
   /// <remarks>This overload is meant to be used with classes, if you only have an interface use <seealso cref="EntitiesImplementing{T}"/>.</remarks>
   public static ModelBuilder EntitiesOfType<T>(
-    this ModelBuilder modelBuilder,
-    Action<EntityTypeBuilder<T>> buildAction)
-    where T : class
+      this ModelBuilder modelBuilder,
+      Action<EntityTypeBuilder<T>> buildAction)
+      where T : class
   {
     ArgumentNullException.ThrowIfNull(modelBuilder);
     ArgumentNullException.ThrowIfNull(buildAction);

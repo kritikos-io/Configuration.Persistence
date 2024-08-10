@@ -13,6 +13,9 @@ public class Corporation : OrderedCityEntity<long, Corporation>
   public ICollection<County> Counties { get; }
     = new List<County>(0);
 
+  public ICollection<CountyCorporation> CountyCorporations { get; }
+    = [];
+
   internal static void OnModelCreating(ModelBuilder builder)
     => builder.Entity<Corporation>(entity =>
     {

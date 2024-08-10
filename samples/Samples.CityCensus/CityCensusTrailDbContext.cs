@@ -4,6 +4,7 @@ namespace Kritikos.Samples.CityCensus;
 using System;
 
 using Kritikos.Configuration.Persistence.Contracts;
+using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 using Kritikos.Configuration.Persistence.Entities;
 using Kritikos.Configuration.Persistence.Extensions;
 using Kritikos.Samples.CityCensus.Base;
@@ -13,6 +14,7 @@ using Kritikos.Samples.CityCensus.Model;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
+using Microsoft.Extensions.Configuration;
 
 public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
 {
@@ -21,7 +23,7 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
   }
 
   public CityCensusTrailDbContext(DbContextOptions<CityCensusTrailDbContext> options)
-    : base(options)
+      : base(options)
   {
   }
 
@@ -43,7 +45,7 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
     if (!optionsBuilder.IsConfigured)
     {
       optionsBuilder.UseSqlite("DataSource=transient;mode=memory;cache=shared")
-        .EnableCommonOptions(true);
+          .EnableCommonOptions(true);
     }
 
     base.OnConfiguring(optionsBuilder);
@@ -57,16 +59,19 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
 
     modelBuilder.ApplyEntityConfiguration();
     modelBuilder.ApplySoftDeletableFilters();
-    modelBuilder.EntitiesImplementing<IOrdered<Guid>>(entity =>
-    {
-      entity.Property(typeof(Guid), nameof(IOrdered<Guid>.Order))
-        .HasValueGenerator((_, _) => new GuidValueGenerator());
-    });
 
-    modelBuilder.EntitiesOfType<OrderedCityEntity<long, Corporation>>(entity =>
-    {
-      entity.Property(e => e.Order)
-        .HasValueGenerator((_, _) => new GuidValueGenerator());
-    });
+    modelBuilder.EntitiesImplementing<IOrdered<Guid>>(
+        entity =>
+        {
+          entity.Property(typeof(Guid), nameof(IOrdered<Guid>.Order))
+              .HasValueGenerator((_, _) => new GuidValueGenerator());
+        });
+
+    modelBuilder.EntitiesOfType<OrderedCityEntity<long, Corporation>>(
+        entity =>
+        {
+          entity.Property(e => e.Order)
+              .HasValueGenerator((_, _) => new GuidValueGenerator());
+        });
   }
 }
