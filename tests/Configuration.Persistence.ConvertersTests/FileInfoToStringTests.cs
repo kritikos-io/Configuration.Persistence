@@ -22,14 +22,8 @@ public class FileInfoToStringTests
 
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
-  [SkippableFact]
   public void Relative_path_windows()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform != PlatformID.Win32NT,
-      "Environment.OSVersion.Platform != PlatformID.Win32NT");
-
     var converter =
       new FileInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
 
@@ -40,14 +34,8 @@ public class FileInfoToStringTests
     Assert.Equal(WindowsRelative, foo);
   }
 
-  [SkippableFact]
   public void Absolute_path_windows()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform != PlatformID.Win32NT,
-      "Environment.OSVersion.Platform != PlatformID.Win32NT");
-
     var converter =
       new FileInfoToStringConverter('\\', mappingHints: MappingHints);
 
@@ -58,14 +46,8 @@ public class FileInfoToStringTests
     Assert.Equal(WindowsRelative, foo);
   }
 
-  [SkippableFact]
   public void Relative_path_nix()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform == PlatformID.Win32NT,
-      "Environment.OSVersion.Platform == PlatformID.Win32NT");
-
     var converter =
       new FileInfoToStringConverter(
         '/',
@@ -78,14 +60,8 @@ public class FileInfoToStringTests
     Assert.Equal(LinuxRelative, foo);
   }
 
-  [SkippableFact]
   public void Absolute_path_nix()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform == PlatformID.Win32NT,
-      "Environment.OSVersion.Platform == PlatformID.Win32NT");
-
     var converter =
       new FileInfoToStringConverter('/', mappingHints: MappingHints);
 

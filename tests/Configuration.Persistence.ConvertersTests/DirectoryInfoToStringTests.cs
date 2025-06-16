@@ -21,16 +21,10 @@ public class DirectoryInfoToStringTests
 
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
-  [SkippableFact]
   public void Relative_path_windows()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform != PlatformID.Win32NT,
-      "Environment.OSVersion.Platform != PlatformID.Win32NT");
-
     var converter =
-      new DirectoryInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
+        new DirectoryInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
 
     var file = converter.ConvertFromProvider(WindowsRelative) as DirectoryInfo;
     var foo = converter.ConvertToProvider(file) as string;
@@ -39,16 +33,10 @@ public class DirectoryInfoToStringTests
     Assert.Equal(WindowsRelative, foo);
   }
 
-  [SkippableFact]
   public void Absolute_path_windows()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform != PlatformID.Win32NT,
-      "Environment.OSVersion.Platform != PlatformID.Win32NT");
-
     var converter =
-      new DirectoryInfoToStringConverter('\\', mappingHints: MappingHints);
+        new DirectoryInfoToStringConverter('\\', mappingHints: MappingHints);
 
     var file = converter.ConvertFromProvider(WindowsPath) as DirectoryInfo;
     var foo = converter.ConvertToProvider(file) as string;
@@ -57,16 +45,9 @@ public class DirectoryInfoToStringTests
     Assert.Equal(WindowsRelative, foo);
   }
 
-  [SkippableFact]
   public void Relative_path_linux()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform == PlatformID.Win32NT,
-      "Environment.OSVersion.Platform == PlatformID.Win32NT");
-
-    var converter =
-      new DirectoryInfoToStringConverter(
+    var converter = new DirectoryInfoToStringConverter(
         '/',
         new DirectoryInfo(LinuxBase),
         mappingHints: MappingHints);
@@ -77,16 +58,10 @@ public class DirectoryInfoToStringTests
     Assert.Equal(LinuxRelative, foo);
   }
 
-  [SkippableFact]
   public void Absolute_path_linux()
   {
-    Skip.If(true);
-    Skip.If(
-      Environment.OSVersion.Platform == PlatformID.Win32NT,
-      "Environment.OSVersion.Platform == PlatformID.Win32NT");
-
     var converter =
-      new DirectoryInfoToStringConverter('/', mappingHints: MappingHints);
+        new DirectoryInfoToStringConverter('/', mappingHints: MappingHints);
 
     var file = converter.ConvertFromProvider(LinuxPath) as DirectoryInfo;
     var foo = converter.ConvertToProvider(file) as string;
