@@ -28,14 +28,17 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   where TContext : DbContext, IAuditTrailDbContext<TAuditRecord>
 {
   private readonly bool recordUnchangedProperties;
+  private readonly JsonSerializerOptions serializerOptions;
+
   private TContext? context;
-  private List<AuditEntry> transient = new();
+  private List<AuditEntry> transient = [];
 
   /// <summary>
   /// Creates a <see cref="AuditTrailSaveChangesInterceptor{TAuditRecord,TContext}"/> that will record audit trails in the same context as the actual entities.
   /// </summary>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
-  public AuditTrailSaveChangesInterceptor(bool recordUnchangedProperties = true)
+  /// <param name="serializerOptions">Custom options for <see cref="JsonSerializer"/> to handle specific cases during auditing.</param>
+  public AuditTrailSaveChangesInterceptor(bool recordUnchangedProperties = true, JsonSerializerOptions? serializerOptions = null)
   {
     if (typeof(ITraceableAudit).IsAssignableFrom(typeof(TAuditRecord)))
     {
@@ -43,6 +46,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     }
 
     this.recordUnchangedProperties = recordUnchangedProperties;
+    this.serializerOptions = serializerOptions ?? JsonSerializerOptions.Default;
   }
 
   /// <summary>
@@ -50,10 +54,14 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   /// </summary>
   /// <param name="context">The <see cref="DbContext"/> to save <see cref="AuditRecord"/> to.</param>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
-  public AuditTrailSaveChangesInterceptor(TContext context, bool recordUnchangedProperties = true)
+  /// <param name="serializerOptions">Custom options for <see cref="JsonSerializer"/> to handle specific cases during auditing.</param>
+  public AuditTrailSaveChangesInterceptor(TContext context, bool recordUnchangedProperties = true, JsonSerializerOptions? serializerOptions = null)
   {
+    ArgumentNullException.ThrowIfNull(context);
+
     this.context = context;
     this.recordUnchangedProperties = recordUnchangedProperties;
+    this.serializerOptions = serializerOptions ?? JsonSerializerOptions.Default;
   }
 
   #region Overrides of SaveChangesInterceptor
@@ -171,15 +179,18 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
               audit.NewValues.Add(property.Metadata.Name, property.CurrentValue!);
               audit.OldValues.Add(property.Metadata.Name, property.OriginalValue!);
             }
-
+            break;
+          case EntityState.Detached:
+          case EntityState.Unchanged:
+          default:
             break;
         }
       }
     }
 
-    var permanent = auditEntries.Where(x => x.TemporaryProperties.Count == 0).Select(x => x.ToAuditRecord()).ToList();
+    var permanent = auditEntries.Where(x => x.TemporaryProperties.Count == 0).Select(x => x.ToAuditRecord(serializerOptions)).ToList();
     context!.AuditRecords.AddRange(permanent);
-    transient = auditEntries.Where(x => x.TemporaryProperties.Count != 0).ToList();
+    transient = [.. auditEntries.Where(x => x.TemporaryProperties.Count != 0)];
 
     return transient;
   }
@@ -200,7 +211,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
         }
       }
 
-      context!.AuditRecords.Add(entry.ToAuditRecord());
+      context!.AuditRecords.Add(entry.ToAuditRecord(serializerOptions));
     }
   }
 
@@ -212,24 +223,24 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     public EntityState State { get; init; }
 
-    public Dictionary<string, object> KeyValues { get; } = new();
+    public Dictionary<string, object> KeyValues { get; } = [];
 
-    public Dictionary<string, object> OldValues { get; } = new();
+    public Dictionary<string, object> OldValues { get; } = [];
 
-    public Dictionary<string, object> NewValues { get; } = new();
+    public Dictionary<string, object> NewValues { get; } = [];
 
-    public List<PropertyEntry> TemporaryProperties { get; } = new();
+    public List<PropertyEntry> TemporaryProperties { get; } = [];
 
-    public TAuditRecord ToAuditRecord()
+    public TAuditRecord ToAuditRecord(JsonSerializerOptions serializerOptions)
       => new()
       {
         Table = TableName,
-        Key = JsonSerializer.Serialize(KeyValues),
+        Key = JsonSerializer.Serialize(KeyValues, serializerOptions),
         OldValues = OldValues.Count != 0
-          ? JsonSerializer.Serialize(OldValues)
+          ? JsonSerializer.Serialize(OldValues, serializerOptions)
           : Empty,
         NewValues = NewValues.Count != 0
-          ? JsonSerializer.Serialize(NewValues)
+          ? JsonSerializer.Serialize(NewValues, serializerOptions)
           : Empty,
         Modification = State,
       };
