@@ -50,8 +50,12 @@
     <DefaultItemExcludes>$(DefaultItemExcludes);*.log;*.binlog</DefaultItemExcludes>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(ArtifactsPath) == ''">
+  <PropertyGroup Condition="$(ArtifactsPath) == '' AND $(DisableCustomArtifactsPath) != 'true'">
     <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(ArtifactsPath) != ''">
+    <UseArtifactsOutput>true</UseArtifactsOutput>
   </PropertyGroup>
 
   <PropertyGroup Label="Central Package Management">
@@ -134,6 +138,12 @@
     </AssemblyAttribute>
   </ItemGroup>
 
+  <!-- Use .NET ruleset for analyzers -->
+  <PropertyGroup Label="Code Analysis Ruleset"
+    Condition="Exists('$(MSBuildThisFileDirectory)\dotnet.ruleset')">
+    <CodeAnalysisRuleset>$(MSBuildThisFileDirectory)\dotnet.ruleset</CodeAnalysisRuleset>
+  </PropertyGroup>
+
   <!-- Use readme as nuget information -->
   <ItemGroup Label="Readme" Condition="$(IsPackable) == 'True' AND $(ProjectReadMe) != ''">
     <None Include="$(ProjectReadMe)" Pack="true" PackagePath="" Visible="true"/>
@@ -164,8 +174,9 @@
     <CurrentYear>$([System.DateTime]::Now.ToString(yyyy))</CurrentYear>
     <Copyright>Copyright © 2017-$(CurrentYear) Kritikos IO. All rights reserved.</Copyright>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)/packages</PackageOutputPath>
-    <PublishDir>$(MSBuildThisFileDirectory)/upload/$(ProjectName)</PublishDir>
+    <PackageOutputPath Condition="$(PackageOutputPath) == ''">$(MSBuildThisFileDirectory)/packages</PackageOutputPath>
+    <PublishDir Condition="$(PublishDir) == ''">
+      $(MSBuildThisFileDirectory)/upload/$(MSBuildProjectName)</PublishDir>
     <PackageIcon Condition="$(ProjectIconExists) == 'True'">icon.png</PackageIcon>
     <PackageReadmeFile Condition="$(ProjectReadMeExists) == 'True'">README.md</PackageReadmeFile>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
