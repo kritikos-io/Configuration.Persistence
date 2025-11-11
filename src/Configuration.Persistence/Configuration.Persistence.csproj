@@ -8,9 +8,6 @@
     <RepositoryUrl>https://github.com/kritikos-io/Configuration.Persistence</RepositoryUrl>
   </PropertyGroup>
 
-<!--    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />-->
-<!--    <PackageReference Include="System.ComponentModel.Annotations" />-->
-
   <ItemGroup>
     <ProjectReference Include="..\Configuration.Persistence.Contracts\Configuration.Persistence.Contracts.csproj" />
   </ItemGroup>
