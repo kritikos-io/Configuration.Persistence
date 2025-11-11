@@ -18,6 +18,12 @@
           "Microsoft.TestPlatform.TestHost": "18.0.0"
         }
       },
+      "NewStyleCop.Analyzers": {
+        "type": "Direct",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "kc/xCU75PktCWXsUK//e3kMempmFBDsdh24vk/u+XFpNxq+GQyDjp3uxK2niBDtPydzm6z3wxmWV1rUBWWYSRA=="
+      },
       "NSubstitute": {
         "type": "Direct",
         "requested": "[5.3.0, )",

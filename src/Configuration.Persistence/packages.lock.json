@@ -20,6 +20,18 @@
           "Microsoft.Extensions.Logging": "9.0.10"
         }
       },
+      "Microsoft.Sbom.Targets": {
+        "type": "Direct",
+        "requested": "[4.1.2, )",
+        "resolved": "4.1.2",
+        "contentHash": "AmGCBhWtWu1d1PCit6WTdmpq48nPmmnJz9zZFBsxoCjYZjjZ0Gjm+wuAzHzVMF8VmTo/NeDGi2C73969QXiryw=="
+      },
+      "NewStyleCop.Analyzers": {
+        "type": "Direct",
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "kc/xCU75PktCWXsUK//e3kMempmFBDsdh24vk/u+XFpNxq+GQyDjp3uxK2niBDtPydzm6z3wxmWV1rUBWWYSRA=="
+      },
       "Microsoft.EntityFrameworkCore": {
         "type": "Transitive",
         "resolved": "9.0.10",
