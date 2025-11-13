@@ -15,8 +15,7 @@ public class EnumToDescriptionStringConverter<TEnum>(ConverterMappingHints? mapp
     mappingHints)
   where TEnum : struct, Enum
 {
-  private static readonly Dictionary<TEnum, string> EnumString = Enum.GetValues(typeof(TEnum))
-    .Cast<TEnum>()
+  private static readonly Dictionary<TEnum, string> EnumString = Enum.GetValues<TEnum>()
     .ToDictionary(
       x => x,
       GetDescription);

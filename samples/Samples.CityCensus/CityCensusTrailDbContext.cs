@@ -4,7 +4,6 @@ namespace Kritikos.Samples.CityCensus;
 using System;
 
 using Kritikos.Configuration.Persistence.Contracts;
-using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 using Kritikos.Configuration.Persistence.Entities;
 using Kritikos.Configuration.Persistence.Extensions;
 using Kritikos.Samples.CityCensus.Base;
@@ -14,7 +13,6 @@ using Kritikos.Samples.CityCensus.Model;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
-using Microsoft.Extensions.Configuration;
 
 public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
 {
@@ -63,7 +61,7 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
     modelBuilder.EntitiesImplementing<IOrdered<Guid>>(
         entity =>
         {
-          entity.Property(typeof(Guid), nameof(IOrdered<Guid>.Order))
+          entity.Property<Guid>(nameof(IOrdered<>.Order))
               .HasValueGenerator((_, _) => new GuidValueGenerator());
         });
 

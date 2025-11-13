@@ -17,8 +17,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 /// </summary>
 public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
 {
-  #region Overrides of SaveChangesInterceptor
-
   /// <inheritdoc />
   [ExcludeFromCodeCoverage] // Handled in async method
   public override InterceptionResult<int> SavingChanges(
@@ -43,8 +41,6 @@ public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
 
     return base.SavingChangesAsync(eventData, result, cancellationToken);
   }
-
-  #endregion
 
   private static void StampEntries(ChangeTracker tracker)
   {

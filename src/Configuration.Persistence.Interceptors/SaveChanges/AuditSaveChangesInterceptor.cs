@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 /// Populates audit values for <see cref="IAuditable{T}"/>, <see cref="ICreateAuditable{T}"/> and <see cref="IUpdateAuditable{T}"/> entities.
 /// </summary>
 /// <typeparam name="T">Type of audit field.</typeparam>
+/// <param name="auditorProvider">The <see cref="IAuditorProvider{T}"/> to use in order to retrieve the principal responsible for the changes.</param>
 public class AuditSaveChangesInterceptor<T>(IAuditorProvider<T> auditorProvider)
   : SaveChangesInterceptor
   where T : IComparable, IComparable<T>, IEquatable<T>

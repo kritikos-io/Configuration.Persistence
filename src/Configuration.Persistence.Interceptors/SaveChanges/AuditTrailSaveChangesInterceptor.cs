@@ -64,8 +64,6 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     this.serializerOptions = serializerOptions ?? JsonSerializerOptions.Default;
   }
 
-  #region Overrides of SaveChangesInterceptor
-
   /// <inheritdoc />
   public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
   {
@@ -140,9 +138,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     return saveResult;
   }
 
-  #endregion
-
-  private List<AuditEntry> CreateAuditEntries(IReadOnlyCollection<EntityEntry<ITraceableAudit>> entries)
+  private List<AuditEntry> CreateAuditEntries(List<EntityEntry<ITraceableAudit>> entries)
   {
     List<AuditEntry> auditEntries = new(entries.Count);
     foreach (var entry in entries)
@@ -179,6 +175,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
               audit.NewValues.Add(property.Metadata.Name, property.CurrentValue!);
               audit.OldValues.Add(property.Metadata.Name, property.OriginalValue!);
             }
+
             break;
           case EntityState.Detached:
           case EntityState.Unchanged:
