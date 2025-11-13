@@ -24,11 +24,11 @@ public class AuditInterceptorTests(SampleDbContextFixture fixture)
     await using var ctx = await fixture.GetContextAsync(
       "createdBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Creator)));
-    await ctx.Database.MigrateAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
     var people = CityDataFaker.People.Generate(30);
     ctx.People.AddRange(people);
 
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
     Assert.All(people, x =>
     {
       Assert.Equal(Creator, x.CreatedBy);
@@ -42,20 +42,20 @@ public class AuditInterceptorTests(SampleDbContextFixture fixture)
     await using var ctx = await fixture.GetContextAsync(
       "updatedBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Creator)));
-    await ctx.Database.MigrateAsync();
-    await ctx.SaveChangesAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
     await using var ctx2 = await fixture.GetContextAsync(
       "updatedBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Editor)));
 
-    var people = await ctx2.People.ToListAsync();
+    var people = await ctx2.People.ToListAsync(TestContext.Current.CancellationToken);
     foreach (var person in people)
     {
       person.FirstName = "REDUCTED";
     }
 
-    await ctx2.SaveChangesAsync();
+    await ctx2.SaveChangesAsync(TestContext.Current.CancellationToken);
 
     Assert.All(people, x => Assert.Equal(Editor, x.UpdatedBy));
   }

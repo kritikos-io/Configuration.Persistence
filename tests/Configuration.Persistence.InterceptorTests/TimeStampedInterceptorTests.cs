@@ -18,12 +18,12 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
   public async Task CreatedAt_Is_Populated()
   {
     await using var ctx = await fixture.GetContextAsync("createdAt", new TimestampSaveChangesInterceptor());
-    await ctx.Database.MigrateAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
     var counties = CityDataFaker.Counties.Generate(10);
     ctx.AddRange(counties);
 
     var then = DateTimeOffset.Now;
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
     var now = DateTimeOffset.Now;
 
     Assert.All(counties, c =>
@@ -38,11 +38,11 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
   public async Task UpdatedAt_Is_Altered()
   {
     await using var ctx = await fixture.GetContextAsync("createdAt", new TimestampSaveChangesInterceptor());
-    await ctx.Database.MigrateAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
     var counties = CityDataFaker.Counties.Generate(10);
     ctx.AddRange(counties);
 
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
     var then = DateTimeOffset.Now;
 
     foreach (var county in counties)
@@ -50,7 +50,7 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
       county.Name = "REDUCTED";
     }
 
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
     var now = DateTimeOffset.Now;
 
     Assert.All(counties, c =>

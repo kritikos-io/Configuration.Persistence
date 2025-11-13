@@ -17,13 +17,13 @@ public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
   public async Task Ensure_Database_is_unwritable()
   {
     await using var ctx = await fixture.GetContextAsync("readonly_db", new ReadOnlyDbSaveChangesInterceptor());
-    await ctx.Database.MigrateAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
     var people = CityDataFaker.People.Generate(30);
 
     ctx.People.AddRange(people);
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-    people = await ctx.People.ToListAsync();
+    people = await ctx.People.ToListAsync(TestContext.Current.CancellationToken);
     Assert.Empty(people);
   }
 
@@ -32,15 +32,15 @@ public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
   {
     var people = CityDataFaker.People.Generate(30);
     await using var ctx = await fixture.GetContextAsync("readonly");
-    await ctx.Database.MigrateAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
 
     ctx.People.AddRange(people);
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
     await using var readOnly =
       await fixture.GetContextAsync("readonly", new ReadOnlyDbSaveChangesInterceptor());
 
-    var newPeople = await ctx.People.ToListAsync();
+    var newPeople = await ctx.People.ToListAsync(TestContext.Current.CancellationToken);
     foreach (var person in newPeople)
     {
       person.FirstName = string.Empty;
@@ -53,8 +53,8 @@ public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
       Assert.Empty(p.LastName);
     });
 
-    await readOnly.SaveChangesAsync();
-    newPeople = await readOnly.People.ToListAsync();
+    await readOnly.SaveChangesAsync(TestContext.Current.CancellationToken);
+    newPeople = await readOnly.People.ToListAsync(TestContext.Current.CancellationToken);
 
     Assert.All(newPeople, p =>
     {

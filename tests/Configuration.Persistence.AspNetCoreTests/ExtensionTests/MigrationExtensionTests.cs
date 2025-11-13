@@ -23,7 +23,7 @@ public class MigrationExtensionTests(SampleDbContextFixture fixture)
   public async Task Ensure_HostExtension_Migrates()
   {
     await using var ctx = await fixture.GetContextAsync("migrate_extension");
-    var migrations = (await ctx.Database.GetPendingMigrationsAsync()).ToList();
+    var migrations = (await ctx.Database.GetPendingMigrationsAsync(TestContext.Current.CancellationToken)).ToList();
     Assert.NotEmpty(migrations);
 
     var builder = Host.CreateDefaultBuilder()
@@ -39,15 +39,15 @@ public class MigrationExtensionTests(SampleDbContextFixture fixture)
 
     using (var host = builder.Build())
     {
-      await host.MigrateAsync<CityCensusTrailDbContext>();
+      await host.MigrateAsync<CityCensusTrailDbContext>(TestContext.Current.CancellationToken);
     }
 
     await using var ctx2 = await fixture.GetContextAsync("migrate_extension");
 
-    migrations = (await ctx2.Database.GetPendingMigrationsAsync()).ToList();
+    migrations = [.. await ctx2.Database.GetPendingMigrationsAsync(TestContext.Current.CancellationToken)];
     Assert.Empty(migrations);
 
-    migrations = (await ctx2.Database.GetAppliedMigrationsAsync()).ToList();
+    migrations = [.. await ctx2.Database.GetAppliedMigrationsAsync(TestContext.Current.CancellationToken)];
     Assert.NotEmpty(migrations);
   }
 }

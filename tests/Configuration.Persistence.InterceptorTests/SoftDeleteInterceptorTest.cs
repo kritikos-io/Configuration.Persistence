@@ -19,15 +19,15 @@ public class SoftDeleteInterceptorTest(SampleDbContextFixture fixture)
   {
     await using var context =
       await fixture.GetContextAsync("softDelete_filter", new SoftDeleteSaveChangesInterceptor());
-    await context.Database.MigrateAsync();
+    await context.Database.MigrateAsync(TestContext.Current.CancellationToken);
     var people = CityDataFaker.People.Generate(TotalPeople);
     context.People.AddRange(people);
 
-    await context.SaveChangesAsync();
+    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
     context.People.RemoveRange(people.Take(DeletedPeople));
-    await context.SaveChangesAsync();
+    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-    people = await context.People.ToListAsync();
+    people = await context.People.ToListAsync(TestContext.Current.CancellationToken);
     Assert.Equal(TotalPeople - DeletedPeople, people.Count);
   }
 
@@ -36,16 +36,16 @@ public class SoftDeleteInterceptorTest(SampleDbContextFixture fixture)
   {
     await using var context =
       await fixture.GetContextAsync("softDelete_persist", new SoftDeleteSaveChangesInterceptor());
-    await context.Database.MigrateAsync();
+    await context.Database.MigrateAsync(TestContext.Current.CancellationToken);
     var people = CityDataFaker.People.Generate(TotalPeople);
     context.People.AddRange(people);
 
-    await context.SaveChangesAsync();
+    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
     context.People.RemoveRange(people.Take(DeletedPeople));
-    await context.SaveChangesAsync();
+    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
     people = await context.People.IgnoreQueryFilters()
-      .ToListAsync();
+      .ToListAsync(TestContext.Current.CancellationToken);
     Assert.Equal(TotalPeople, people.Count);
     Assert.Equal(DeletedPeople, people.Count(p => p.IsDeleted));
   }

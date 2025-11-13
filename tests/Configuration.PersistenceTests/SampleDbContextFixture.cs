@@ -11,7 +11,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-public class SampleDbContextFixture : IDisposable
+public sealed class SampleDbContextFixture : IDisposable
 {
   private readonly ConcurrentDictionary<string, SqliteConnection> sqlConnections = new();
 
@@ -43,7 +43,5 @@ public class SampleDbContextFixture : IDisposable
       sqlite.Dispose();
       sqlConnections.TryRemove(key, out _);
     }
-
-    GC.SuppressFinalize(this);
   }
 }

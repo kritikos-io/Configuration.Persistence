@@ -16,13 +16,13 @@ public class ModelBuilderTests(SampleDbContextFixture fixture)
   public async Task EntitiesOfType_by_Interface()
   {
     await using var ctx = await fixture.GetContextAsync("ofType_interface");
-    await ctx.Database.MigrateAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
 
     var counties = CityDataFaker.Counties.Generate(20);
     Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
 
     ctx.Counties.AddRange(counties);
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
     Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
   }
@@ -31,13 +31,13 @@ public class ModelBuilderTests(SampleDbContextFixture fixture)
   public async Task EntitiesOfType_by_BaseClass()
   {
     await using var ctx = await fixture.GetContextAsync("ofType_base");
-    await ctx.Database.MigrateAsync();
+    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
 
     var counties = CityDataFaker.Counties.Generate(20);
     Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
 
     ctx.Counties.AddRange(counties);
-    await ctx.SaveChangesAsync();
+    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
 
     Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
   }
