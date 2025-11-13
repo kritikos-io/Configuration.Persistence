@@ -13,7 +13,7 @@ public class RelativeUriToStringConverter : ValueConverter<Uri, string>
   private static readonly Uri Fallback = new("about:blank");
 
   /// <summary>
-  /// Converts relative <seealso cref="Uri"/> to <seealso cref="string"/>.
+  /// Initializes a new instance of the <see cref="RelativeUriToStringConverter"/> class that converts <see cref="Uri"/> to <see cref="string"/>.
   /// </summary>
   /// <param name="baseUri">The base of relative <seealso cref="Uri"/> to be constructed.</param>
   /// <param name="mappingHints">

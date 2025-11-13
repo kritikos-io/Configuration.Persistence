@@ -1,6 +1,5 @@
 namespace Kritikos.Configuration.Persistence.ConvertersTests;
 
-using System;
 using System.IO;
 
 using Kritikos.Configuration.Persistence.Converters.IO;

@@ -34,7 +34,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   private List<AuditEntry> transient = [];
 
   /// <summary>
-  /// Creates a <see cref="AuditTrailSaveChangesInterceptor{TAuditRecord,TContext}"/> that will record audit trails in the same context as the actual entities.
+  /// Initializes a new instance of the <see cref="AuditTrailSaveChangesInterceptor{TAuditRecord,TContext}"/> class that will record audit trails in the same context as the actual entities.
   /// </summary>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
   /// <param name="serializerOptions">Custom options for <see cref="JsonSerializer"/> to handle specific cases during auditing.</param>
@@ -50,7 +50,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   }
 
   /// <summary>
-  /// Creates a <see cref="AuditTrailSaveChangesInterceptor{TAuditRecord,TContext}"/> that will record audit trails in the passed instance of <paramref name="context"/>.
+  /// Initializes a new instance of the <see cref="AuditTrailSaveChangesInterceptor{TAuditRecord,TContext}"/> class that will record audit trails in the passed instance of <paramref name="context"/>.
   /// </summary>
   /// <param name="context">The <see cref="DbContext"/> to save <see cref="AuditRecord"/> to.</param>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
