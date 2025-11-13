@@ -32,14 +32,14 @@ public static class HostExtensions
 
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<TDbContext>>();
 
-    var migrations = (await ctx.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
-    if (migrations.Count == 0)
+    var migrations = (await ctx.Database.GetPendingMigrationsAsync(cancellationToken)).ToArray();
+    if (migrations.Length == 0)
     {
       return;
     }
 
-    logger.LogInformation("Applying migrations to {DbContext}: {Migrations}", contextName, migrations);
+    logger.LogApplyingMigrations(contextName, migrations);
     await ctx.Database.MigrateAsync(cancellationToken);
-    logger.LogInformation("Migrations for {DbContext} completed succesfully", contextName);
+    logger.LogMigrationsAppliedSuccessfully(contextName);
   }
 }
