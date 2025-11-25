@@ -3,7 +3,6 @@ namespace Kritikos.Configuration.Persistence.Extensions;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 using Kritikos.Configuration.Persistence.Contracts;
 using Kritikos.Configuration.Persistence.Contracts.Behavioral;
