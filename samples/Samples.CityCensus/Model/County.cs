@@ -25,11 +25,4 @@ public class County : CityEntity<long, County>, ITimestamped, IOrdered<Guid>, IC
 
   public ICollection<CountyCorporation> CountyCorporations { get; }
     = [];
-
-  private static void OnModelCreating(ModelBuilder builder)
-  {
-    ArgumentNullException.ThrowIfNull(builder);
-
-    builder.Entity<County>(OnModelCreating);
-  }
 }

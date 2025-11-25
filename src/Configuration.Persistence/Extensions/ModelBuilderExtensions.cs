@@ -14,31 +14,6 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 public static class ModelBuilderExtensions
 {
   /// <summary>
-  /// Applies configuration to all entities implementing <see cref="IConfigurableEntity"/>.
-  /// <remarks>This extension method works both on public and internal implementations of the interface.</remarks>
-  /// </summary>
-  /// <param name="modelBuilder">The builder being used to construct the model for this context.
-  /// Databases (and other extensions) typically define extension methods on this object
-  /// that allow you to configure aspects of the model that are specific to a given database.</param>
-  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
-  public static void ApplyEntityConfiguration(this ModelBuilder modelBuilder)
-  {
-    ArgumentNullException.ThrowIfNull(modelBuilder);
-
-    var eTypes = modelBuilder.Model.GetEntityTypes()
-        .Where(x => typeof(IConfigurableEntity).IsAssignableFrom(x.ClrType))
-        .Select(x => x.ClrType);
-
-    foreach (var entityType in eTypes)
-    {
-      var methods = entityType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-      var method = methods.SingleOrDefault(x => x.Name == nameof(IConfigurableEntity.OnModelCreating));
-
-      method?.Invoke(null, [modelBuilder]);
-    }
-  }
-
-  /// <summary>
   /// Registers RowVersion to be used as a concurrency token for entities implementing <see cref="IConcurrent"/>.
   /// </summary>
   /// <param name="modelBuilder">The builder being used to construct the model for this context.

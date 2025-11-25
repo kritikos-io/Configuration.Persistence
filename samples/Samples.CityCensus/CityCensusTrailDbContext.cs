@@ -55,7 +55,6 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
     ArgumentNullException.ThrowIfNull(modelBuilder);
     base.OnModelCreating(modelBuilder);
 
-    modelBuilder.ApplyEntityConfiguration();
     modelBuilder.ApplySoftDeletableFilters();
 
     modelBuilder.EntitiesImplementing<IOrdered<Guid>>(
