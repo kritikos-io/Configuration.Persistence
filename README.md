@@ -51,7 +51,24 @@ Use with care, not all converters support every available query execution at dat
 * Relative URI to string
 * TimeSpan to number
 
+## Docker
+
+A multi-stage Dockerfile is provided in `docker/` with multiple targets for different use cases. Sample usage is provided in [`compose.sample.yaml`](./docker/compose.sample.yaml).
+
+The `RUNTIME_BASE` build arg controls the final image base:
+
+| Value | Base image | Use case |
+|---|---|---|
+| `web` (default) | `aspnet` | ASP.NET web applications |
+| `app` | `runtime` | Console applications |
+| `self-contained` | `runtime-deps` | Self-contained deployments |
+
+### OpenAPI Linting
+
+OpenAPI documents generated at build time are validated using [Spectral]. Configure rules in `.spectral.yaml` at the repository root.
+
 [BasicEntity]: src/Configuration.Persistence/Base/BasicEntity.cs
 [ConcurrentEntity]: src/Configuration.Persistence/Base/ConcurrentEntity.cs
 [Entity]: src/Configuration.Persistence/Base/Entity.cs
 [ef-converters]: https://docs.microsoft.com/en-us/ef/core/modeling/value-conversions?tabs=data-annotations
+[Spectral]: https://github.com/stoplightio/spectral
