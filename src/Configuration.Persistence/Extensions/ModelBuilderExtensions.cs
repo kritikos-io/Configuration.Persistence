@@ -30,7 +30,7 @@ public static class ModelBuilderExtensions
         .EntitiesImplementing<ISqlServerConcurrent>(
             x =>
             {
-              x.Property<byte[]>(nameof(ISqlServerConcurrent))
+              x.Property<byte[]>(nameof(ISqlServerConcurrent.RowVersion))
                   .IsRowVersion();
             })
         .EntitiesImplementing<IPostgreSqlConcurrent>(

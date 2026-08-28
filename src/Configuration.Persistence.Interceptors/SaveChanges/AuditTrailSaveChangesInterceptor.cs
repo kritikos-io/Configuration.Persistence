@@ -77,7 +77,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     if (entries.Count != 0)
     {
-      transient = CreateAuditEntries(entries);
+      CreateAuditEntries(entries);
     }
 
     return base.SavingChanges(eventData, result);
@@ -138,7 +138,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     return saveResult;
   }
 
-  private List<AuditEntry> CreateAuditEntries(List<EntityEntry<ITraceableAudit>> entries)
+  private void CreateAuditEntries(List<EntityEntry<ITraceableAudit>> entries)
   {
     List<AuditEntry> auditEntries = new(entries.Count);
     foreach (var entry in entries)
@@ -187,9 +187,9 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     var permanent = auditEntries.Where(x => x.TemporaryProperties.Count == 0).Select(x => x.ToAuditRecord(serializerOptions)).ToList();
     context!.AuditRecords.AddRange(permanent);
-    transient = [.. auditEntries.Where(x => x.TemporaryProperties.Count != 0)];
 
-    return transient;
+    // Entries with store-generated keys cannot be serialized until the save completes.
+    transient = [.. auditEntries.Where(x => x.TemporaryProperties.Count != 0)];
   }
 
   private void UpdateTemporaryProperties(List<AuditEntry> entries)
