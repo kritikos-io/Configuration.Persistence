@@ -10,53 +10,54 @@ using Kritikos.Samples.CityCensus.Services;
 
 using Microsoft.EntityFrameworkCore;
 
-using Xunit;
-
+[ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class AuditInterceptorTests(SampleDbContextFixture fixture)
-  : IClassFixture<SampleDbContextFixture>
 {
   private static readonly Guid Creator = Guid.Parse("1813b30a-a352-416e-adee-282362f7ba4e");
   private static readonly Guid Editor = Guid.Parse("364b3527-0282-4fc7-aafc-547f2c87f641");
 
-  [Fact]
-  public async Task CreatedBy_Is_Populated()
+  [Test]
+  public async Task CreatedBy_Is_Populated(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync(
       "createdBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Creator)));
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
     var people = CityDataFaker.People.Generate(30);
     ctx.People.AddRange(people);
 
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
-    Assert.All(people, x =>
+    await ctx.SaveChangesAsync(cancellationToken);
+    foreach (var person in people)
     {
-      Assert.Equal(Creator, x.CreatedBy);
-      Assert.Equal(x.CreatedBy, x.UpdatedBy);
-    });
+      await Assert.That(person.CreatedBy).IsEqualTo(Creator);
+      await Assert.That(person.UpdatedBy).IsEqualTo(person.CreatedBy);
+    }
   }
 
-  [Fact]
-  public async Task UpdatedBy_Is_Populated()
+  [Test]
+  public async Task UpdatedBy_Is_Populated(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync(
       "updatedBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Creator)));
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
 
     await using var ctx2 = await fixture.GetContextAsync(
       "updatedBy",
       new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => Editor)));
 
-    var people = await ctx2.People.ToListAsync(TestContext.Current.CancellationToken);
+    var people = await ctx2.People.ToListAsync(cancellationToken);
     foreach (var person in people)
     {
       person.FirstName = "REDUCTED";
     }
 
-    await ctx2.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx2.SaveChangesAsync(cancellationToken);
 
-    Assert.All(people, x => Assert.Equal(Editor, x.UpdatedBy));
+    foreach (var person in people)
+    {
+      await Assert.That(person.UpdatedBy).IsEqualTo(Editor);
+    }
   }
 }

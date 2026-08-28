@@ -7,38 +7,48 @@ using Kritikos.Samples.CityCensus;
 
 using Microsoft.EntityFrameworkCore;
 
-using Xunit;
-
+[ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class ModelBuilderTests(SampleDbContextFixture fixture)
-  : IClassFixture<SampleDbContextFixture>
 {
-  [Fact]
-  public async Task EntitiesOfType_by_Interface()
+  [Test]
+  public async Task EntitiesOfType_by_Interface(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync("ofType_interface");
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
 
     var counties = CityDataFaker.Counties.Generate(20);
-    Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
+    foreach (var county in counties)
+    {
+      await Assert.That(county.Order).IsEqualTo(Guid.Empty);
+    }
 
     ctx.Counties.AddRange(counties);
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
 
-    Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
+    foreach (var county in counties)
+    {
+      await Assert.That(county.Order).IsNotEqualTo(Guid.Empty);
+    }
   }
 
-  [Fact]
-  public async Task EntitiesOfType_by_BaseClass()
+  [Test]
+  public async Task EntitiesOfType_by_BaseClass(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync("ofType_base");
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
 
     var counties = CityDataFaker.Counties.Generate(20);
-    Assert.All(counties, c => Assert.True(c.Order == Guid.Empty));
+    foreach (var county in counties)
+    {
+      await Assert.That(county.Order).IsEqualTo(Guid.Empty);
+    }
 
     ctx.Counties.AddRange(counties);
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
 
-    Assert.All(counties, c => Assert.False(c.Order == Guid.Empty));
+    foreach (var county in counties)
+    {
+      await Assert.That(county.Order).IsNotEqualTo(Guid.Empty);
+    }
   }
 }

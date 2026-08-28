@@ -14,17 +14,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-using Xunit;
-
+[ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class MigrationExtensionTests(SampleDbContextFixture fixture)
-  : IClassFixture<SampleDbContextFixture>
 {
-  [Fact]
-  public async Task Ensure_HostExtension_Migrates()
+  [Test]
+  public async Task Ensure_HostExtension_Migrates(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync("migrate_extension");
-    var migrations = (await ctx.Database.GetPendingMigrationsAsync(TestContext.Current.CancellationToken)).ToList();
-    Assert.NotEmpty(migrations);
+    var migrations = (await ctx.Database.GetPendingMigrationsAsync(cancellationToken)).ToList();
+    await Assert.That(migrations).IsNotEmpty();
 
     var builder = Host.CreateDefaultBuilder()
       .ConfigureWebHostDefaults(webBuilder =>
@@ -39,15 +37,15 @@ public class MigrationExtensionTests(SampleDbContextFixture fixture)
 
     using (var host = builder.Build())
     {
-      await host.MigrateAsync<CityCensusTrailDbContext>(TestContext.Current.CancellationToken);
+      await host.MigrateAsync<CityCensusTrailDbContext>(cancellationToken);
     }
 
     await using var ctx2 = await fixture.GetContextAsync("migrate_extension");
 
-    migrations = [.. await ctx2.Database.GetPendingMigrationsAsync(TestContext.Current.CancellationToken)];
-    Assert.Empty(migrations);
+    migrations = [.. await ctx2.Database.GetPendingMigrationsAsync(cancellationToken)];
+    await Assert.That(migrations).IsEmpty();
 
-    migrations = [.. await ctx2.Database.GetAppliedMigrationsAsync(TestContext.Current.CancellationToken)];
-    Assert.NotEmpty(migrations);
+    migrations = [.. await ctx2.Database.GetAppliedMigrationsAsync(cancellationToken)];
+    await Assert.That(migrations).IsNotEmpty();
   }
 }

@@ -6,7 +6,7 @@ using Kritikos.Configuration.Persistence.Converters.IO;
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-using Xunit;
+using TUnit.Core.Enums;
 
 public class FileInfoToStringTests
 {
@@ -21,7 +21,9 @@ public class FileInfoToStringTests
 
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
-  public void Relative_path_windows()
+  [Test]
+  [RunOn(OS.Windows)]
+  public async Task Relative_path_windows()
   {
     var converter =
       new FileInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
@@ -29,11 +31,13 @@ public class FileInfoToStringTests
     var file = converter.ConvertFromProvider(WindowsRelative) as FileInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
-    Assert.Equal(WindowsPath, file.FullName);
-    Assert.Equal(WindowsRelative, foo);
+    await Assert.That(file?.FullName).IsEqualTo(WindowsPath);
+    await Assert.That(foo).IsEqualTo(WindowsRelative);
   }
 
-  public void Absolute_path_windows()
+  [Test]
+  [RunOn(OS.Windows)]
+  public async Task Absolute_path_windows()
   {
     var converter =
       new FileInfoToStringConverter('\\', mappingHints: MappingHints);
@@ -41,11 +45,14 @@ public class FileInfoToStringTests
     var file = converter.ConvertFromProvider(WindowsPath) as FileInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
-    Assert.Equal(WindowsPath, file.FullName);
-    Assert.Equal(WindowsRelative, foo);
+    await Assert.That(file?.FullName).IsEqualTo(WindowsPath);
+
+    // Without a base path there is nothing to make the result relative against.
+    await Assert.That(foo).IsEqualTo(WindowsPath);
   }
 
-  public void Relative_path_nix()
+  [Test]
+  public async Task Relative_path_nix()
   {
     var converter =
       new FileInfoToStringConverter(
@@ -56,10 +63,11 @@ public class FileInfoToStringTests
     var file = converter.ConvertFromProvider(LinuxRelative) as FileInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
-    Assert.Equal(LinuxRelative, foo);
+    await Assert.That(foo).IsEqualTo(LinuxRelative);
   }
 
-  public void Absolute_path_nix()
+  [Test]
+  public async Task Absolute_path_nix()
   {
     var converter =
       new FileInfoToStringConverter('/', mappingHints: MappingHints);
@@ -67,6 +75,6 @@ public class FileInfoToStringTests
     var file = converter.ConvertFromProvider(LinuxPath) as FileInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
-    Assert.Equal(LinuxPath, foo);
+    await Assert.That(foo).IsEqualTo(LinuxPath);
   }
 }

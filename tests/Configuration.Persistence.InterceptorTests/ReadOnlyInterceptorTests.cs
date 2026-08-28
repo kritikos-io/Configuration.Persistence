@@ -8,58 +8,56 @@ using Kritikos.Samples.CityCensus;
 
 using Microsoft.EntityFrameworkCore;
 
-using Xunit;
-
+[ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
-  : IClassFixture<SampleDbContextFixture>
 {
-  [Fact]
-  public async Task Ensure_Database_is_unwritable()
+  [Test]
+  public async Task Ensure_Database_is_unwritable(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync("readonly_db", new ReadOnlyDbSaveChangesInterceptor());
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
     var people = CityDataFaker.People.Generate(30);
 
     ctx.People.AddRange(people);
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
 
-    people = await ctx.People.ToListAsync(TestContext.Current.CancellationToken);
-    Assert.Empty(people);
+    people = await ctx.People.ToListAsync(cancellationToken);
+    await Assert.That(people).IsEmpty();
   }
 
-  [Fact]
-  public async Task Ensure_read_only()
+  [Test]
+  public async Task Ensure_read_only(CancellationToken cancellationToken)
   {
     var people = CityDataFaker.People.Generate(30);
     await using var ctx = await fixture.GetContextAsync("readonly");
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
 
     ctx.People.AddRange(people);
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
 
     await using var readOnly =
       await fixture.GetContextAsync("readonly", new ReadOnlyDbSaveChangesInterceptor());
 
-    var newPeople = await ctx.People.ToListAsync(TestContext.Current.CancellationToken);
+    var newPeople = await ctx.People.ToListAsync(cancellationToken);
     foreach (var person in newPeople)
     {
       person.FirstName = string.Empty;
       person.LastName = string.Empty;
     }
 
-    Assert.All(newPeople, p =>
+    foreach (var person in newPeople)
     {
-      Assert.Empty(p.FirstName);
-      Assert.Empty(p.LastName);
-    });
+      await Assert.That(person.FirstName).IsEmpty();
+      await Assert.That(person.LastName).IsEmpty();
+    }
 
-    await readOnly.SaveChangesAsync(TestContext.Current.CancellationToken);
-    newPeople = await readOnly.People.ToListAsync(TestContext.Current.CancellationToken);
+    await readOnly.SaveChangesAsync(cancellationToken);
+    newPeople = await readOnly.People.ToListAsync(cancellationToken);
 
-    Assert.All(newPeople, p =>
+    foreach (var person in newPeople)
     {
-      Assert.NotEmpty(p.FirstName);
-      Assert.NotEmpty(p.LastName);
-    });
+      await Assert.That(person.FirstName).IsNotEmpty();
+      await Assert.That(person.LastName).IsNotEmpty();
+    }
   }
 }

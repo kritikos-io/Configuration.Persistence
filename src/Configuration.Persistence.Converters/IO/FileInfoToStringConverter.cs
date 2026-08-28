@@ -45,16 +45,15 @@ public class FileInfoToStringConverter : ValueConverter<FileInfo, string>
     var path = file.FullName;
     var rootPath = Path.GetPathRoot(path) ?? string.Empty;
 
-    path = basePath != null
-      ? path
-        .Replace(basePath.FullName, string.Empty, StringComparison.InvariantCulture)[1..]
-      : path;
+    if (basePath != null)
+    {
+      path = path.Replace(basePath.FullName, string.Empty, StringComparison.InvariantCulture)[1..];
+    }
+    else if (separator != '\\' && Path.DirectorySeparatorChar == '\\' && rootPath.Length - 1 > 0)
+    {
+      path = path[(rootPath.Length - 1)..];
+    }
 
-    path = separator != '\\' && Path.DirectorySeparatorChar == '\\' && rootPath.Length - 1 > 0
-      ? path[(rootPath.Length - 1)..]
-      : path;
-    path = path.Replace(Path.DirectorySeparatorChar, separator);
-
-    return path;
+    return path.Replace(Path.DirectorySeparatorChar, separator);
   }
 }

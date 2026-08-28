@@ -8,8 +8,6 @@ using Kritikos.Configuration.Persistence.Converters.Primitive;
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-using Xunit;
-
 public abstract class TimeSpanToNumberConverterTests
 {
   protected static readonly ConverterMappingHints MappingHints = new(unicode: true);
@@ -42,7 +40,7 @@ public abstract class TimeSpanToNumberConverterTests<T> : TimeSpanToNumberConver
 {
   protected abstract TimeSpanToNumberConverter<T> CreateConverter(DateInterval interval);
 
-  protected void Tester(
+  protected async Task Tester(
     TimeSpan span,
     Func<T, DateInterval, TimeSpan> toTimeSpan,
     Func<TimeSpan, DateInterval, T> fromTimeSpan,
@@ -58,8 +56,8 @@ public abstract class TimeSpanToNumberConverterTests<T> : TimeSpanToNumberConver
     var foo = timeSpanToNumber(span);
     var bar = numberToTimespan(foo);
 
-    Assert.Equal(fromTimeSpan(span, interval), foo);
-    Assert.Equal(toTimeSpan(foo, interval), bar);
-    Assert.Equal(fromTimeSpan(bar, interval), fromTimeSpan(span, interval));
+    await Assert.That(foo).IsEqualTo(fromTimeSpan(span, interval));
+    await Assert.That(bar).IsEqualTo(toTimeSpan(foo, interval));
+    await Assert.That(fromTimeSpan(span, interval)).IsEqualTo(fromTimeSpan(bar, interval));
   }
 }

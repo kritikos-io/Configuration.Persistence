@@ -9,40 +9,41 @@ using Kritikos.Samples.CityCensus;
 
 using Microsoft.EntityFrameworkCore;
 
-using Xunit;
-
+// Both tests share the "createdAt" in-memory database, which SQLite keys globally by name,
+// so they must not run concurrently.
+[ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
+[NotInParallel]
 public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
-  : IClassFixture<SampleDbContextFixture>
 {
-  [Fact]
-  public async Task CreatedAt_Is_Populated()
+  [Test]
+  public async Task CreatedAt_Is_Populated(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync("createdAt", new TimestampSaveChangesInterceptor());
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
     var counties = CityDataFaker.Counties.Generate(10);
     ctx.AddRange(counties);
 
     var then = DateTimeOffset.Now;
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
     var now = DateTimeOffset.Now;
 
-    Assert.All(counties, c =>
+    foreach (var county in counties)
     {
-      Assert.True(c.CreatedAt >= then);
-      Assert.Equal(c.CreatedAt, c.UpdatedAt);
-      Assert.True(c.CreatedAt <= now);
-    });
+      await Assert.That(county.CreatedAt >= then).IsTrue();
+      await Assert.That(county.UpdatedAt).IsEqualTo(county.CreatedAt);
+      await Assert.That(county.CreatedAt <= now).IsTrue();
+    }
   }
 
-  [Fact]
-  public async Task UpdatedAt_Is_Altered()
+  [Test]
+  public async Task UpdatedAt_Is_Altered(CancellationToken cancellationToken)
   {
     await using var ctx = await fixture.GetContextAsync("createdAt", new TimestampSaveChangesInterceptor());
-    await ctx.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await ctx.Database.MigrateAsync(cancellationToken);
     var counties = CityDataFaker.Counties.Generate(10);
     ctx.AddRange(counties);
 
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
     var then = DateTimeOffset.Now;
 
     foreach (var county in counties)
@@ -50,14 +51,14 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
       county.Name = "REDUCTED";
     }
 
-    await ctx.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await ctx.SaveChangesAsync(cancellationToken);
     var now = DateTimeOffset.Now;
 
-    Assert.All(counties, c =>
+    foreach (var county in counties)
     {
-      Assert.True(c.UpdatedAt >= then);
-      Assert.True(c.CreatedAt < c.UpdatedAt);
-      Assert.True(c.UpdatedAt <= now);
-    });
+      await Assert.That(county.UpdatedAt >= then).IsTrue();
+      await Assert.That(county.CreatedAt < county.UpdatedAt).IsTrue();
+      await Assert.That(county.UpdatedAt <= now).IsTrue();
+    }
   }
 }

@@ -44,15 +44,16 @@ public class DirectoryInfoToStringConverter : ValueConverter<DirectoryInfo, stri
   {
     var path = directory.FullName;
     var rootPath = Path.GetPathRoot(path) ?? string.Empty;
-    path = basePath != null
-      ? path.Replace(basePath.FullName, string.Empty, StringComparison.InvariantCulture)[1..]
-      : path;
 
-    path = separator != '\\' && Path.DirectorySeparatorChar == '\\' && rootPath.Length - 1 > 0
-      ? path[(rootPath.Length - 1)..]
-      : path;
-    path = path.Replace(Path.DirectorySeparatorChar, separator);
+    if (basePath != null)
+    {
+      path = path.Replace(basePath.FullName, string.Empty, StringComparison.InvariantCulture)[1..];
+    }
+    else if (separator != '\\' && Path.DirectorySeparatorChar == '\\' && rootPath.Length - 1 > 0)
+    {
+      path = path[(rootPath.Length - 1)..];
+    }
 
-    return path;
+    return path.Replace(Path.DirectorySeparatorChar, separator);
   }
 }

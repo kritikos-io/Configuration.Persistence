@@ -6,47 +6,45 @@ using Kritikos.Samples.CityCensus;
 
 using Microsoft.EntityFrameworkCore;
 
-using Xunit;
-
+[ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class SoftDeleteInterceptorTest(SampleDbContextFixture fixture)
-  : IClassFixture<SampleDbContextFixture>
 {
   private const int TotalPeople = 10;
   private const int DeletedPeople = 4;
 
-  [Fact]
-  public async Task Soft_deleted_items_are_filtered()
+  [Test]
+  public async Task Soft_deleted_items_are_filtered(CancellationToken cancellationToken)
   {
     await using var context =
       await fixture.GetContextAsync("softDelete_filter", new SoftDeleteSaveChangesInterceptor());
-    await context.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await context.Database.MigrateAsync(cancellationToken);
     var people = CityDataFaker.People.Generate(TotalPeople);
     context.People.AddRange(people);
 
-    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await context.SaveChangesAsync(cancellationToken);
     context.People.RemoveRange(people.Take(DeletedPeople));
-    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await context.SaveChangesAsync(cancellationToken);
 
-    people = await context.People.ToListAsync(TestContext.Current.CancellationToken);
-    Assert.Equal(TotalPeople - DeletedPeople, people.Count);
+    people = await context.People.ToListAsync(cancellationToken);
+    await Assert.That(people.Count).IsEqualTo(TotalPeople - DeletedPeople);
   }
 
-  [Fact]
-  public async Task Soft_deleted_items_are_persisted()
+  [Test]
+  public async Task Soft_deleted_items_are_persisted(CancellationToken cancellationToken)
   {
     await using var context =
       await fixture.GetContextAsync("softDelete_persist", new SoftDeleteSaveChangesInterceptor());
-    await context.Database.MigrateAsync(TestContext.Current.CancellationToken);
+    await context.Database.MigrateAsync(cancellationToken);
     var people = CityDataFaker.People.Generate(TotalPeople);
     context.People.AddRange(people);
 
-    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await context.SaveChangesAsync(cancellationToken);
     context.People.RemoveRange(people.Take(DeletedPeople));
-    await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+    await context.SaveChangesAsync(cancellationToken);
 
     people = await context.People.IgnoreQueryFilters()
-      .ToListAsync(TestContext.Current.CancellationToken);
-    Assert.Equal(TotalPeople, people.Count);
-    Assert.Equal(DeletedPeople, people.Count(p => p.IsDeleted));
+      .ToListAsync(cancellationToken);
+    await Assert.That(people.Count).IsEqualTo(TotalPeople);
+    await Assert.That(people.Count(p => p.IsDeleted)).IsEqualTo(DeletedPeople);
   }
 }

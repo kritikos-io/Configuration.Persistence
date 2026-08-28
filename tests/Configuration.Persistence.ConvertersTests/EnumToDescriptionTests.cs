@@ -11,26 +11,24 @@ using Kritikos.Configuration.Persistence.Converters.Primitive;
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-using Xunit;
-
 public class EnumToDescriptionTests
 {
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
-  [Theory]
-  [InlineData("None", Foobar.None)]
-  [InlineData("Text", Foobar.txt)]
-  [InlineData("Music", Foobar.mp3)]
-  [InlineData("Video", Foobar.mp4)]
-  public void Enum_to_Description(string stringValue, Foobar enumValue)
+  [Test]
+  [Arguments("None", Foobar.None)]
+  [Arguments("Text", Foobar.txt)]
+  [Arguments("Music", Foobar.mp3)]
+  [Arguments("Video", Foobar.mp4)]
+  public async Task Enum_to_Description(string stringValue, Foobar enumValue)
   {
     var converter = new EnumToDescriptionStringConverter<Foobar>(MappingHints);
 
     var @enum = (Foobar)converter.ConvertFromProvider(stringValue)!;
     var description = converter.ConvertToProvider(enumValue) as string;
 
-    Assert.Equal(enumValue, @enum);
-    Assert.Equal(stringValue, description);
+    await Assert.That(@enum).IsEqualTo(enumValue);
+    await Assert.That(description).IsEqualTo(stringValue);
   }
 }
 
