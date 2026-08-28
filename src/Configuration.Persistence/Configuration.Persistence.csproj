@@ -6,6 +6,8 @@
     <Description>A starting point for EF Core persistance providing extension methods for migrating, hosted services and the infrastructure needed to setup an auditing system for any DbContext</Description>
     <PackageProjectUrl>https://github.com/kritikos-io/Configuration.Persistence</PackageProjectUrl>
     <RepositoryUrl>https://github.com/kritikos-io/Configuration.Persistence</RepositoryUrl>
+    <!-- EF Core does not mark its assemblies CLS-compliant, so any API exposing its types cannot be either. -->
+    <SkipClsCompliant>true</SkipClsCompliant>
   </PropertyGroup>
 
   <ItemGroup>

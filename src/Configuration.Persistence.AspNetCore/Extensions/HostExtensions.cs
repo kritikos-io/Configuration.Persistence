@@ -10,6 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// Extension methods bridging an <see cref="IHost"/> to Entity Framework Core migrations.
+/// </summary>
 public static class HostExtensions
 {
   /// <summary>

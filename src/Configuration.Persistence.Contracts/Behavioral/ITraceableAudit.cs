@@ -31,6 +31,9 @@ public interface IAuditable<T> : ICreateAuditable<T>, IUpdateAuditable<T>
 /// <typeparam name="T">Type of auditor identifying field.</typeparam>
 public interface ICreateAuditable<T>
 {
+  /// <summary>
+  /// Gets or sets the auditor that created this entity.
+  /// </summary>
   T CreatedBy { get; set; }
 }
 
@@ -40,5 +43,8 @@ public interface ICreateAuditable<T>
 /// <typeparam name="T">Type of auditor identifying field.</typeparam>
 public interface IUpdateAuditable<T>
 {
+  /// <summary>
+  /// Gets or sets the auditor that last updated this entity.
+  /// </summary>
   T UpdatedBy { get; set; }
 }

@@ -11,6 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
+/// <summary>
+/// Rewrites deletions of <see cref="ISoftDeletable"/> entities into updates flagging them as deleted.
+/// </summary>
 public class SoftDeleteSaveChangesInterceptor : SaveChangesInterceptor
 {
   /// <inheritdoc />

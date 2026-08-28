@@ -17,6 +17,9 @@ public interface ITimestamped : ICreateTimestamped, IUpdateTimestamped
 /// </summary>
 public interface ICreateTimestamped
 {
+  /// <summary>
+  /// Gets or sets the UTC time this entity was created.
+  /// </summary>
   DateTime CreatedAt { get; set; }
 }
 
@@ -25,5 +28,8 @@ public interface ICreateTimestamped
 /// </summary>
 public interface IUpdateTimestamped
 {
+  /// <summary>
+  /// Gets or sets the UTC time this entity was last updated.
+  /// </summary>
   DateTime UpdatedAt { get; set; }
 }

@@ -15,6 +15,7 @@ using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 public abstract class Model<TKey> : IEntity<TKey>, IEquatable<Model<TKey>>
   where TKey : IComparable<TKey>, IEquatable<TKey>
 {
+  /// <inheritdoc />
   public TKey Id { get; set; } = default!;
 
   /// <inheritdoc />

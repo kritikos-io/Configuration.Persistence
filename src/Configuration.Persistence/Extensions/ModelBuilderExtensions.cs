@@ -10,6 +10,9 @@ using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
+/// <summary>
+/// Extension methods applying convention-based configuration across every entity in a <see cref="ModelBuilder"/>.
+/// </summary>
 public static class ModelBuilderExtensions
 {
   /// <summary>

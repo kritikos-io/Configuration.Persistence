@@ -1,0 +1,95 @@
+# Configuration.Persistence.Interceptors
+
+`SaveChanges` interceptors implementing the behaviour the entity contracts describe, so timestamping, attribution, soft deletion and audit trails happen without a line of code in your repositories.
+
+## Getting Started
+
+```shell
+dotnet add package Kritikos.Configuration.Persistence.Interceptors
+```
+
+Interceptors are registered on the `DbContextOptionsBuilder` and apply to every entity the context tracks.
+
+```csharp
+builder.Services.AddDbContext<AppDbContext>(options => options
+  .UseNpgsql(connectionString)
+  .AddInterceptors(
+    new TimestampSaveChangesInterceptor(),
+    new SoftDeleteSaveChangesInterceptor()));
+```
+
+## Capabilities
+
+| Interceptor | Acts on | Behaviour |
+| --- | --- | --- |
+| `TimestampSaveChangesInterceptor` | `ICreateTimestamped`, `IUpdateTimestamped` | Stamps `CreatedAt` on insert and `UpdatedAt` on insert and update |
+| `AuditSaveChangesInterceptor<T>` | `ICreateAuditable<T>`, `IUpdateAuditable<T>` | Stamps `CreatedBy` and `UpdatedBy` from an `IAuditorProvider<T>` |
+| `AuditTrailSaveChangesInterceptor<TAuditRecord, TContext>` | `ITraceableAudit` | Writes an `AuditRecord` per changed entity, capturing old and new values as JSON |
+| `SoftDeleteSaveChangesInterceptor` | `ISoftDeletable` | Rewrites deletions into updates setting `IsDeleted` and `DeletedAt` |
+| `ReadOnlyDbSaveChangesInterceptor` | the whole context | Suppresses every save, reporting zero affected rows |
+
+The audit trail is the only interceptor that writes twice: entries are staged while changes are being saved, because the primary keys of inserted entities are not known until the database has assigned them, then flushed once the original save completes.
+
+```mermaid
+sequenceDiagram
+  participant App
+  participant Context as DbContext
+  participant Trail as AuditTrailInterceptor
+  participant Db as Database
+
+  App->>Context: SaveChangesAsync()
+  Context->>Trail: SavingChanges
+  Trail-->>Context: audit entries staged
+  Context->>Db: INSERT / UPDATE / DELETE
+  Db-->>Context: generated keys
+  Context->>Trail: SavedChanges
+  Trail->>Db: INSERT audit records
+```
+
+## Configuration
+
+`AuditSaveChangesInterceptor<T>` needs an `IAuditorProvider<T>` to answer "who is making this change". `GetAuditor` returns the current principal or `null`; `GetFallbackAuditor` supplies the identity that background and system work is attributed to.
+
+```csharp
+public class HttpAuditorProvider(IHttpContextAccessor accessor) : IAuditorProvider<Guid>
+{
+  public Guid? GetAuditor()
+    => Guid.TryParse(accessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier), out var id)
+      ? id
+      : null;
+
+  public Guid GetFallbackAuditor() => Guid.Empty;
+}
+```
+
+The provider is usually scoped to a request, so resolve the interceptor from the service provider rather than constructing it inline.
+
+```csharp
+builder.Services.AddScoped<IAuditorProvider<Guid>, HttpAuditorProvider>();
+builder.Services.AddScoped<AuditSaveChangesInterceptor<Guid>>();
+
+builder.Services.AddDbContext<AppDbContext>((provider, options) => options
+  .UseNpgsql(connectionString)
+  .AddInterceptors(provider.GetRequiredService<AuditSaveChangesInterceptor<Guid>>()));
+```
+
+`AuditTrailSaveChangesInterceptor<TAuditRecord, TContext>` takes two optional arguments: `recordUnchangedProperties` chooses between a full snapshot and a delta, and `serializerOptions` customises how values are serialised. Passing a `TContext` to the constructor sends the trail to a different context than the one being audited.
+
+```csharp
+options.AddInterceptors(
+  new AuditTrailSaveChangesInterceptor<AuditRecord, AppDbContext>(recordUnchangedProperties: false));
+```
+
+## Caveats
+
+> [!IMPORTANT]
+> Entities to be audited must implement `ITraceableAudit`, and `TAuditRecord` must not. The constructor throws `NotSupportedException` otherwise, because auditing the audit table would recurse indefinitely.
+
+> [!WARNING]
+> `ReadOnlyDbSaveChangesInterceptor` is final for the lifetime of the context, and it suppresses writes silently: calling code sees a successful save that changed nothing. Where a runtime-mutable behaviour is wanted, configure `QueryTrackingBehavior` instead.
+
+> [!NOTE]
+> `SoftDeleteSaveChangesInterceptor` converts the delete on the entity it is handed, not on its dependents. Relationships configured to cascade still delete children outright unless those children are soft-deletable and loaded into the change tracker.
+
+> [!NOTE]
+> Timestamps are written in UTC by the application, so they record the moment `SaveChanges` ran on the application server rather than database clock time.

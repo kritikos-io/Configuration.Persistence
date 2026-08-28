@@ -32,6 +32,9 @@ public interface IPostgreSqlShadowConcurrent : IConcurrent
 /// </summary>
 public interface IPostgreSqlConcurrent : IConcurrent
 {
+  /// <summary>
+  /// Gets or sets the PostgreSql <c>xmin</c> system column acting as the concurrency token.
+  /// </summary>
   public uint RowVersion { get; set; }
 }
 
@@ -40,7 +43,10 @@ public interface IPostgreSqlConcurrent : IConcurrent
 /// </summary>
 public interface ISqlServerConcurrent : IConcurrent
 {
-#pragma warning disable CA1819 Defined as per the spec for optimistic concurrency
+#pragma warning disable CA1819 // Defined as per the spec for optimistic concurrency
+  /// <summary>
+  /// Gets or sets the Sql Server <c>rowversion</c> column acting as the concurrency token.
+  /// </summary>
   byte[] RowVersion { get; set; }
 #pragma warning restore CA1819
 }

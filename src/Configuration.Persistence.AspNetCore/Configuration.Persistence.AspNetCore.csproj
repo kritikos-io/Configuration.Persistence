@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+    <!-- EF Core does not mark its assemblies CLS-compliant, so any API exposing its types cannot be either. -->
+    <SkipClsCompliant>true</SkipClsCompliant>
   </PropertyGroup>
 
   <ItemGroup>

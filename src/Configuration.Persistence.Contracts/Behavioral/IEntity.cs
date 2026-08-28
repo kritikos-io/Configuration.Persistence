@@ -21,6 +21,9 @@ public interface IEntity
 public interface IEntity<TKey> : IEntity
   where TKey : IComparable<TKey>, IEquatable<TKey>
 {
+  /// <summary>
+  /// Gets or sets the primary key uniquely identifying this entity.
+  /// </summary>
   TKey Id { get; set; }
 }
 
@@ -32,7 +35,7 @@ public interface IJoinEntity : IEntity
 }
 
 /// <summary>
-/// Typed version that identifies entities joined by an <see cref="IJoinEntity"/>
+/// Typed version that identifies entities joined by an <see cref="IJoinEntity"/>.
 /// </summary>
 /// <typeparam name="TLeft">The first side of the many-to-many relation being mapped.</typeparam>
 /// <typeparam name="TRight">The second side of the many-to-many relation being mapped.</typeparam>
@@ -46,9 +49,9 @@ public interface IJoinEntity<TLeft, TRight> : IJoinEntity
 /// Typed version that identifies entities joined by an <see cref="IJoinEntity"/> and strongly typed keys.
 /// </summary>
 /// <typeparam name="TLeft">The first side of the many-to-many relation being mapped.</typeparam>
-/// <typeparam name="TKeyLeft">The type of the primary key used in <see cref="TLeft"/>.</typeparam>
+/// <typeparam name="TKeyLeft">The type of the primary key used in <typeparamref name="TLeft"/>.</typeparam>
 /// <typeparam name="TRight">The second side of the many-to-many relation being mapped.</typeparam>
-/// <typeparam name="TKeyRight">The type of the primary key used in <see cref="TRight"/>.</typeparam>
+/// <typeparam name="TKeyRight">The type of the primary key used in <typeparamref name="TRight"/>.</typeparam>
 public interface IJoinEntity<TLeft, TKeyLeft, TRight, TKeyRight> : IJoinEntity<TLeft, TRight>
   where TLeft : IEntity<TKeyLeft>
   where TRight : IEntity<TKeyRight>

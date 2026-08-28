@@ -5,6 +5,10 @@ using Kritikos.Configuration.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 
+/// <summary>
+/// Extension methods applying the repository's common <see cref="DbContextOptionsBuilder"/> configuration
+/// based on the hosting environment.
+/// </summary>
 public static class DbContextOptionsBuilderExtensions
 {
   /// <summary>

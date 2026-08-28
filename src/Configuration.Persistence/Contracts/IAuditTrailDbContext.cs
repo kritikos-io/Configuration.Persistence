@@ -11,5 +11,8 @@ using Microsoft.EntityFrameworkCore;
 public interface IAuditTrailDbContext<TAudit>
   where TAudit : AuditRecord
 {
+  /// <summary>
+  /// Gets the table interceptors write audit trail entries to.
+  /// </summary>
   DbSet<TAudit> AuditRecords { get; }
 }

@@ -8,6 +8,11 @@ using System.Reflection;
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+/// <summary>
+/// Persists an enum as the text of its <see cref="DescriptionAttribute"/>, falling back to the member name.
+/// </summary>
+/// <typeparam name="TEnum">The enum being converted.</typeparam>
+/// <param name="mappingHints">Hints that can be used by the type mapper to create data types with appropriate facets.</param>
 public class EnumToDescriptionStringConverter<TEnum>(ConverterMappingHints? mappingHints = null)
   : ValueConverter<TEnum, string>(
     v => EnumString[v],

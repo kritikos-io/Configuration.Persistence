@@ -35,14 +35,18 @@ public class EnumToDescriptionTests
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 public enum Foobar
 {
+  /// <summary>A member without a description, which falls back to its own name.</summary>
   None,
 
+  /// <summary>A member whose description differs from its name.</summary>
   [Description("Text")]
   txt,
 
+  /// <summary>A member whose description differs from its name.</summary>
   [Description("Music")]
   mp3,
 
+  /// <summary>A member whose description differs from its name.</summary>
   [Description("Video")]
   mp4,
 }

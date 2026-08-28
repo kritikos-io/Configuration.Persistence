@@ -10,7 +10,15 @@ using System;
 public interface IAuditorProvider<out T>
   where T : IComparable, IComparable<T>, IEquatable<T>
 {
+  /// <summary>
+  /// Retrieves the current auditor, or <see langword="null"/> when none can be resolved.
+  /// </summary>
+  /// <returns>The auditor responsible for the change being persisted.</returns>
   T? GetAuditor();
 
+  /// <summary>
+  /// Retrieves the auditor to attribute a change to when <see cref="GetAuditor"/> yields nothing.
+  /// </summary>
+  /// <returns>The fallback auditor, typically representing the system itself.</returns>
   T GetFallbackAuditor();
 }

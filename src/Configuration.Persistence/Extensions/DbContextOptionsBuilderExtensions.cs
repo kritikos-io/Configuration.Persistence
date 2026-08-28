@@ -5,6 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
+/// <summary>
+/// Extension methods applying the repository's common <see cref="DbContextOptionsBuilder"/> configuration.
+/// </summary>
 [ExcludeFromCodeCoverage]
 public static class DbContextOptionsBuilderExtensions
 {
