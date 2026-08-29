@@ -15,6 +15,7 @@ using Kritikos.Samples.CityCensus;
 using Kritikos.Samples.CityCensus.Model;
 using Kritikos.Samples.CityCensus.Services;
 
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -356,6 +357,125 @@ public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixtur
     await Assert.That(keys.Count).IsEqualTo(TotalCounties);
     await Assert.That(keys.Select(x => x[nameof(County.Id)].GetInt64()).ToList())
       .IsEquivalentTo(counties.Select(x => x.Id).ToList());
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_ExcludedPropertyOnAddedEntity_NamesItInsteadOfRecordingIt(
+    CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_excludedAdded",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var person = CityDataFaker.People.Generate(1)[0];
+    ctx.People.Add(person);
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var record = await ctx.AuditRecords.SingleAsync(cancellationToken);
+    var values = Deserialize(record.NewValues);
+    await Assert.That(values.ContainsKey(nameof(Person.Email))).IsFalse();
+    await Assert.That(record.NewValues.Contains(person.Email, StringComparison.Ordinal)).IsFalse();
+    await Assert.That(values[nameof(Person.FirstName)].GetString()).IsEqualTo(person.FirstName);
+    await Assert.That(record.Redacted).IsEquivalentTo([nameof(Person.Email)]);
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_ExcludedPropertyModified_NamesItWithoutEitherValue(
+    CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_excludedModified",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var person = CityDataFaker.People.Generate(1)[0];
+    ctx.People.Add(person);
+    await ctx.SaveChangesAsync(cancellationToken);
+    var original = person.Email;
+
+    person.Email = "moved@example.com";
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var record = await ctx.AuditRecords
+      .SingleAsync(x => x.Modification == EntityState.Modified, cancellationToken);
+    await Assert.That(Deserialize(record.OldValues).ContainsKey(nameof(Person.Email))).IsFalse();
+    await Assert.That(Deserialize(record.NewValues).ContainsKey(nameof(Person.Email))).IsFalse();
+    await Assert.That(record.OldValues.Contains(original, StringComparison.Ordinal)).IsFalse();
+    await Assert.That(record.NewValues.Contains("moved@example.com", StringComparison.Ordinal)).IsFalse();
+    await Assert.That(record.Redacted).IsEquivalentTo([nameof(Person.Email)]);
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_ExcludedPropertyUnchanged_LeavesItOutOfTheRedactedNames(
+    CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_excludedUnchanged",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var person = CityDataFaker.People.Generate(1)[0];
+    ctx.People.Add(person);
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    person.FirstName = "Renamed";
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var record = await ctx.AuditRecords
+      .SingleAsync(x => x.Modification == EntityState.Modified, cancellationToken);
+    var values = Deserialize(record.NewValues);
+
+    // Recorded despite being untouched, so recordUnchangedProperties is on and would have carried the address too.
+    await Assert.That(values.ContainsKey(nameof(Person.LastName))).IsTrue();
+    await Assert.That(values.ContainsKey(nameof(Person.Email))).IsFalse();
+    await Assert.That(record.NewValues.Contains(person.Email, StringComparison.Ordinal)).IsFalse();
+    await Assert.That(record.Redacted).IsEmpty();
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_ExcludedPropertyOnDeletedEntity_NamesItWithoutTheValue(
+    CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_excludedDeleted",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var person = CityDataFaker.People.Generate(1)[0];
+    ctx.People.Add(person);
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    ctx.People.Remove(person);
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var record = await ctx.AuditRecords
+      .SingleAsync(x => x.Modification == EntityState.Deleted, cancellationToken);
+    await Assert.That(Deserialize(record.OldValues).ContainsKey(nameof(Person.Email))).IsFalse();
+    await Assert.That(record.OldValues.Contains(person.Email, StringComparison.Ordinal)).IsFalse();
+    await Assert.That(record.Redacted).IsEquivalentTo([nameof(Person.Email)]);
+    await Assert.That(Deserialize(record.NewValues)).IsEmpty();
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_ExcludedPrimaryKey_KeepsItInTheKeyAnyway(CancellationToken cancellationToken)
+  {
+    await using var connection = new SqliteConnection("DataSource=auditTrail_excludedKey;mode=memory;cache=shared");
+    await connection.OpenAsync(cancellationToken);
+    var options = new DbContextOptionsBuilder<ExcludedKeyDbContext>()
+      .UseSqlite(connection)
+      .AddInterceptors(new AuditTrailSaveChangesInterceptor<AuditRecord, ExcludedKeyDbContext>())
+      .Options;
+    await using var ctx = new ExcludedKeyDbContext(options);
+    await ctx.Database.EnsureCreatedAsync(cancellationToken);
+    var entity = new ExcludedKeyEntity { Name = "secret" };
+    ctx.Entities.Add(entity);
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var record = await ctx.AuditRecords.SingleAsync(cancellationToken);
+
+    // A trail entry that cannot be traced back to a row is worthless, so the key outranks its exclusion.
+    await Assert.That(Deserialize(record.Key)[nameof(ExcludedKeyEntity.Id)].GetInt64()).IsEqualTo(entity.Id);
+    await Assert.That(record.NewValues.Contains("secret", StringComparison.Ordinal)).IsFalse();
+    await Assert.That(record.Redacted).IsEquivalentTo([nameof(ExcludedKeyEntity.Name)]);
   }
 
   private static Dictionary<string, JsonElement> Deserialize(string json)

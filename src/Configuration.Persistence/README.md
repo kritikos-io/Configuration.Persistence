@@ -30,6 +30,7 @@ protected override void OnModelCreating(ModelBuilder builder)
 | `ApplySoftDeletableFilters` | `ModelBuilder` | Defaults `IsDeleted` to `false` and adds a global query filter excluding deleted rows, declared on each inheritance root |
 | `ManyToManyWithJoinEntity` | `EntityTypeBuilder<T>` | Configures a join entity with a composite key built from both sides |
 | `ManyToManyWithSkipNavigation` | `EntityTypeBuilder<T>` | Configures a skip navigation backed by an explicit join entity |
+| `ExcludeFromAuditTrail` | `PropertyBuilder` | Keeps the value of a property out of the audit trail, naming it as redacted instead |
 | `EnableCommonOptions` | `DbContextOptionsBuilder` | Applies the shared diagnostics and cascade-delete policy |
 
 The package also contributes the concurrency contracts and the entity that backs audit trails.
@@ -40,7 +41,7 @@ The package also contributes the concurrency contracts and the entity that backs
 | `IPostgreSqlConcurrent` | Exposes the PostgreSQL `xmin` system column as a `uint` |
 | `ISqlServerConcurrent` | Exposes the SQL Server `rowversion` column as a `byte[]` |
 | `IAuditTrailDbContext<TAudit>` | Exposes the `DbSet<TAudit>` that audit interceptors write into |
-| `AuditRecord` | A single audit entry: table, key, `EntityState`, and old and new values |
+| `AuditRecord` | A single audit entry: table, key, `EntityState`, old and new values, and the names withheld from them |
 
 ## Usage Examples
 
@@ -84,7 +85,21 @@ public class AppDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
 }
 ```
 
+`ExcludeFromAuditTrail` keeps a single property out of the values an audit trail records, without hiding that it changed. The name is listed in `AuditRecord.Redacted` instead, so a trail still shows a password rotation or an address change while holding neither value.
+
+```csharp
+builder.Entity<Person>()
+  .Property(e => e.Email)
+  .ExcludeFromAuditTrail();
+```
+
 ## Caveats
+
+> [!CAUTION]
+> Every property of an audited entity is written to the trail in full, including credentials and personally identifiable data, and `AuditRecord` usually outlives the row it describes. Mark anything that must not be duplicated there with `ExcludeFromAuditTrail`.
+
+> [!IMPORTANT]
+> `ExcludeFromAuditTrail` governs the audit trail alone. The same value still reaches Entity Framework's command log as a query parameter, which `EnableCommonOptions` widens to full parameter values when `isDevelopment` is `true`. Logs need guarding separately, through [data redaction][redaction] or by restricting who can read them.
 
 > [!WARNING]
 > `ApplySoftDeletableFilters` installs a global query filter. Rows hidden by it are invisible to `Include` and to foreign-key fixup, which surfaces as a required navigation resolving to `null`. Use `IgnoreQueryFilters()` where deleted rows are genuinely wanted.
@@ -103,3 +118,5 @@ public class AppDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
 
 > [!NOTE]
 > `ApplyConcurrencyTokens` is all an `IPostgreSqlConcurrent` entity needs. Npgsql maps any `uint` concurrency token generated on add or update onto the `xmin` system column by convention, so the property lands on `xmin` as an `xid` without provider-specific configuration.
+
+[redaction]: https://learn.microsoft.com/dotnet/core/extensions/data-redaction

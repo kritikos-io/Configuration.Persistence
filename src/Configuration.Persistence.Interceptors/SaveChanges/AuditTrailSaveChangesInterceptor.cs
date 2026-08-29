@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Kritikos.Configuration.Persistence.Contracts;
 using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 using Kritikos.Configuration.Persistence.Entities;
+using Kritikos.Configuration.Persistence.Extensions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -151,6 +152,16 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     return base.SaveChangesFailedAsync(eventData, cancellationToken);
   }
 
+  private static void Redact(AuditEntry audit, EntityState state, PropertyEntry property)
+  {
+    // On a modification only an actual change is named, otherwise recordUnchangedProperties would have every trail claim the property moved.
+    if (state is EntityState.Added or EntityState.Deleted
+      || (state is EntityState.Modified && property.IsModified))
+    {
+      audit.Redacted.Add(property.Metadata.Name);
+    }
+  }
+
   private void AuditTrackedEntries(DbContextEventData eventData)
   {
     if (eventData.Context is not { } savingContext)
@@ -199,6 +210,12 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
       auditEntries.Add(audit);
       foreach (var property in entry.Properties)
       {
+        if (!property.Metadata.IsPrimaryKey() && property.Metadata.IsExcludedFromAuditTrail())
+        {
+          Redact(audit, entry.State, property);
+          continue;
+        }
+
         if (property.IsTemporary)
         {
           audit.TemporaryProperties.Add(property);
@@ -291,6 +308,8 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     public Dictionary<string, object> NewValues { get; } = [];
 
+    public List<string> Redacted { get; } = [];
+
     public List<PropertyEntry> TemporaryProperties { get; } = [];
 
     public TAuditRecord ToAuditRecord(JsonSerializerOptions serializerOptions)
@@ -299,13 +318,15 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
         CreatedAt = CreatedAt,
         Table = TableName,
         Key = JsonSerializer.Serialize(KeyValues, serializerOptions),
-        OldValues = OldValues.Count != 0
-          ? JsonSerializer.Serialize(OldValues, serializerOptions)
-          : Empty,
-        NewValues = NewValues.Count != 0
-          ? JsonSerializer.Serialize(NewValues, serializerOptions)
-          : Empty,
+        OldValues = Serialize(OldValues, serializerOptions),
+        NewValues = Serialize(NewValues, serializerOptions),
+        Redacted = Redacted,
         Modification = State,
       };
+
+    private static string Serialize(Dictionary<string, object> values, JsonSerializerOptions serializerOptions)
+      => values.Count != 0
+        ? JsonSerializer.Serialize(values, serializerOptions)
+        : Empty;
   }
 }
