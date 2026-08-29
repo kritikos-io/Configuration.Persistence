@@ -30,10 +30,11 @@
     <File Path="src\Directory.build.props" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests\Configuration.Persistence.AspNetCoreTests\Configuration.Persistence.AspNetCoreTests.csproj" Type="Classic C#" />
-    <Project Path="tests\Configuration.Persistence.ConvertersTests\Configuration.Persistence.ConvertersTests.csproj" Type="Classic C#" />
-    <Project Path="tests\Configuration.Persistence.InterceptorTests\Configuration.Persistence.InterceptorTests.csproj" Type="Classic C#" />
-    <Project Path="tests\Configuration.PersistenceTests\Configuration.PersistenceTests.csproj" Type="Classic C#" />
+    <Project Path="tests\Configuration.Persistence.AspNetCore.Tests\Configuration.Persistence.AspNetCore.Tests.csproj" Type="Classic C#" />
+    <Project Path="tests\Configuration.Persistence.Converters.Tests\Configuration.Persistence.Converters.Tests.csproj" Type="Classic C#" />
+    <Project Path="tests\Configuration.Persistence.Interceptors.Tests\Configuration.Persistence.Interceptors.Tests.csproj" Type="Classic C#" />
+    <Project Path="tests\Configuration.Persistence.TestKit\Configuration.Persistence.TestKit.csproj" Type="Classic C#" />
+    <Project Path="tests\Configuration.Persistence.Tests\Configuration.Persistence.Tests.csproj" Type="Classic C#" />
     <File Path="tests\Directory.Build.props" />
   </Folder>
 </Solution>

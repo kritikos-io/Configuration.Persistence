@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <!-- Shared fixtures only: keeping this out of the test-project set stops TUnit registering the referencing projects' tests more than once. -->
+    <IsTestProject>false</IsTestProject>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\samples\Samples.CityCensus\Samples.CityCensus.csproj" />
+  </ItemGroup>
+
+</Project>

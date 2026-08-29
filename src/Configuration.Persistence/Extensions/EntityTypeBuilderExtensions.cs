@@ -40,6 +40,7 @@ public static class EntityTypeBuilderExtensions
   /// <typeparam name="TEntity">The <see cref="IJoinEntity{TLeft,TRight}"/> to configure.</typeparam>
   /// <typeparam name="TLeft">The first <see cref="IEntity{TKey}"/> that is part of the many-to-many relationship key.</typeparam>
   /// <typeparam name="TRight">The second <see cref="IEntity{TKey}"/> that is part of the many-to-many relationship key.</typeparam>
+  /// <exception cref="ArgumentNullException"><paramref name="entity"/> is null.</exception>
   public static void ManyToManyWithJoinEntity<TEntity, TLeft, TRight>(
     this EntityTypeBuilder<TEntity> entity,
     Expression<Func<TEntity, TLeft?>> left,
@@ -66,7 +67,7 @@ public static class EntityTypeBuilderExtensions
     rightKey = string.IsNullOrWhiteSpace(rightKey)
       ? $"{typeof(TRight).Name}Id"
       : rightKey;
-    var rightReferenceCollection = reverseLeft == null
+    var rightReferenceCollection = reverseRight == null
       ? rightKeyBuilder.WithMany()
       : rightKeyBuilder.WithMany(reverseRight);
     rightReferenceCollection.HasForeignKey(rightKey);

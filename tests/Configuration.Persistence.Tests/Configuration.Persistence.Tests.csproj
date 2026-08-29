@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bogus" />
+    <PackageReference Include="TUnit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\samples\Samples.CityCensus\Samples.CityCensus.csproj" />
+    <ProjectReference Include="..\..\src\Configuration.Persistence.Interceptors\Configuration.Persistence.Interceptors.csproj" />
+    <ProjectReference Include="..\Configuration.Persistence.TestKit\Configuration.Persistence.TestKit.csproj" />
+  </ItemGroup>
+
+</Project>

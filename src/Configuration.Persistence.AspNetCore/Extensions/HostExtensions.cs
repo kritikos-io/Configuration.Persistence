@@ -22,6 +22,8 @@ public static class HostExtensions
   /// <param name="host">The <see cref="IHost"/> to operate on.</param>
   /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
   /// <returns>A <see cref="Task"/> representing the asynchronous migration operation.</returns>
+  /// <exception cref="ArgumentNullException"><paramref name="host"/> is null.</exception>
+  /// <exception cref="InvalidOperationException"><typeparamref name="TDbContext"/> is not registered on <paramref name="host"/>.</exception>
   public static async Task MigrateAsync<TDbContext>(this IHost host, CancellationToken cancellationToken = default)
     where TDbContext : DbContext
   {

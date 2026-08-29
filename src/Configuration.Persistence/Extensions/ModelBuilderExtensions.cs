@@ -73,7 +73,7 @@ public static class ModelBuilderExtensions
   /// <param name="modelBuilder"><seealso cref="ModelBuilder"/> instance to configure.</param>
   /// <param name="buildAction">The configuration action to be invoked for all instances inheriting <typeparamref name="T"/>.</param>
   /// <returns>The same <paramref name="modelBuilder"/> instance so that multiple calls can be chained.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
+  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> or <paramref name="buildAction"/> is null.</exception>
   /// <remarks>This overload is meant to be used with interfaces, if you have a base class prefer the strongly typed version <seealso cref="EntitiesOfType{T}(ModelBuilder,Action{EntityTypeBuilder{T}})"/>.</remarks>
   public static ModelBuilder EntitiesImplementing<T>(
       this ModelBuilder modelBuilder,
@@ -98,7 +98,7 @@ public static class ModelBuilderExtensions
   /// <param name="modelBuilder"><seealso cref="ModelBuilder"/> instance to configure.</param>
   /// <param name="buildAction">The configuration action to be invoked for all instances inheriting <typeparamref name="T"/>.</param>
   /// <returns>The same <paramref name="modelBuilder"/> instance so that multiple calls can be chained.</returns>
-  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
+  /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> or <paramref name="buildAction"/> is null.</exception>
   /// <remarks>This overload is meant to be used with classes, if you only have an interface use <seealso cref="EntitiesImplementing{T}"/>.</remarks>
   public static ModelBuilder EntitiesOfType<T>(
       this ModelBuilder modelBuilder,
