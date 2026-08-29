@@ -103,6 +103,16 @@ public class TimeSpanToDoubleTests : TimeSpanToNumberConverterTests<double>
   }
 
   [Test]
+  public async Task ConvertFromProvider_TicksBeyondInt64ButRepresentableAsDouble_ThrowsArgumentOutOfRangeException()
+  {
+    var fromProvider = CreateConverter(DateInterval.Ticks).ConvertFromProviderExpression.Compile();
+
+    // 2^63 rounds to the same double as long.MaxValue, so the bounds check alone cannot reject it.
+    await Assert.That(() => fromProvider(9223372036854775808d))
+      .Throws<ArgumentOutOfRangeException>();
+  }
+
+  [Test]
   public async Task ConvertToProvider_UnsupportedInterval_ThrowsInvalidOperationException()
   {
     var toProvider = CreateConverter((DateInterval)byte.MaxValue).ConvertToProviderExpression.Compile();

@@ -76,4 +76,22 @@ public class ReadOnlyDbSaveChangesInterceptorTests(SampleDbContextFixture fixtur
       await Assert.That(person.LastName).IsNotEmpty();
     }
   }
+
+  [Test]
+  public async Task SavingChanges_NullEventData_ThrowsArgumentNullException()
+  {
+    var interceptor = new ReadOnlyDbSaveChangesInterceptor();
+
+    await Assert.That(() => interceptor.SavingChanges(null!, default))
+      .Throws<ArgumentNullException>();
+  }
+
+  [Test]
+  public async Task SavingChangesAsync_NullEventData_ThrowsArgumentNullException()
+  {
+    var interceptor = new ReadOnlyDbSaveChangesInterceptor();
+
+    await Assert.That(async () => await interceptor.SavingChangesAsync(null!, default))
+      .Throws<ArgumentNullException>();
+  }
 }

@@ -7,11 +7,16 @@ using Kritikos.Configuration.Persistence.Converters.Primitive;
 
 public class TimeSpanToLongTests : TimeSpanToNumberConverterTests<long>
 {
+  // Ticks are compared as Int64 so the expectation does not lose the precision the converter preserves.
   private static new readonly Func<TimeSpan, DateInterval, long> FromTimeSpan = (span, interval) =>
-    Convert.ToInt64(TimeSpanToNumberConverterTests.FromTimeSpan(span, interval));
+    interval == DateInterval.Ticks
+      ? span.Ticks
+      : Convert.ToInt64(TimeSpanToNumberConverterTests.FromTimeSpan(span, interval));
 
   private static new readonly Func<long, DateInterval, TimeSpan> ToTimeSpan = (value, interval) =>
-    TimeSpanToNumberConverterTests.ToTimeSpan(Convert.ToDouble(value), interval);
+    interval == DateInterval.Ticks
+      ? TimeSpan.FromTicks(value)
+      : TimeSpanToNumberConverterTests.ToTimeSpan(Convert.ToDouble(value), interval);
 
   [Test]
   public async Task Convert_DaysIntervalAtTimeSpanBounds_RoundTripsExactly()
@@ -59,6 +64,21 @@ public class TimeSpanToLongTests : TimeSpanToNumberConverterTests<long>
     const DateInterval interval = DateInterval.Ticks;
     await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
     await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
+  }
+
+  [Test]
+  [Arguments(long.MaxValue)]
+  [Arguments(long.MinValue)]
+  public async Task Convert_TicksIntervalAtTimeSpanBounds_RoundTripsExactly(long ticks)
+  {
+    var converter = CreateConverter(DateInterval.Ticks);
+    var toProvider = converter.ConvertToProviderExpression.Compile();
+    var fromProvider = converter.ConvertFromProviderExpression.Compile();
+
+    var stored = toProvider(TimeSpan.FromTicks(ticks));
+
+    await Assert.That(stored).IsEqualTo(ticks);
+    await Assert.That(fromProvider(stored).Ticks).IsEqualTo(ticks);
   }
 
   /// <inheritdoc />

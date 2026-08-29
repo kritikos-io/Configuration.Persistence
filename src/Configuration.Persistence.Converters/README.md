@@ -90,4 +90,7 @@ builder.Entity<Request>()
 > [!NOTE]
 > `EnumToDescriptionStringConverter<TEnum>` builds its lookup once per closed generic type. Editing a `DescriptionAttribute` after rows exist orphans the values already stored, which materialise as the enum's default member.
 
+> [!WARNING]
+> `EnumToDescriptionStringConverter<TEnum>` never rejects stored text. Any value matching no member reads back as `default(TEnum)` rather than throwing, so an unmatched row is indistinguishable from one legitimately holding the default. A value outside the enum is written as its numeric text and therefore does not survive a round trip.
+
 [ef-converters]: https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions

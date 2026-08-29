@@ -19,12 +19,20 @@ public class ReadOnlyDbSaveChangesInterceptor : SaveChangesInterceptor
   public override InterceptionResult<int> SavingChanges(
     DbContextEventData eventData,
     InterceptionResult<int> result)
-    => base.SavingChanges(eventData, InterceptionResult<int>.SuppressWithResult(0));
+  {
+    ArgumentNullException.ThrowIfNull(eventData);
+
+    return base.SavingChanges(eventData, InterceptionResult<int>.SuppressWithResult(0));
+  }
 
   /// <inheritdoc />
-  public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
+  public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
     DbContextEventData eventData,
     InterceptionResult<int> result,
     CancellationToken cancellationToken = default)
-    => await base.SavingChangesAsync(eventData, InterceptionResult<int>.SuppressWithResult(0), cancellationToken);
+  {
+    ArgumentNullException.ThrowIfNull(eventData);
+
+    return base.SavingChangesAsync(eventData, InterceptionResult<int>.SuppressWithResult(0), cancellationToken);
+  }
 }

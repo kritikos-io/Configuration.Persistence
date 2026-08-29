@@ -149,6 +149,32 @@ public class ModelBuilderExtensionsTests
   }
 
   [Test]
+  public async Task EntitiesOfType_SeveralDerivedTypes_InvokesTheBuildActionOnce()
+  {
+    var builder = new ModelBuilder();
+    builder.Entity<LabelledAndNumberedEntity>();
+    builder.Entity<OnlyNumberedEntity>();
+
+    var invocations = 0;
+    builder.EntitiesOfType<NumberedEntity>(_ => invocations++);
+
+    await Assert.That(invocations).IsEqualTo(1);
+  }
+
+  [Test]
+  public async Task EntitiesOfType_NoMatchingEntity_LeavesTheModelUntouched()
+  {
+    var builder = new ModelBuilder();
+    builder.Entity<LabelledEntity>();
+
+    var invoked = false;
+    builder.EntitiesOfType<NumberedEntity>(_ => invoked = true);
+
+    await Assert.That(invoked).IsFalse();
+    await Assert.That(builder.Model.FindEntityType(typeof(NumberedEntity))).IsNull();
+  }
+
+  [Test]
   public async Task EntitiesImplementing_NullBuildAction_ThrowsArgumentNullException()
     => await Assert.That(() => new ModelBuilder().EntitiesImplementing<ISoftDeletable>(null!))
       .Throws<ArgumentNullException>();

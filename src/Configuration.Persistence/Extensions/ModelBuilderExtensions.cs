@@ -105,7 +105,10 @@ public static class ModelBuilderExtensions
   /// <param name="buildAction">The configuration action to be invoked for all instances inheriting <typeparamref name="T"/>.</param>
   /// <returns>The same <paramref name="modelBuilder"/> instance so that multiple calls can be chained.</returns>
   /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> or <paramref name="buildAction"/> is null.</exception>
-  /// <remarks>This overload is meant to be used with classes, if you only have an interface use <seealso cref="EntitiesImplementing{T}"/>.</remarks>
+  /// <remarks>
+  /// This overload is meant to be used with classes, if you only have an interface use <seealso cref="EntitiesImplementing{T}"/>.
+  /// A strongly typed <seealso cref="EntityTypeBuilder{T}"/> can only be obtained for <typeparamref name="T"/> itself, so <paramref name="buildAction"/> is invoked once against the base and derived types inherit the configuration. It is skipped entirely when the model contains no entity assignable to <typeparamref name="T"/>, rather than adding one.
+  /// </remarks>
   public static ModelBuilder EntitiesOfType<T>(
       this ModelBuilder modelBuilder,
       Action<EntityTypeBuilder<T>> buildAction)
@@ -114,8 +117,7 @@ public static class ModelBuilderExtensions
     ArgumentNullException.ThrowIfNull(modelBuilder);
     ArgumentNullException.ThrowIfNull(buildAction);
 
-    var entityTypes = modelBuilder.Model.GetEntityTypes().Where(x => typeof(T).IsAssignableFrom(x.ClrType)).ToList();
-    foreach (var unused in entityTypes)
+    if (modelBuilder.Model.GetEntityTypes().Any(x => typeof(T).IsAssignableFrom(x.ClrType)))
     {
       buildAction(modelBuilder.Entity<T>());
     }

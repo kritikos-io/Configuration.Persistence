@@ -25,7 +25,7 @@ protected override void OnModelCreating(ModelBuilder builder)
 | Extension | Extends | Effect |
 | --- | --- | --- |
 | `EntitiesImplementing<T>` | `ModelBuilder` | Runs a configuration action against every entity assignable to interface `T` |
-| `EntitiesOfType<T>` | `ModelBuilder` | The same for a base class, with a strongly typed `EntityTypeBuilder<T>` |
+| `EntitiesOfType<T>` | `ModelBuilder` | Configures base class `T` once through a strongly typed `EntityTypeBuilder<T>`, leaving derived types to inherit it |
 | `ApplyConcurrencyTokens` | `ModelBuilder` | Registers the row version of every `IConcurrent` entity as a concurrency token |
 | `ApplySoftDeletableFilters` | `ModelBuilder` | Defaults `IsDeleted` to `false` and adds a global query filter excluding deleted rows, declared on each inheritance root |
 | `ManyToManyWithJoinEntity` | `EntityTypeBuilder<T>` | Configures a join entity with a composite key built from both sides |

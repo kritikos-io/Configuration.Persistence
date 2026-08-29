@@ -30,21 +30,21 @@ public class TimeSpanToNumberConverter<T>(DateInterval interval, ConverterMappin
   where T : unmanaged, IConvertible, IComparable, IComparable<T>, IEquatable<T>
 {
   private static T NumberFromTimeSpan(DateInterval interval, TimeSpan span)
-  {
-    // Ticks are handed over as Int64 so an integral T never loses precision to a double round trip.
-    object value = interval switch
+    => interval switch
     {
-      DateInterval.Days => span.TotalDays,
-      DateInterval.Hours => span.TotalHours,
-      DateInterval.Minutes => span.TotalMinutes,
-      DateInterval.Seconds => span.TotalSeconds,
-      DateInterval.Milliseconds => span.TotalMilliseconds,
-      DateInterval.Ticks => span.Ticks,
+      DateInterval.Days => ToNumber(span.TotalDays),
+      DateInterval.Hours => ToNumber(span.TotalHours),
+      DateInterval.Minutes => ToNumber(span.TotalMinutes),
+      DateInterval.Seconds => ToNumber(span.TotalSeconds),
+      DateInterval.Milliseconds => ToNumber(span.TotalMilliseconds),
+      DateInterval.Ticks => ToNumber(span.Ticks),
       _ => throw new InvalidOperationException($"{nameof(interval)} is not supported."),
     };
 
-    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
-  }
+  // Each arm converts on its own, so ticks are never unified into the double the other intervals produce.
+  private static T ToNumber<TValue>(TValue value)
+    where TValue : struct
+    => (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
 
   private static TimeSpan TimeSpanToNumber(DateInterval interval, T val)
   {
@@ -69,11 +69,27 @@ public class TimeSpanToNumberConverter<T>(DateInterval interval, ConverterMappin
         : throw OutOfRange(interval, value, TimeSpan.MinValue.TotalMilliseconds, TimeSpan.MaxValue.TotalMilliseconds),
 
       // The bounds are compared as double but the conversion reads the original value, so an integral T keeps every tick.
-      DateInterval.Ticks => value is >= long.MinValue and < long.MaxValue
-        ? TimeSpan.FromTicks(Convert.ToInt64(val, CultureInfo.InvariantCulture))
-        : throw OutOfRange(interval, value, TimeSpan.MinValue.Ticks, TimeSpan.MaxValue.Ticks),
+      DateInterval.Ticks => TicksToTimeSpan(val, value),
       _ => throw new InvalidOperationException($"{nameof(interval)} is not supported."),
     };
+  }
+
+  private static TimeSpan TicksToTimeSpan(T val, double value)
+  {
+    // long.MaxValue is not representable as a double, so a tick count at the bound compares equal to it rather than below.
+    if (value is < long.MinValue or > long.MaxValue)
+    {
+      throw OutOfRange(DateInterval.Ticks, value, long.MinValue, long.MaxValue);
+    }
+
+    try
+    {
+      return TimeSpan.FromTicks(Convert.ToInt64(val, CultureInfo.InvariantCulture));
+    }
+    catch (OverflowException)
+    {
+      throw OutOfRange(DateInterval.Ticks, value, long.MinValue, long.MaxValue);
+    }
   }
 
   private static bool InRange(double value, double minimum, double maximum)
