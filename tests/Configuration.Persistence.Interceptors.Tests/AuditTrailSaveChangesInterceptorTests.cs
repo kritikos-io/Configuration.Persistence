@@ -125,6 +125,61 @@ public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixtur
   }
 
   [Test]
+  public async Task SaveChangesAsync_PreviousSaveFailed_DiscardsTheTrailOfTheFailedEntities(
+    CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_failedSave",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var county = CityDataFaker.Counties.Generate(1)[0];
+    ctx.Counties.Add(county);
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var orphan = CityDataFaker.People.Generate(1)[0];
+    ctx.People.Add(orphan);
+    ctx.Entry(orphan).Property("CountyId").CurrentValue = 999999L;
+    await Assert.That(async () => await ctx.SaveChangesAsync(cancellationToken))
+      .Throws<DbUpdateException>();
+    ctx.ChangeTracker.Clear();
+
+    // A save carrying no store generated keys leaves the held back trail in place, so only discarding it on failure keeps the orphan out.
+    var tracked = await ctx.Counties.SingleAsync(cancellationToken);
+    tracked.Name = "Renamed";
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var records = await ctx.AuditRecords.ToListAsync(cancellationToken);
+    await Assert.That(records.Select(x => x.Table).ToList()).IsEquivalentTo(["Counties", "Counties"]);
+  }
+
+  [Test]
+  public async Task SaveChanges_PreviousSaveFailed_DiscardsTheTrailOfTheFailedEntities(
+    CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_failedSaveSync",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var county = CityDataFaker.Counties.Generate(1)[0];
+    ctx.Counties.Add(county);
+    ctx.SaveChanges();
+
+    var orphan = CityDataFaker.People.Generate(1)[0];
+    ctx.People.Add(orphan);
+    ctx.Entry(orphan).Property("CountyId").CurrentValue = 999999L;
+    await Assert.That(ctx.SaveChanges).Throws<DbUpdateException>();
+    ctx.ChangeTracker.Clear();
+
+    // A save carrying no store generated keys leaves the held back trail in place, so only discarding it on failure keeps the orphan out.
+    var tracked = await ctx.Counties.SingleAsync(cancellationToken);
+    tracked.Name = "Renamed";
+    ctx.SaveChanges();
+
+    var records = await ctx.AuditRecords.ToListAsync(cancellationToken);
+    await Assert.That(records.Select(x => x.Table).ToList()).IsEquivalentTo(["Counties", "Counties"]);
+  }
+
+  [Test]
   public async Task Constructor_TraceableAuditRecord_ThrowsNotSupportedException()
     => await Assert.That(() =>
       {
