@@ -140,7 +140,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
   private void CreateAuditEntries(List<EntityEntry<ITraceableAudit>> entries)
   {
-    List<AuditEntry> auditEntries = new(entries.Count);
+    var auditEntries = new List<AuditEntry>(entries.Count);
     foreach (var entry in entries)
     {
       var audit = new AuditEntry { TableName = entry.Metadata.GetTableName()!, State = entry.State };

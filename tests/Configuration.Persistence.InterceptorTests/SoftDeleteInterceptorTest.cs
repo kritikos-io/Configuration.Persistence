@@ -12,6 +12,8 @@ public class SoftDeleteInterceptorTest(SampleDbContextFixture fixture)
   private const int TotalPeople = 10;
   private const int DeletedPeople = 4;
 
+  private readonly SampleDbContextFixture fixture = fixture;
+
   [Test]
   public async Task Soft_deleted_items_are_filtered(CancellationToken cancellationToken)
   {

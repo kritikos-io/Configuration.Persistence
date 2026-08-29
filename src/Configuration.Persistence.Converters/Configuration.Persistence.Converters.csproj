@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-    <Description>ValueConverters for use with EF Core, handle responsibly.</Description>
+    <Description>Entity Framework Core value converters for types the providers do not map natively: FileInfo and DirectoryInfo, relative Uri, TimeSpan stored as a numeric total, and enums persisted through their DescriptionAttribute.</Description>
+    <PackageTags>entity-framework-core;efcore;value-converter;valueconverter;timespan;uri;fileinfo;directoryinfo;enum;persistence</PackageTags>
     <!-- EF Core does not mark its assemblies CLS-compliant, so any API exposing its types cannot be either. -->
     <SkipClsCompliant>true</SkipClsCompliant>
   </PropertyGroup>

@@ -22,6 +22,8 @@ public class AuditSaveChangesInterceptor<T>(IAuditorProvider<T> auditorProvider)
   : SaveChangesInterceptor
   where T : IComparable, IComparable<T>, IEquatable<T>
 {
+  private readonly IAuditorProvider<T> auditorProvider = auditorProvider;
+
   /// <inheritdoc />
   [ExcludeFromCodeCoverage] // Handled in async method
   public override InterceptionResult<int> SavingChanges(

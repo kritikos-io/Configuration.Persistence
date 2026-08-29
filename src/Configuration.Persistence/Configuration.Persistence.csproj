@@ -3,9 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-    <Description>A starting point for EF Core persistance providing extension methods for migrating, hosted services and the infrastructure needed to setup an auditing system for any DbContext</Description>
-    <PackageProjectUrl>https://github.com/kritikos-io/Configuration.Persistence</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/kritikos-io/Configuration.Persistence</RepositoryUrl>
+    <Description>Entity Framework Core building blocks for the Kritikos.Configuration.Persistence contracts: model builder extensions that register concurrency tokens, apply soft-delete query filters and map many-to-many relationships, shared DbContext option defaults, and the audit trail record used by the interceptors package.</Description>
+    <PackageTags>entity-framework-core;efcore;persistence;modelbuilder;concurrency;rowversion;soft-delete;many-to-many;audit-trail;dbcontext</PackageTags>
     <!-- EF Core does not mark its assemblies CLS-compliant, so any API exposing its types cannot be either. -->
     <SkipClsCompliant>true</SkipClsCompliant>
   </PropertyGroup>

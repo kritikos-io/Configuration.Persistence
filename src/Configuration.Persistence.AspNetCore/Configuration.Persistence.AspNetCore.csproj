@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
+    <Description>Host and options wiring connecting Kritikos.Configuration.Persistence to an ASP.NET Core application: an IHost extension that applies pending Entity Framework Core migrations during startup, and environment-aware DbContext option overloads that restrict detailed errors and sensitive data logging to development.</Description>
+    <PackageTags>entity-framework-core;efcore;aspnetcore;hosting;migrations;startup;dbcontext;persistence</PackageTags>
     <!-- EF Core does not mark its assemblies CLS-compliant, so any API exposing its types cannot be either. -->
     <SkipClsCompliant>true</SkipClsCompliant>
   </PropertyGroup>

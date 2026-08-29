@@ -3,14 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-    <Description>Interceptors handling common usecase scenarios such us read-only db context, automatic auditing, timestamping</Description>
+    <Description>Entity Framework Core SaveChanges interceptors covering the usual cross-cutting persistence concerns: creation and update timestamps, current-user auditing, a full audit trail of changed values, soft deletion in place of physical deletes, and read-only DbContext enforcement.</Description>
+    <PackageTags>entity-framework-core;efcore;interceptors;savechanges;audit;audit-trail;timestamp;soft-delete;read-only;persistence</PackageTags>
     <!-- EF Core does not mark its assemblies CLS-compliant, so any API exposing its types cannot be either. -->
     <SkipClsCompliant>true</SkipClsCompliant>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Text.Json" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Configuration.Persistence\Configuration.Persistence.csproj" />

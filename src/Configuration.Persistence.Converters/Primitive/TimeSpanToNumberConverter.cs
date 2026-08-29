@@ -13,26 +13,19 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 /// Converts <seealso cref="TimeSpan"/> to and from numeric types with specified <seealso cref="DateInterval"/>.
 /// </summary>
 /// <typeparam name="T">The numeric value type to convert to and from.</typeparam>
+/// <param name="interval">The interval used in the numeric representation.</param>
+/// <param name="mappingHints">
+/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+/// facets for the converted data.
+/// </param>
 /// <exception cref="OverflowException"><seealso cref="DateInterval"/> requested exceeds the max value of <typeparamref name="T"/>.</exception>
-public class TimeSpanToNumberConverter<T> : ValueConverter<TimeSpan, T>
+public class TimeSpanToNumberConverter<T>(DateInterval interval, ConverterMappingHints? mappingHints = null)
+  : ValueConverter<TimeSpan, T>(
+    v => NumberFromTimeSpan(interval, v),
+    v => TimeSpanToNumber(interval, v),
+    mappingHints)
   where T : unmanaged, IConvertible, IComparable, IComparable<T>, IEquatable<T>
 {
-  /// <summary>
-  /// Initializes a new instance of the <seealso cref="TimeSpanToNumberConverter{T}"/> class.
-  /// </summary>
-  /// <param name="interval">The interval used in the numeric representation.</param>
-  /// <param name="mappingHints">
-  /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
-  /// facets for the converted data.
-  /// </param>
-  public TimeSpanToNumberConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
-    : base(
-      v => NumberFromTimeSpan(interval, v),
-      v => TimeSpanToNumber(interval, v),
-      mappingHints)
-  {
-  }
-
   private static T NumberFromTimeSpan(DateInterval interval, TimeSpan span)
   {
     var value = interval switch
@@ -100,58 +93,34 @@ public class TimeSpanToNumberConverter<T> : ValueConverter<TimeSpan, T>
 /// <summary>
 /// Converts <seealso cref="TimeSpan"/> to and from <see cref="double"/> using a specified <seealso cref="DateInterval"/>.
 /// </summary>
-public class TimeSpanToDoubleConverter : TimeSpanToNumberConverter<double>
-{
-  /// <summary>
-  /// Initializes a new instance of the <seealso cref="TimeSpanToDoubleConverter"/> class.
-  /// </summary>
-  /// <param name="interval">The interval used in the numeric double representation.</param>
-  /// <param name="mappingHints">
-  /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
-  /// facets for the converted data.
-  /// </param>
-  public TimeSpanToDoubleConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
-    : base(interval, mappingHints)
-  {
-  }
-}
+/// <param name="interval">The interval used in the numeric double representation.</param>
+/// <param name="mappingHints">
+/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+/// facets for the converted data.
+/// </param>
+public class TimeSpanToDoubleConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
+  : TimeSpanToNumberConverter<double>(interval, mappingHints);
 
 /// <summary>
 /// Converts <seealso cref="TimeSpan"/> to and from <see cref="long"/> using a specified <seealso cref="DateInterval"/>.
 /// </summary>
-public class TimeSpanToLongConverter : TimeSpanToNumberConverter<long>
-{
-  /// <summary>
-  /// Initializes a new instance of the <seealso cref="TimeSpanToLongConverter"/> class.
-  /// </summary>
-  /// <param name="interval">The interval used in the numeric double representation.</param>
-  /// <param name="mappingHints">
-  /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
-  /// facets for the converted data.
-  /// </param>
-  public TimeSpanToLongConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
-    : base(interval, mappingHints)
-  {
-  }
-}
+/// <param name="interval">The interval used in the numeric double representation.</param>
+/// <param name="mappingHints">
+/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+/// facets for the converted data.
+/// </param>
+public class TimeSpanToLongConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
+  : TimeSpanToNumberConverter<long>(interval, mappingHints);
 
 /// <summary>
 /// Converts <seealso cref="TimeSpan"/> to and from <see cref="int"/> using a specified <seealso cref="DateInterval"/>.
 /// </summary>
 /// <remarks>Care required when using this converter for <seealso cref="DateInterval.Minutes"/> and smaller denominations.</remarks>
+/// <param name="interval">The interval used in the numeric double representation.</param>
+/// <param name="mappingHints">
+/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+/// facets for the converted data.
+/// </param>
 /// <exception cref="OverflowException"><seealso cref="DateInterval"/> requested exceeds the max value of <see cref="int"/>.</exception>
-public class TimeSpanToIntConverter : TimeSpanToNumberConverter<int>
-{
-  /// <summary>
-  /// Initializes a new instance of the <seealso cref="TimeSpanToIntConverter"/> class.
-  /// </summary>
-  /// <param name="interval">The interval used in the numeric double representation.</param>
-  /// <param name="mappingHints">
-  /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
-  /// facets for the converted data.
-  /// </param>
-  public TimeSpanToIntConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
-    : base(interval, mappingHints)
-  {
-  }
-}
+public class TimeSpanToIntConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
+  : TimeSpanToNumberConverter<int>(interval, mappingHints);

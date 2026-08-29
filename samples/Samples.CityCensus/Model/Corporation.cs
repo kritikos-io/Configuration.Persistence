@@ -11,7 +11,7 @@ public class Corporation : OrderedCityEntity<long, Corporation>
   public string Name { get; set; } = string.Empty;
 
   public ICollection<County> Counties { get; }
-    = new List<County>(0);
+    = [];
 
   public ICollection<CountyCorporation> CountyCorporations { get; }
     = [];

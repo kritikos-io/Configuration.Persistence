@@ -3,7 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
-    <Description>A simple set of contracts to describe database entities and Dtos</Description>
+    <Description>Dependency-free contracts describing database entities, join entities and DTOs, along with the cross-cutting behaviours built on top of them: timestamping, user auditing and soft deletion. Contains no Entity Framework Core reference, so domain and contract assemblies can consume it without taking a dependency on a persistence provider.</Description>
+    <PackageTags>entity-framework-core;efcore;contracts;abstractions;entity;dto;audit;soft-delete;timestamp;persistence</PackageTags>
   </PropertyGroup>
 
 </Project>

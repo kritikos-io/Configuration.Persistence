@@ -8,28 +8,21 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 /// <summary>
 /// Converts from <seealso cref="DirectoryInfo"/> to and from string.
 /// </summary>
-public class DirectoryInfoToStringConverter : ValueConverter<DirectoryInfo, string>
+/// <param name="separator">Character used as directory separator in the persistence layer.</param>
+/// <param name="basePath"><seealso cref="DirectoryInfo"/> used as path base when handling relative paths.</param>
+/// <param name="mappingHints">
+/// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
+/// facets for the converted data.
+/// </param>
+public class DirectoryInfoToStringConverter(
+  char separator,
+  FileSystemInfo? basePath = null,
+  ConverterMappingHints? mappingHints = null)
+  : ValueConverter<DirectoryInfo, string>(
+    v => FromDirectoryInfo(basePath, v, separator),
+    v => FromPath(basePath, v, separator),
+    mappingHints)
 {
-  /// <summary>
-  /// Initializes a new instance of the <seealso cref="DirectoryInfoToStringConverter"/> class.
-  /// </summary>
-  /// <param name="separator">Character used as directory separator in the persistence layer.</param>
-  /// <param name="basePath"><seealso cref="DirectoryInfo"/> used as path base when handling relative paths.</param>
-  /// <param name="mappingHints">
-  /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
-  /// facets for the converted data.
-  /// </param>
-  public DirectoryInfoToStringConverter(
-    char separator,
-    FileSystemInfo? basePath = null,
-    ConverterMappingHints? mappingHints = null)
-    : base(
-      v => FromDirectoryInfo(basePath, v, separator),
-      v => FromPath(basePath, v, separator),
-      mappingHints)
-  {
-  }
-
   private static DirectoryInfo FromPath(FileSystemInfo? basePath, string directoryPath, char separator)
   {
     var path = (basePath == null

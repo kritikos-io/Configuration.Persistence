@@ -17,6 +17,8 @@ using Microsoft.Extensions.Hosting;
 [ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class MigrationExtensionTests(SampleDbContextFixture fixture)
 {
+  private readonly SampleDbContextFixture fixture = fixture;
+
   [Test]
   public async Task Ensure_HostExtension_Migrates(CancellationToken cancellationToken)
   {

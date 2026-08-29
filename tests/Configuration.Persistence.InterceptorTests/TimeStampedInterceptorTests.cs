@@ -15,6 +15,8 @@ using Microsoft.EntityFrameworkCore;
 [NotInParallel]
 public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
 {
+  private readonly SampleDbContextFixture fixture = fixture;
+
   [Test]
   public async Task CreatedAt_Is_Populated(CancellationToken cancellationToken)
   {

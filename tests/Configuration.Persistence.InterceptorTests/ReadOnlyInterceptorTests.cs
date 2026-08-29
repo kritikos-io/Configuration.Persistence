@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 [ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
 {
+  private readonly SampleDbContextFixture fixture = fixture;
+
   [Test]
   public async Task Ensure_Database_is_unwritable(CancellationToken cancellationToken)
   {
