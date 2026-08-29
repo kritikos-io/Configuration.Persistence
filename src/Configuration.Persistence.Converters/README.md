@@ -41,7 +41,7 @@ builder.Entity<Document>()
   .HasConversion(new DirectoryInfoToStringConverter('/', new DirectoryInfo("/srv/storage")));
 ```
 
-`RelativeUriToStringConverter` stores a URI relative to a base, and falls back to `about:blank` when a stored value can no longer be resolved against it.
+`RelativeUriToStringConverter` stores a URI relative to a base, and falls back to `about:blank` when a stored value can no longer be resolved against it. The property itself holds absolute URIs; only the stored form is relative.
 
 ```csharp
 builder.Entity<Article>()
@@ -92,6 +92,12 @@ builder.Entity<Request>()
 
 > [!WARNING]
 > `EnumToDescriptionStringConverter<TEnum>` never rejects stored text. Any value matching no member reads back as `default(TEnum)` rather than throwing, so an unmatched row is indistinguishable from one legitimately holding the default. A value outside the enum is written as its numeric text and therefore does not survive a round trip.
+
+> [!NOTE]
+> Where an enum declares aliases, members sharing a single value, the first one declared supplies the stored text for all of them and the rest are unreachable on read. Both compare equal, so a round trip is lossless, but the alias's own `DescriptionAttribute` is never written.
+
+> [!IMPORTANT]
+> `RelativeUriToStringConverter` requires the property to hold an absolute `Uri`. A relative one has nothing to be made relative against and throws `ArgumentException` on save rather than being written as-is.
 
 > [!CAUTION]
 > `basePath` is a prefix the filesystem converters resolve against, not a boundary they enforce. Paths outside the root are stored with leading `..` segments, and one on another volume keeps its own root, so reading either back deliberately produces a path the base does not contain. A row an attacker can write is therefore a row that can name any file the process can open. Validate such values in your own code; do not treat the converter as a sandbox.

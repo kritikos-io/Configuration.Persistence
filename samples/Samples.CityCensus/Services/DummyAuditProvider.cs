@@ -4,14 +4,20 @@ using System;
 
 using Kritikos.Configuration.Persistence.Interceptors.Services;
 
-public class DummyAuditProvider(Func<Guid> fetchAuditor)
+public class DummyAuditProvider(Func<Guid?> fetchAuditor, Guid fallback = default)
   : IAuditorProvider<Guid>
 {
-  private readonly Func<Guid> fetchAuditor = fetchAuditor;
+  private readonly Func<Guid?> fetchAuditor = fetchAuditor;
 
   /// <inheritdoc />
-  public Guid GetAuditor() => fetchAuditor();
+  public bool TryGetAuditor(out Guid auditor)
+  {
+    var fetched = fetchAuditor();
+    auditor = fetched ?? default;
+
+    return fetched.HasValue;
+  }
 
   /// <inheritdoc />
-  public Guid GetFallbackAuditor() => Guid.Empty;
+  public Guid GetFallbackAuditor() => fallback;
 }

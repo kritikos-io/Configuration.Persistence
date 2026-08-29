@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 /// </summary>
 /// <remarks>
 /// Values outside the ones declared by <typeparamref name="TEnum"/> are written as their numeric text, and stored text matching no member is read back as <c>default</c>, since a value converter cannot reject a value already in the database.
-/// When two members share a description the first one declared wins on read.
+/// When two members share a description, or share a value as aliases do, the first one declared wins.
 /// </remarks>
 /// <typeparam name="TEnum">The enum being converted.</typeparam>
 /// <param name="mappingHints">Hints that can be used by the type mapper to create data types with appropriate facets.</param>
@@ -24,7 +24,9 @@ public class EnumToDescriptionStringConverter<TEnum>(ConverterMappingHints? mapp
     mappingHints)
   where TEnum : struct, Enum
 {
+  // Aliases are distinct members sharing one value, so the values have to be deduplicated before they can be keyed on.
   private static readonly Dictionary<TEnum, string> EnumString = Enum.GetValues<TEnum>()
+    .Distinct()
     .ToDictionary(
       x => x,
       GetDescription);

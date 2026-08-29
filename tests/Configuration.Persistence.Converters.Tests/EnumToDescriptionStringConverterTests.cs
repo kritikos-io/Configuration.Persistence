@@ -50,6 +50,33 @@ public class EnumToDescriptionStringConverterTests
 
     await Assert.That(description).IsEqualTo("42");
   }
+
+  [Test]
+  public async Task Convert_EnumWithAliasedMembers_RoundTripsThroughTheFirstDeclared()
+  {
+    // Aliases make Enum.GetValues return one value twice, which used to fault the static lookup.
+    var converter = new EnumToDescriptionStringConverter<Aliased>(MappingHints);
+
+    var description = converter.ConvertToProvider(Aliased.Success) as string;
+    var @enum = (Aliased)converter.ConvertFromProvider(description)!;
+
+    await Assert.That(description).IsEqualTo("Completed");
+    await Assert.That(@enum).IsEqualTo(Aliased.Ok);
+  }
+}
+
+public enum Aliased
+{
+  /// <summary>A member without a description.</summary>
+  Pending = 0,
+
+  /// <summary>The first member declared with its value, whose description wins over its alias.</summary>
+  [Description("Completed")]
+  Ok = 200,
+
+  /// <summary>An alias of <see cref="Ok"/>, sharing its value.</summary>
+  [Description("Succeeded")]
+  Success = 200,
 }
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter

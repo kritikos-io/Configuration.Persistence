@@ -51,4 +51,13 @@ public class RelativeUriToStringConverterTests
   public async Task Constructor_NullBaseUri_ThrowsArgumentNullException()
     => await Assert.That(() => new RelativeUriToStringConverter(null!, MappingHints))
       .Throws<ArgumentNullException>();
+
+  [Test]
+  public async Task ConvertToProvider_RelativeUri_ThrowsArgumentException()
+  {
+    var converter = new RelativeUriToStringConverter(new Uri(Base), MappingHints);
+
+    await Assert.That(() => converter.ConvertToProvider(new Uri(Relative, UriKind.Relative)))
+      .Throws<ArgumentException>();
+  }
 }

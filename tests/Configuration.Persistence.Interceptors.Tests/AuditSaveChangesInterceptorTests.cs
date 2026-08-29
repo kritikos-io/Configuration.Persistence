@@ -15,6 +15,7 @@ public class AuditSaveChangesInterceptorTests(SampleDbContextFixture fixture)
 {
   private static readonly Guid Creator = Guid.Parse("1813b30a-a352-416e-adee-282362f7ba4e");
   private static readonly Guid Editor = Guid.Parse("364b3527-0282-4fc7-aafc-547f2c87f641");
+  private static readonly Guid SystemAuditor = Guid.Parse("c0ffee00-0000-4000-8000-000000000001");
 
   private readonly SampleDbContextFixture fixture = fixture;
 
@@ -100,5 +101,25 @@ public class AuditSaveChangesInterceptorTests(SampleDbContextFixture fixture)
 
     await Assert.That(async () => await interceptor.SavingChangesAsync(null!, default))
       .Throws<ArgumentNullException>();
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_UnresolvedAuditor_PopulatesFromTheFallback(CancellationToken cancellationToken)
+  {
+    // A value typed key has no null to signal absence with, so the fallback is only reachable through the return value of TryGetAuditor.
+    await using var ctx = await fixture.GetContextAsync(
+      "fallbackBy",
+      new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => null, SystemAuditor)));
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var people = CityDataFaker.People.Generate(10);
+    ctx.People.AddRange(people);
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    foreach (var person in people)
+    {
+      await Assert.That(person.CreatedBy).IsEqualTo(SystemAuditor);
+      await Assert.That(person.UpdatedBy).IsEqualTo(SystemAuditor);
+    }
   }
 }

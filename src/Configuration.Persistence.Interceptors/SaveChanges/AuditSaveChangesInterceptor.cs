@@ -82,5 +82,7 @@ public class AuditSaveChangesInterceptor<T> : SaveChangesInterceptor
   }
 
   private T GetAuditor()
-    => auditorProvider.GetAuditor() ?? auditorProvider.GetFallbackAuditor();
+    => auditorProvider.TryGetAuditor(out var auditor)
+      ? auditor
+      : auditorProvider.GetFallbackAuditor();
 }

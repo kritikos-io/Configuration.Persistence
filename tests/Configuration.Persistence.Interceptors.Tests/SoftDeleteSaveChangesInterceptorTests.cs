@@ -3,6 +3,7 @@
 using Kritikos.Configuration.Persistence.Interceptors.SaveChanges;
 using Kritikos.Configuration.Persistence.TestKit;
 using Kritikos.Samples.CityCensus;
+using Kritikos.Samples.CityCensus.Services;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -100,5 +101,30 @@ public class SoftDeleteSaveChangesInterceptorTests(SampleDbContextFixture fixtur
     {
       await Assert.That(person.DeletedAt).IsEqualTo(clock.UtcNow.UtcDateTime);
     }
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_RegisteredBeforeAuditing_AttributesTheSoftDelete(CancellationToken cancellationToken)
+  {
+    // Soft deletion turns Deleted into Modified, which is the state the auditing interceptor filters on,
+    // so registering it second is what lets a soft delete be attributed at all.
+    var creator = Guid.Parse("1813b30a-a352-416e-adee-282362f7ba4e");
+    var deleter = Guid.Parse("364b3527-0282-4fc7-aafc-547f2c87f641");
+    var auditor = creator;
+    await using var context = await fixture.GetContextAsync(
+      "softDelete_ordering",
+      new SoftDeleteSaveChangesInterceptor(),
+      new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => auditor)));
+    await context.Database.MigrateAsync(cancellationToken);
+    var person = CityDataFaker.People.Generate(1)[0];
+    context.People.Add(person);
+    await context.SaveChangesAsync(cancellationToken);
+
+    auditor = deleter;
+    context.People.Remove(person);
+    await context.SaveChangesAsync(cancellationToken);
+
+    await Assert.That(person.IsDeleted).IsTrue();
+    await Assert.That(person.UpdatedBy).IsEqualTo(deleter);
   }
 }
