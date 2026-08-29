@@ -47,8 +47,8 @@ The package also contributes the concurrency contracts and the entity that backs
 `EntitiesImplementing<T>` is the escape hatch for anything the built-in conventions do not cover, including provider-specific configuration.
 
 ```csharp
-builder.EntitiesImplementing<IPostgreSqlConcurrent>(entity =>
-  entity.Property<uint>(nameof(IPostgreSqlConcurrent.RowVersion)).UseXminAsConcurrencyToken());
+builder.EntitiesImplementing<ISoftDeletable>(entity =>
+  entity.HasIndex(nameof(ISoftDeletable.IsDeleted)));
 ```
 
 `ManyToManyWithSkipNavigation` keeps a many-to-many navigable from both sides while retaining an explicit join entity you can extend with payload columns.
@@ -100,3 +100,6 @@ public class AppDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
 
 > [!NOTE]
 > `ManyToManyWithJoinEntity` assumes both sides have a single-property primary key. Configure composite-keyed relationships manually.
+
+> [!NOTE]
+> `ApplyConcurrencyTokens` is all an `IPostgreSqlConcurrent` entity needs. Npgsql maps any `uint` concurrency token generated on add or update onto the `xmin` system column by convention, so the property lands on `xmin` as an `xid` without provider-specific configuration.
