@@ -1,3 +1,4 @@
+#pragma warning disable SA1402 // File may only contain a single type
 namespace Kritikos.Configuration.Persistence.Interceptors.Tests;
 
 using System;
@@ -15,6 +16,7 @@ using Kritikos.Samples.CityCensus.Model;
 using Kritikos.Samples.CityCensus.Services;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 [ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixture)
@@ -261,6 +263,122 @@ public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixtur
     await Assert.That(counties.All(x => x.CreatedAt == clock.UtcNow.UtcDateTime)).IsTrue();
   }
 
+  [Test]
+  public async Task SaveChangesAsync_SaveFailed_DiscardsTheEntriesHeldBackForIt(CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_failedAsync",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var county = CityDataFaker.Counties.Generate(1)[0];
+    ctx.Counties.Add(county);
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    Orphan(ctx);
+    await Assert.That(async () => await ctx.SaveChangesAsync(cancellationToken)).Throws<DbUpdateException>();
+    ctx.ChangeTracker.Clear();
+
+    // Holds nothing back of its own, so anything the failed save left behind would be flushed here.
+    var tracked = await ctx.Counties.SingleAsync(cancellationToken);
+    tracked.Name = "Renamed";
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    // The failed row was never written, so the trail must not claim it was.
+    var tables = await ctx.AuditRecords.Select(x => x.Table).ToListAsync(cancellationToken);
+    await Assert.That(tables).IsEquivalentTo(["Counties", "Counties"]);
+  }
+
+  [Test]
+  public async Task SaveChanges_SaveFailed_DiscardsTheEntriesHeldBackForIt(CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_failedSync",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var county = CityDataFaker.Counties.Generate(1)[0];
+    ctx.Counties.Add(county);
+    ctx.SaveChanges();
+
+    Orphan(ctx);
+    await Assert.That(ctx.SaveChanges).Throws<DbUpdateException>();
+    ctx.ChangeTracker.Clear();
+
+    var tracked = await ctx.Counties.SingleAsync(cancellationToken);
+    tracked.Name = "Renamed";
+    ctx.SaveChanges();
+
+    var tables = await ctx.AuditRecords.Select(x => x.Table).ToListAsync(cancellationToken);
+    await Assert.That(tables).IsEquivalentTo(["Counties", "Counties"]);
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_InstanceSharedWithAFailingContext_KeepsItsOwnHeldBackEntries(
+    CancellationToken cancellationToken)
+  {
+    // A single instance registered through AddDbContext serves every context, so one save must not disturb another.
+    var shared = new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>();
+    await using var other = await fixture.GetContextAsync("auditTrail_sharedOther", shared);
+    await other.Database.MigrateAsync(cancellationToken);
+
+    var interleaved = false;
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_sharedOwner",
+      shared,
+      new CallbackSaveChangesInterceptor(async () =>
+      {
+        if (interleaved)
+        {
+          return;
+        }
+
+        // Fails while the outer save is still holding its store generated keys back.
+        interleaved = true;
+        Orphan(other);
+        try
+        {
+          await other.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+          other.ChangeTracker.Clear();
+        }
+      }));
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var counties = CityDataFaker.Counties.Generate(TotalCounties);
+    ctx.Counties.AddRange(counties);
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    await Assert.That(interleaved).IsTrue();
+    var keys = (await ctx.AuditRecords.ToListAsync(cancellationToken))
+      .Select(x => Deserialize(x.Key))
+      .ToList();
+    await Assert.That(keys.Count).IsEqualTo(TotalCounties);
+    await Assert.That(keys.Select(x => x[nameof(County.Id)].GetInt64()).ToList())
+      .IsEquivalentTo(counties.Select(x => x.Id).ToList());
+  }
+
   private static Dictionary<string, JsonElement> Deserialize(string json)
     => JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json) ?? [];
+
+  private static void Orphan(CityCensusTrailDbContext context)
+  {
+    // Points at a county that does not exist, so the save fails on the foreign key.
+    var person = CityDataFaker.People.Generate(1)[0];
+    context.People.Add(person);
+    context.Entry(person).Property("CountyId").CurrentValue = 999999L;
+  }
+}
+
+internal sealed class CallbackSaveChangesInterceptor(Func<Task> onSaving) : SaveChangesInterceptor
+{
+  public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
+    DbContextEventData eventData,
+    InterceptionResult<int> result,
+    CancellationToken cancellationToken = default)
+  {
+    await onSaving();
+
+    return await base.SavingChangesAsync(eventData, result, cancellationToken);
+  }
 }

@@ -100,6 +100,3 @@ public class AppDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
 
 > [!NOTE]
 > `ManyToManyWithJoinEntity` assumes both sides have a single-property primary key. Configure composite-keyed relationships manually.
-
-> [!NOTE]
-> `IPostgreSqlShadowConcurrent` is obsolete; use `IPostgreSqlConcurrent`, which exposes the concurrency token as a real property rather than a shadow one.
