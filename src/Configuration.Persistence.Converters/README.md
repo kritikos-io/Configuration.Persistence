@@ -85,6 +85,9 @@ builder.Entity<Request>()
 > `DateInterval` is a lossy choice, not a formatting one. Persisting as `Seconds` discards sub-second precision permanently, and `TimeSpanToIntConverter` overflows for spans beyond roughly 24 days at millisecond resolution. Prefer `Ticks` unless the column is meant to be read by a human.
 
 > [!CAUTION]
+> An integral converter **rounds to even, it does not truncate**, so a stored duration can be longer than the one it was given. At `Seconds`, `0.5s` stores as `0`, `1.5s` as `2`, and `2.5s` as `2`; a `1.5s` span therefore reads back as `2s`. Where a duration must never grow, round it yourself before saving, or persist as `Ticks`.
+
+> [!CAUTION]
 > Changing a converter's `separator`, `basePath`, `baseUri` or `DateInterval` reinterprets every row already written with the previous setting. Treat these as part of the schema and migrate the data alongside any change.
 
 > [!NOTE]

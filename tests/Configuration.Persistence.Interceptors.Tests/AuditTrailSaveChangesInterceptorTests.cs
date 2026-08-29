@@ -12,6 +12,7 @@ using Kritikos.Configuration.Persistence.Interceptors.SaveChanges;
 using Kritikos.Configuration.Persistence.TestKit;
 using Kritikos.Samples.CityCensus;
 using Kritikos.Samples.CityCensus.Model;
+using Kritikos.Samples.CityCensus.Services;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -127,6 +128,50 @@ public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixtur
         _ = new AuditTrailSaveChangesInterceptor<TraceableAuditRecord, TraceableAuditDbContext>();
       })
       .Throws<NotSupportedException>();
+
+  [Test]
+  [Arguments(true)]
+  [Arguments(false)]
+  public async Task SaveChangesAsync_AuditingRegisteredEitherWay_AttributesTheTrailItself(
+    bool trailFirst,
+    CancellationToken cancellationToken)
+  {
+    // The trail persists through a save of its own, which re-enters the pipeline, so attribution does not depend on registration order.
+    var auditor = Guid.Parse("364b3527-0282-4fc7-aafc-547f2c87f641");
+    var trail = new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>();
+    var audit = new AuditSaveChangesInterceptor<Guid>(new DummyAuditProvider(() => auditor));
+    await using var ctx = await fixture.GetContextAsync(
+      $"auditTrail_attributed_{trailFirst}",
+      trailFirst ? [trail, audit] : [audit, trail]);
+    await ctx.Database.MigrateAsync(cancellationToken);
+    ctx.Counties.AddRange(CityDataFaker.Counties.Generate(TotalCounties));
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var records = await ctx.AuditRecords.ToListAsync(cancellationToken);
+    await Assert.That(records).IsNotEmpty();
+    await Assert.That(records.All(x => x.CreatedBy == auditor)).IsTrue();
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_TrailEntry_StoresTheModificationAsText(CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_modificationText",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var county = CityDataFaker.Counties.Generate(1)[0];
+    ctx.Counties.Add(county);
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    county.Name = "Renamed";
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var stored = await ctx.Database
+      .SqlQuery<string>($"SELECT Modification FROM AuditRecords ORDER BY Id")
+      .ToListAsync(cancellationToken);
+    await Assert.That(stored).IsEquivalentTo([nameof(EntityState.Added), nameof(EntityState.Modified)]);
+  }
 
   [Test]
   public async Task Constructor_NullContext_ThrowsArgumentNullException()

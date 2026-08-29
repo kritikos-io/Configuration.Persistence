@@ -18,7 +18,7 @@ public class AuditRecord : IEntity<long>, ICreateTimestamped, ICreateAuditable<G
   public DateTime CreatedAt { get; set; }
 
   /// <inheritdoc />
-  /// <remarks>Left at its default unless an <c>AuditSaveChangesInterceptor&lt;Guid&gt;</c> is registered after the audit trail interceptor, since the trail itself has no notion of a principal.</remarks>
+  /// <remarks>Left at its default unless an <c>AuditSaveChangesInterceptor&lt;Guid&gt;</c> is registered on the context holding the trail, in any order, since the trail itself has no notion of a principal.</remarks>
   public Guid CreatedBy { get; set; }
 
   /// <summary>

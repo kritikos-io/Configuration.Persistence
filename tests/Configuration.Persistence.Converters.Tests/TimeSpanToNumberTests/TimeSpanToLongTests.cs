@@ -81,6 +81,34 @@ public class TimeSpanToLongTests : TimeSpanToNumberConverterTests<long>
     await Assert.That(fromProvider(stored).Ticks).IsEqualTo(ticks);
   }
 
+  [Test]
+  [Arguments(500, 0L)]
+  [Arguments(1500, 2L)]
+  [Arguments(2500, 2L)]
+  [Arguments(3500, 4L)]
+  [Arguments(900, 1L)]
+  [Arguments(-1500, -2L)]
+  public async Task ConvertToProvider_FractionOfTheInterval_RoundsToEven(int milliseconds, long expected)
+  {
+    var converter = CreateConverter(DateInterval.Seconds);
+
+    var stored = converter.ConvertToProvider(TimeSpan.FromMilliseconds(milliseconds));
+
+    await Assert.That(stored).IsEqualTo(expected);
+  }
+
+  [Test]
+  public async Task Convert_HalfOfTheIntervalRoundingUp_ReturnsALongerSpanThanItWasGiven()
+  {
+    var converter = CreateConverter(DateInterval.Seconds);
+    var original = TimeSpan.FromMilliseconds(1500);
+
+    var restored = (TimeSpan)converter.ConvertFromProvider(converter.ConvertToProvider(original))!;
+
+    await Assert.That(restored).IsEqualTo(TimeSpan.FromSeconds(2));
+    await Assert.That(restored).IsGreaterThan(original);
+  }
+
   /// <inheritdoc />
   protected override TimeSpanToLongConverter CreateConverter(DateInterval interval) => new(interval, MappingHints);
 }

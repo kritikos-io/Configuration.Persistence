@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 /// Converts <seealso cref="TimeSpan"/> to and from numeric types with specified <seealso cref="DateInterval"/>.
 /// </summary>
 /// <remarks>
-/// Conversion to <typeparamref name="T"/> throws an <see cref="OverflowException"/> when the requested <seealso cref="DateInterval"/> yields a value outside the range of <typeparamref name="T"/>, and rounds to the nearest representable value when <typeparamref name="T"/> is integral, so a round trip is lossy below the chosen interval.
+/// Conversion to <typeparamref name="T"/> throws an <see cref="OverflowException"/> when the requested <seealso cref="DateInterval"/> yields a value outside the range of <typeparamref name="T"/>, and rounds to even when <typeparamref name="T"/> is integral, so a round trip is lossy below the chosen interval and can return a longer <seealso cref="TimeSpan"/> than it was given.
 /// Conversion from <typeparamref name="T"/> throws an <see cref="ArgumentOutOfRangeException"/> for stored values outside the range of <seealso cref="TimeSpan"/>, including <see cref="double.NaN"/>.
 /// </remarks>
 /// <typeparam name="T">The numeric value type to convert to and from.</typeparam>
