@@ -162,4 +162,37 @@ public class ModelBuilderExtensionsTests
   public async Task EntitiesOfType_NullBuildAction_ThrowsArgumentNullException()
     => await Assert.That(() => new ModelBuilder().EntitiesOfType<SqlServerConcurrentEntity>(null!))
       .Throws<ArgumentNullException>();
+
+  [Test]
+  public async Task ApplySoftDeletableFilters_InheritanceHierarchy_FiltersOnTheRootOnly()
+  {
+    await using var ctx = new SoftDeleteHierarchyDbContext();
+
+    var root = ctx.Model.FindEntityType(typeof(SoftDeletableRoot));
+    var leaf = ctx.Model.FindEntityType(typeof(SoftDeletableLeaf));
+
+    await Assert.That(root?.GetDeclaredQueryFilters()).IsNotEmpty();
+    await Assert.That(leaf?.GetDeclaredQueryFilters()).IsEmpty();
+  }
+
+  [Test]
+  public async Task ApplySoftDeletableFilters_DeletedDerivedEntity_IsExcludedFromQueries(
+    CancellationToken cancellationToken)
+  {
+    await using var connection = new SqliteConnection("DataSource=softdelete_hierarchy;mode=memory;cache=shared");
+    await connection.OpenAsync(cancellationToken);
+
+    await using var ctx = new SoftDeleteHierarchyDbContext();
+    await ctx.Database.EnsureCreatedAsync(cancellationToken);
+
+    ctx.Entities.AddRange(
+      new SoftDeletableLeaf { Name = "visible", Extra = "kept" },
+      new SoftDeletableLeaf { Name = "hidden", Extra = "gone", IsDeleted = true });
+    await ctx.SaveChangesAsync(cancellationToken);
+    ctx.ChangeTracker.Clear();
+
+    var visible = await ctx.Entities.ToListAsync(cancellationToken);
+
+    await Assert.That(visible.Select(x => x.Name).ToList()).IsEquivalentTo(["visible"]);
+  }
 }

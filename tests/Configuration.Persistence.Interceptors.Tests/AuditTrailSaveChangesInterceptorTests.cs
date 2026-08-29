@@ -175,6 +175,26 @@ public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixtur
       .Throws<ArgumentNullException>();
   }
 
+  [Test]
+  public async Task SaveChangesAsync_InstanceSharedBetweenContexts_WritesIntoTheSavingContext(
+    CancellationToken cancellationToken)
+  {
+    var interceptor = new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>();
+
+    await using var first = await fixture.GetContextAsync("auditTrail_shared_first", interceptor);
+    await first.Database.MigrateAsync(cancellationToken);
+    first.Counties.AddRange(CityDataFaker.Counties.Generate(TotalCounties));
+    await first.SaveChangesAsync(cancellationToken);
+
+    await using var second = await fixture.GetContextAsync("auditTrail_shared_second", interceptor);
+    await second.Database.MigrateAsync(cancellationToken);
+    second.Counties.AddRange(CityDataFaker.Counties.Generate(TotalCounties));
+    await second.SaveChangesAsync(cancellationToken);
+
+    await Assert.That(await first.AuditRecords.CountAsync(cancellationToken)).IsEqualTo(TotalCounties);
+    await Assert.That(await second.AuditRecords.CountAsync(cancellationToken)).IsEqualTo(TotalCounties);
+  }
+
   private static Dictionary<string, JsonElement> Deserialize(string json)
     => JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json) ?? [];
 }

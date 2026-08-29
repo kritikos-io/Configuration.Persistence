@@ -50,6 +50,7 @@ public class AuditRecord : IEntity<long>, ICreateTimestamped, ICreateAuditable<G
   /// Configures the audit record entity on the supplied model.
   /// </summary>
   /// <param name="builder">The builder being used to construct the model for the context.</param>
+  /// <remarks>Indexes cover the two ways a trail is read: the history of one audited row, and everything that happened within a period.</remarks>
   /// <exception cref="ArgumentNullException"><paramref name="builder"/> is null.</exception>
   public static void OnModelCreating(ModelBuilder builder)
   {
@@ -59,6 +60,9 @@ public class AuditRecord : IEntity<long>, ICreateTimestamped, ICreateAuditable<G
       entity.HasKey(e => e.Id);
       entity.Property(e => e.Modification)
         .HasConversion<string>();
+
+      entity.HasIndex(e => new { e.Table, e.Key });
+      entity.HasIndex(e => e.CreatedAt);
     });
   }
 }

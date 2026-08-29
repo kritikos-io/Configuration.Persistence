@@ -48,22 +48,28 @@ public static class ModelBuilderExtensions
   /// Databases (and other extensions) typically define extension methods on this object
   /// that allow you to configure aspects of the model that are specific to a given database.</param>
   /// <exception cref="ArgumentNullException"><paramref name="modelBuilder"/> is null.</exception>
+  /// <remarks>Entity Framework Core only accepts a query filter on the root of an inheritance hierarchy, so derived types are covered by the filter declared on their root rather than one of their own.</remarks>
   public static void ApplySoftDeletableFilters(this ModelBuilder modelBuilder)
   {
     ArgumentNullException.ThrowIfNull(modelBuilder);
 
-    modelBuilder.EntitiesImplementing<ISoftDeletable>(
-        x =>
-        {
-          x.Property<bool>(nameof(ISoftDeletable.IsDeleted))
-              .HasDefaultValue(false);
+    var roots = modelBuilder.Model.GetEntityTypes()
+        .Where(x => x.BaseType == null && typeof(ISoftDeletable).IsAssignableFrom(x.ClrType))
+        .ToList();
 
-          var param = Expression.Parameter(x.Metadata.ClrType, "x");
-          var body = Expression.Equal(
-              Expression.Property(param, nameof(ISoftDeletable.IsDeleted)),
-              Expression.Constant(false));
-          x.HasQueryFilter(Expression.Lambda(body, param));
-        });
+    foreach (var root in roots)
+    {
+      var entity = modelBuilder.Entity(root.ClrType);
+
+      entity.Property<bool>(nameof(ISoftDeletable.IsDeleted))
+          .HasDefaultValue(false);
+
+      var param = Expression.Parameter(root.ClrType, "x");
+      var body = Expression.Equal(
+          Expression.Property(param, nameof(ISoftDeletable.IsDeleted)),
+          Expression.Constant(false));
+      entity.HasQueryFilter(Expression.Lambda(body, param));
+    }
   }
 
   /// <summary>

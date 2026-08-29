@@ -27,7 +27,7 @@ protected override void OnModelCreating(ModelBuilder builder)
 | `EntitiesImplementing<T>` | `ModelBuilder` | Runs a configuration action against every entity assignable to interface `T` |
 | `EntitiesOfType<T>` | `ModelBuilder` | The same for a base class, with a strongly typed `EntityTypeBuilder<T>` |
 | `ApplyConcurrencyTokens` | `ModelBuilder` | Registers the row version of every `IConcurrent` entity as a concurrency token |
-| `ApplySoftDeletableFilters` | `ModelBuilder` | Defaults `IsDeleted` to `false` and adds a global query filter excluding deleted rows |
+| `ApplySoftDeletableFilters` | `ModelBuilder` | Defaults `IsDeleted` to `false` and adds a global query filter excluding deleted rows, declared on each inheritance root |
 | `ManyToManyWithJoinEntity` | `EntityTypeBuilder<T>` | Configures a join entity with a composite key built from both sides |
 | `ManyToManyWithSkipNavigation` | `EntityTypeBuilder<T>` | Configures a skip navigation backed by an explicit join entity |
 | `EnableCommonOptions` | `DbContextOptionsBuilder` | Applies the shared diagnostics and cascade-delete policy |
@@ -69,7 +69,7 @@ builder.Entity<PersonCorporation>()
     join => join.Corporation);
 ```
 
-Audit trails need a context exposing the record set; `AuditRecord.OnModelCreating` configures the key and persists `Modification` as text rather than as an opaque integer.
+Audit trails need a context exposing the record set; `AuditRecord.OnModelCreating` configures the key, persists `Modification` as text rather than as an opaque integer, and indexes the two ways a trail is read: `(Table, Key)` for the history of one row, and `CreatedAt` for everything that happened within a period.
 
 ```csharp
 public class AppDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
@@ -88,6 +88,9 @@ public class AppDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
 
 > [!WARNING]
 > `ApplySoftDeletableFilters` installs a global query filter. Rows hidden by it are invisible to `Include` and to foreign-key fixup, which surfaces as a required navigation resolving to `null`. Use `IgnoreQueryFilters()` where deleted rows are genuinely wanted.
+
+> [!NOTE]
+> Entity Framework Core only accepts a query filter on the root of an inheritance hierarchy, so `ApplySoftDeletableFilters` declares one filter per root. Derived soft-deletable types are covered by their root's filter rather than one of their own.
 
 > [!IMPORTANT]
 > `EnableCommonOptions` escalates `CascadeDelete` and `CascadeDeleteOrphan` to thrown exceptions. This is deliberate — cascading deletes should be declared, not inherited from a convention — but it will break a model that relies on the default behaviour.
