@@ -8,16 +8,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 using TUnit.Core.Enums;
 
-public class FileInfoToStringTests
+public class DirectoryInfoToStringConverterTests
 {
   private const string WindowsBase = @"C:\Windows\System32";
-  private const string WindowsRelative = @"drivers\etc\hosts";
-
-  private const string WindowsPath = @"C:\Windows\System32\drivers\etc\hosts";
+  private const string WindowsRelative = @"drivers\etc";
+  private const string WindowsPath = @"C:\Windows\System32\drivers\etc";
 
   private const string LinuxBase = "/srv/http";
-  private const string LinuxRelative = "root/index.html";
-  private const string LinuxPath = "/srv/http/root/index.html";
+  private const string LinuxRelative = "root";
+  private const string LinuxPath = "/srv/http/root";
 
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
@@ -26,9 +25,9 @@ public class FileInfoToStringTests
   public async Task Convert_WindowsRelativePathWithBasePath_RoundTripsToRelativePath()
   {
     var converter =
-      new FileInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
+        new DirectoryInfoToStringConverter('\\', new DirectoryInfo(WindowsBase), MappingHints);
 
-    var file = converter.ConvertFromProvider(WindowsRelative) as FileInfo;
+    var file = converter.ConvertFromProvider(WindowsRelative) as DirectoryInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
     await Assert.That(file?.FullName).IsEqualTo(WindowsPath);
@@ -40,9 +39,9 @@ public class FileInfoToStringTests
   public async Task Convert_WindowsAbsolutePathWithoutBasePath_RoundTripsToAbsolutePath()
   {
     var converter =
-      new FileInfoToStringConverter('\\', mappingHints: MappingHints);
+        new DirectoryInfoToStringConverter('\\', mappingHints: MappingHints);
 
-    var file = converter.ConvertFromProvider(WindowsPath) as FileInfo;
+    var file = converter.ConvertFromProvider(WindowsPath) as DirectoryInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
     await Assert.That(file?.FullName).IsEqualTo(WindowsPath);
@@ -54,13 +53,12 @@ public class FileInfoToStringTests
   [Test]
   public async Task Convert_UnixRelativePathWithBasePath_RoundTripsToRelativePath()
   {
-    var converter =
-      new FileInfoToStringConverter(
+    var converter = new DirectoryInfoToStringConverter(
         '/',
         new DirectoryInfo(LinuxBase),
         mappingHints: MappingHints);
 
-    var file = converter.ConvertFromProvider(LinuxRelative) as FileInfo;
+    var file = converter.ConvertFromProvider(LinuxRelative) as DirectoryInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
     await Assert.That(foo).IsEqualTo(LinuxRelative);
@@ -70,9 +68,9 @@ public class FileInfoToStringTests
   public async Task Convert_UnixAbsolutePathWithoutBasePath_RoundTripsToAbsolutePath()
   {
     var converter =
-      new FileInfoToStringConverter('/', mappingHints: MappingHints);
+        new DirectoryInfoToStringConverter('/', mappingHints: MappingHints);
 
-    var file = converter.ConvertFromProvider(LinuxPath) as FileInfo;
+    var file = converter.ConvertFromProvider(LinuxPath) as DirectoryInfo;
     var foo = converter.ConvertToProvider(file) as string;
 
     await Assert.That(foo).IsEqualTo(LinuxPath);

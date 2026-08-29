@@ -11,7 +11,7 @@ using Kritikos.Configuration.Persistence.Converters.Primitive;
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-public class EnumToDescriptionTests
+public class EnumToDescriptionStringConverterTests
 {
   private static readonly ConverterMappingHints MappingHints = new(unicode: true);
 
@@ -29,6 +29,26 @@ public class EnumToDescriptionTests
 
     await Assert.That(@enum).IsEqualTo(enumValue);
     await Assert.That(description).IsEqualTo(stringValue);
+  }
+
+  [Test]
+  public async Task ConvertFromProvider_TextMatchingNoMember_ReturnsDefault()
+  {
+    var converter = new EnumToDescriptionStringConverter<Foobar>(MappingHints);
+
+    var @enum = (Foobar)converter.ConvertFromProvider("Spreadsheet")!;
+
+    await Assert.That(@enum).IsEqualTo(default(Foobar));
+  }
+
+  [Test]
+  public async Task ConvertToProvider_ValueOutsideTheEnum_ReturnsNumericText()
+  {
+    var converter = new EnumToDescriptionStringConverter<Foobar>(MappingHints);
+
+    var description = converter.ConvertToProvider((Foobar)42) as string;
+
+    await Assert.That(description).IsEqualTo("42");
   }
 }
 

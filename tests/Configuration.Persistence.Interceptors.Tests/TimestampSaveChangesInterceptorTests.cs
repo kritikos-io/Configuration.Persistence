@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 // so they must not run concurrently.
 [ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
 [NotInParallel]
-public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
+public class TimestampSaveChangesInterceptorTests(SampleDbContextFixture fixture)
 {
   private readonly SampleDbContextFixture fixture = fixture;
 
@@ -50,7 +50,7 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
 
     foreach (var county in counties)
     {
-      county.Name = "REDUCTED";
+      county.Name = "REDACTED";
     }
 
     await ctx.SaveChangesAsync(cancellationToken);
@@ -61,6 +61,26 @@ public class TimeStampedInterceptorTests(SampleDbContextFixture fixture)
       await Assert.That(county.UpdatedAt >= then).IsTrue();
       await Assert.That(county.CreatedAt < county.UpdatedAt).IsTrue();
       await Assert.That(county.UpdatedAt <= now).IsTrue();
+    }
+  }
+
+  [Test]
+  public async Task SaveChanges_AddedEntity_PopulatesCreatedAt(CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync("createdAtSync", new TimestampSaveChangesInterceptor());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var counties = CityDataFaker.Counties.Generate(10);
+    ctx.AddRange(counties);
+
+    var then = DateTimeOffset.Now;
+    ctx.SaveChanges();
+    var now = DateTimeOffset.Now;
+
+    foreach (var county in counties)
+    {
+      await Assert.That(county.CreatedAt >= then).IsTrue();
+      await Assert.That(county.UpdatedAt).IsEqualTo(county.CreatedAt);
+      await Assert.That(county.CreatedAt <= now).IsTrue();
     }
   }
 

@@ -1,7 +1,6 @@
 namespace Kritikos.Configuration.Persistence.Interceptors.SaveChanges;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,14 +17,17 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
 {
   /// <inheritdoc />
-  [ExcludeFromCodeCoverage] // Handled in async method
   public override InterceptionResult<int> SavingChanges(
     DbContextEventData eventData,
     InterceptionResult<int> result)
   {
     ArgumentNullException.ThrowIfNull(eventData);
 
-    StampEntries(eventData.Context!.ChangeTracker);
+    if (eventData.Context is { } context)
+    {
+      StampEntries(context.ChangeTracker);
+    }
+
     return base.SavingChanges(eventData, result);
   }
 
@@ -37,7 +39,10 @@ public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
   {
     ArgumentNullException.ThrowIfNull(eventData);
 
-    StampEntries(eventData.Context!.ChangeTracker);
+    if (eventData.Context is { } context)
+    {
+      StampEntries(context.ChangeTracker);
+    }
 
     return base.SavingChangesAsync(eventData, result, cancellationToken);
   }

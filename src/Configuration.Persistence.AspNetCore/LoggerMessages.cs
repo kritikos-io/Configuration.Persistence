@@ -21,6 +21,6 @@ internal static partial class LoggerMessages
   /// </summary>
   /// <param name="logger">The logger to write to.</param>
   /// <param name="dbContext">Name of the context that was migrated.</param>
-  [LoggerMessage(LogLevel.Warning, "Migrations for {DbContext} have been applied succesfully")]
+  [LoggerMessage(LogLevel.Warning, "Migrations for {DbContext} have been applied successfully")]
   public static partial void LogMigrationsAppliedSuccessfully(this ILogger logger, string dbContext);
 }

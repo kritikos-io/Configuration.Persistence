@@ -11,48 +11,48 @@ public class TimeSpanToDoubleTests : TimeSpanToNumberConverterTests<double>
   public async Task Convert_DaysIntervalAtTimeSpanBounds_RoundTripsExactly()
   {
     const DateInterval interval = DateInterval.Days;
-    await Tester(TimeSpan.MaxValue, ToTimeSpan, FromTimespan, interval);
-    await Tester(TimeSpan.MinValue, ToTimeSpan, FromTimespan, interval);
+    await Tester(TimeSpan.MaxValue, ToTimeSpan, FromTimeSpan, interval);
+    await Tester(TimeSpan.MinValue, ToTimeSpan, FromTimeSpan, interval);
   }
 
   [Test]
   public async Task Convert_HoursIntervalNearTimeSpanBounds_RoundTripsExactly()
   {
     const DateInterval interval = DateInterval.Hours;
-    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
-    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
+    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
+    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
   }
 
   [Test]
   public async Task Convert_MinutesIntervalNearTimeSpanBounds_RoundTripsExactly()
   {
     const DateInterval interval = DateInterval.Minutes;
-    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
-    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
+    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
+    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
   }
 
   [Test]
   public async Task Convert_SecondsIntervalNearTimeSpanBounds_RoundTripsExactly()
   {
     const DateInterval interval = DateInterval.Seconds;
-    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
-    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
+    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
+    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
   }
 
   [Test]
   public async Task Convert_MillisecondsIntervalNearTimeSpanBounds_RoundTripsExactly()
   {
     const DateInterval interval = DateInterval.Milliseconds;
-    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
-    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
+    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
+    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
   }
 
   [Test]
   public async Task Convert_TicksIntervalNearTimeSpanBounds_RoundTripsExactly()
   {
     const DateInterval interval = DateInterval.Ticks;
-    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
-    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimespan, interval);
+    await Tester(TimeSpan.MaxValue.Subtract(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
+    await Tester(TimeSpan.MinValue.Add(TimeSpan.FromHours(1)), ToTimeSpan, FromTimeSpan, interval);
   }
 
   [Test]
@@ -68,6 +68,37 @@ public class TimeSpanToDoubleTests : TimeSpanToNumberConverterTests<double>
     var fromProvider = CreateConverter(interval).ConvertFromProviderExpression.Compile();
 
     await Assert.That(() => fromProvider(double.MaxValue))
+      .Throws<ArgumentOutOfRangeException>();
+  }
+
+  [Test]
+  [Arguments(DateInterval.Days)]
+  [Arguments(DateInterval.Hours)]
+  [Arguments(DateInterval.Minutes)]
+  [Arguments(DateInterval.Seconds)]
+  [Arguments(DateInterval.Milliseconds)]
+  [Arguments(DateInterval.Ticks)]
+  public async Task ConvertFromProvider_ValueBelowTimeSpanMinimum_ThrowsArgumentOutOfRangeException(
+    DateInterval interval)
+  {
+    var fromProvider = CreateConverter(interval).ConvertFromProviderExpression.Compile();
+
+    await Assert.That(() => fromProvider(double.MinValue))
+      .Throws<ArgumentOutOfRangeException>();
+  }
+
+  [Test]
+  [Arguments(DateInterval.Days)]
+  [Arguments(DateInterval.Hours)]
+  [Arguments(DateInterval.Minutes)]
+  [Arguments(DateInterval.Seconds)]
+  [Arguments(DateInterval.Milliseconds)]
+  [Arguments(DateInterval.Ticks)]
+  public async Task ConvertFromProvider_NotANumber_ThrowsArgumentOutOfRangeException(DateInterval interval)
+  {
+    var fromProvider = CreateConverter(interval).ConvertFromProviderExpression.Compile();
+
+    await Assert.That(() => fromProvider(double.NaN))
       .Throws<ArgumentOutOfRangeException>();
   }
 

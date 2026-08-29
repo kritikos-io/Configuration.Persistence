@@ -4,7 +4,7 @@
 namespace Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
 /// <summary>
-/// Marker field targeted by interceptors to generate audit trails.
+/// Marker interface targeted by interceptors to generate audit trails.
 /// </summary>
 /// <remarks>
 /// Use <see cref="IAuditable{T}"/> when all you need is a simple creation and last audit authority.
@@ -16,11 +16,11 @@ public interface ITraceableAudit
 /// <summary>
 /// Exposes barebones auditing functionality on a multi-user system.
 /// </summary>
+/// <typeparam name="T">Type of auditor identifying field.</typeparam>
 /// <remarks>
+/// Fields should be handled by interceptors.
 /// Use <see cref="ITraceableAudit"/> when proper audit trails are needed.
 /// </remarks>
-/// <typeparam name="T">Type of auditor identifying field.</typeparam>
-/// <remarks>Fields should be handled by interceptors.</remarks>
 public interface IAuditable<T> : ICreateAuditable<T>, IUpdateAuditable<T>
 {
 }

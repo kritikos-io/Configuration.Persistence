@@ -14,3 +14,9 @@ public class TraceableAuditDbContext : DbContext, IAuditTrailDbContext<Traceable
 {
   public DbSet<TraceableAuditRecord> AuditRecords => Set<TraceableAuditRecord>();
 }
+
+// Only exists to prove the interceptor rejects a saving context that is not the requested trail context.
+public class UnrelatedAuditDbContext : DbContext, IAuditTrailDbContext<AuditRecord>
+{
+  public DbSet<AuditRecord> AuditRecords => Set<AuditRecord>();
+}

@@ -16,7 +16,7 @@ using Kritikos.Samples.CityCensus.Model;
 using Microsoft.EntityFrameworkCore;
 
 [ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
-public class AuditTrailInterceptorTests(SampleDbContextFixture fixture)
+public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixture)
 {
   private const int TotalCounties = 5;
 
@@ -135,6 +135,36 @@ public class AuditTrailInterceptorTests(SampleDbContextFixture fixture)
         _ = new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>(null!);
       })
       .Throws<ArgumentNullException>();
+
+  [Test]
+  public async Task SaveChanges_AddedEntities_RecordsOneTrailEntryPerEntity(CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_sync",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    ctx.Counties.AddRange(CityDataFaker.Counties.Generate(TotalCounties));
+
+    ctx.SaveChanges();
+
+    var records = await ctx.AuditRecords.ToListAsync(cancellationToken);
+    await Assert.That(records.Count).IsEqualTo(TotalCounties);
+    await Assert.That(records.All(x => x.CreatedAt != default)).IsTrue();
+  }
+
+  [Test]
+  public async Task SaveChangesAsync_SavingContextIsNotTheTrailContext_ThrowsInvalidOperationException(
+    CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_unresolved",
+      new AuditTrailSaveChangesInterceptor<AuditRecord, UnrelatedAuditDbContext>());
+    await ctx.Database.MigrateAsync(cancellationToken);
+    ctx.Counties.AddRange(CityDataFaker.Counties.Generate(TotalCounties));
+
+    await Assert.That(async () => await ctx.SaveChangesAsync(cancellationToken))
+      .Throws<InvalidOperationException>();
+  }
 
   [Test]
   public async Task SavingChangesAsync_NullEventData_ThrowsArgumentNullException()

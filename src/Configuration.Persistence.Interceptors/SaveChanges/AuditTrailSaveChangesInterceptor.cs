@@ -22,7 +22,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 /// <typeparam name="TAuditRecord">Overridable entity that contains audit fields, should extend <see cref="AuditRecord"/>.</typeparam>
 /// <typeparam name="TContext">The type of the <see cref="DbContext"/> to save into.</typeparam>
 /// <remarks><typeparamref name="TAuditRecord"/> can not implement <see cref="ITraceableAudit"/>, otherwise <see cref="SavingChangesAsync"/> and/or <see cref="SavingChanges"/> would recursively call themselves.</remarks>
-/// <exception cref="NotSupportedException"><typeparamref name="TAuditRecord"/> extends <see cref="ITraceableAudit"/>.</exception>
 public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChangesInterceptor
   where TAuditRecord : AuditRecord, new()
   where TContext : DbContext, IAuditTrailDbContext<TAuditRecord>
@@ -38,6 +37,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   /// </summary>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
   /// <param name="serializerOptions">Custom options for <see cref="JsonSerializer"/> to handle specific cases during auditing.</param>
+  /// <exception cref="NotSupportedException"><typeparamref name="TAuditRecord"/> extends <see cref="ITraceableAudit"/>.</exception>
   public AuditTrailSaveChangesInterceptor(bool recordUnchangedProperties = true, JsonSerializerOptions? serializerOptions = null)
   {
     if (typeof(ITraceableAudit).IsAssignableFrom(typeof(TAuditRecord)))
@@ -55,35 +55,33 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   /// <param name="context">The <see cref="DbContext"/> to save <see cref="AuditRecord"/> to.</param>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
   /// <param name="serializerOptions">Custom options for <see cref="JsonSerializer"/> to handle specific cases during auditing.</param>
+  /// <exception cref="ArgumentNullException"><paramref name="context"/> is null.</exception>
+  /// <exception cref="NotSupportedException"><typeparamref name="TAuditRecord"/> extends <see cref="ITraceableAudit"/>.</exception>
   public AuditTrailSaveChangesInterceptor(TContext context, bool recordUnchangedProperties = true, JsonSerializerOptions? serializerOptions = null)
+    : this(recordUnchangedProperties, serializerOptions)
   {
     ArgumentNullException.ThrowIfNull(context);
 
     this.context = context;
-    this.recordUnchangedProperties = recordUnchangedProperties;
-    this.serializerOptions = serializerOptions ?? JsonSerializerOptions.Default;
   }
 
+  private TContext AuditContext
+    => context ?? throw new InvalidOperationException(
+      $"No {typeof(TContext).Name} was supplied to {GetType().Name} and the saving context is not a {typeof(TContext).Name}.");
+
   /// <inheritdoc />
+  /// <exception cref="InvalidOperationException">No <typeparamref name="TContext"/> was supplied and the saving context is not a <typeparamref name="TContext"/>.</exception>
   public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
   {
     ArgumentNullException.ThrowIfNull(eventData);
 
-    context ??= eventData.Context as TContext;
-    var entries = eventData.Context!.ChangeTracker
-      .Entries<ITraceableAudit>()
-      .Where(x => x.State is not EntityState.Detached and not EntityState.Unchanged)
-      .ToList();
-
-    if (entries.Count != 0)
-    {
-      CreateAuditEntries(entries);
-    }
+    AuditTrackedEntries(eventData);
 
     return base.SavingChanges(eventData, result);
   }
 
   /// <inheritdoc />
+  /// <exception cref="InvalidOperationException">No <typeparamref name="TContext"/> was supplied and the saving context is not a <typeparamref name="TContext"/>.</exception>
   public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
     DbContextEventData eventData,
     InterceptionResult<int> result,
@@ -91,16 +89,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   {
     ArgumentNullException.ThrowIfNull(eventData);
 
-    context ??= eventData.Context as TContext;
-    var entries = eventData.Context!.ChangeTracker
-      .Entries<ITraceableAudit>()
-      .Where(x => x.State is not EntityState.Detached and not EntityState.Unchanged)
-      .ToList();
-
-    if (entries.Count != 0)
-    {
-      CreateAuditEntries(entries);
-    }
+    AuditTrackedEntries(eventData);
 
     return base.SavingChangesAsync(eventData, result, cancellationToken);
   }
@@ -112,9 +101,10 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     if (transient.Count != 0)
     {
-      UpdateTemporaryProperties(transient);
-      transient.Clear();
-      context!.SaveChanges();
+      var pending = transient;
+      transient = [];
+      UpdateTemporaryProperties(pending);
+      AuditContext.SaveChanges();
     }
 
     return saveResult;
@@ -130,12 +120,47 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     if (transient.Count != 0)
     {
-      UpdateTemporaryProperties(transient);
-      transient.Clear();
-      await context!.SaveChangesAsync(cancellationToken);
+      var pending = transient;
+      transient = [];
+      UpdateTemporaryProperties(pending);
+      await AuditContext.SaveChangesAsync(cancellationToken);
     }
 
     return saveResult;
+  }
+
+  /// <inheritdoc />
+  public override void SaveChangesFailed(DbContextErrorEventData eventData)
+  {
+    transient = [];
+    base.SaveChangesFailed(eventData);
+  }
+
+  /// <inheritdoc />
+  public override Task SaveChangesFailedAsync(DbContextErrorEventData eventData, CancellationToken cancellationToken = default)
+  {
+    transient = [];
+    return base.SaveChangesFailedAsync(eventData, cancellationToken);
+  }
+
+  private void AuditTrackedEntries(DbContextEventData eventData)
+  {
+    if (eventData.Context is not { } savingContext)
+    {
+      return;
+    }
+
+    context ??= savingContext as TContext;
+
+    var entries = savingContext.ChangeTracker
+      .Entries<ITraceableAudit>()
+      .Where(x => x.State is not EntityState.Detached and not EntityState.Unchanged)
+      .ToList();
+
+    if (entries.Count != 0)
+    {
+      CreateAuditEntries(entries);
+    }
   }
 
   private void CreateAuditEntries(List<EntityEntry<ITraceableAudit>> entries)
@@ -186,7 +211,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     }
 
     var permanent = auditEntries.Where(x => x.TemporaryProperties.Count == 0).Select(x => x.ToAuditRecord(serializerOptions)).ToList();
-    context!.AuditRecords.AddRange(permanent);
+    AuditContext.AuditRecords.AddRange(permanent);
 
     // Entries with store-generated keys cannot be serialized until the save completes.
     transient = [.. auditEntries.Where(x => x.TemporaryProperties.Count != 0)];
@@ -208,7 +233,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
         }
       }
 
-      context!.AuditRecords.Add(entry.ToAuditRecord(serializerOptions));
+      AuditContext.AuditRecords.Add(entry.ToAuditRecord(serializerOptions));
     }
   }
 
@@ -231,6 +256,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     public TAuditRecord ToAuditRecord(JsonSerializerOptions serializerOptions)
       => new()
       {
+        CreatedAt = DateTime.UtcNow,
         Table = TableName,
         Key = JsonSerializer.Serialize(KeyValues, serializerOptions),
         OldValues = OldValues.Count != 0

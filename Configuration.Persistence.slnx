@@ -27,7 +27,8 @@
     <Project Path="src\Configuration.Persistence.Converters\Configuration.Persistence.Converters.csproj" Type="Classic C#" />
     <Project Path="src\Configuration.Persistence.Interceptors\Configuration.Persistence.Interceptors.csproj" Type="Classic C#" />
     <Project Path="src\Configuration.Persistence\Configuration.Persistence.csproj" Type="Classic C#" />
-    <File Path="src\Directory.build.props" />
+    <File Path="src\Directory.Build.props" />
+    <File Path="src\Directory.Build.targets" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests\Configuration.Persistence.AspNetCore.Tests\Configuration.Persistence.AspNetCore.Tests.csproj" Type="Classic C#" />

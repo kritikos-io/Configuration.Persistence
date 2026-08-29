@@ -12,13 +12,16 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 /// <summary>
 /// Converts <seealso cref="TimeSpan"/> to and from numeric types with specified <seealso cref="DateInterval"/>.
 /// </summary>
+/// <remarks>
+/// Conversion to <typeparamref name="T"/> throws an <see cref="OverflowException"/> when the requested <seealso cref="DateInterval"/> yields a value outside the range of <typeparamref name="T"/>, and rounds to the nearest representable value when <typeparamref name="T"/> is integral, so a round trip is lossy below the chosen interval.
+/// Conversion from <typeparamref name="T"/> throws an <see cref="ArgumentOutOfRangeException"/> for stored values outside the range of <seealso cref="TimeSpan"/>, including <see cref="double.NaN"/>.
+/// </remarks>
 /// <typeparam name="T">The numeric value type to convert to and from.</typeparam>
 /// <param name="interval">The interval used in the numeric representation.</param>
 /// <param name="mappingHints">
 /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
 /// facets for the converted data.
 /// </param>
-/// <exception cref="OverflowException"><seealso cref="DateInterval"/> requested exceeds the max value of <typeparamref name="T"/>.</exception>
 public class TimeSpanToNumberConverter<T>(DateInterval interval, ConverterMappingHints? mappingHints = null)
   : ValueConverter<TimeSpan, T>(
     v => NumberFromTimeSpan(interval, v),
@@ -28,66 +31,59 @@ public class TimeSpanToNumberConverter<T>(DateInterval interval, ConverterMappin
 {
   private static T NumberFromTimeSpan(DateInterval interval, TimeSpan span)
   {
-    var value = interval switch
+    // Ticks are handed over as Int64 so an integral T never loses precision to a double round trip.
+    object value = interval switch
     {
       DateInterval.Days => span.TotalDays,
       DateInterval.Hours => span.TotalHours,
       DateInterval.Minutes => span.TotalMinutes,
       DateInterval.Seconds => span.TotalSeconds,
       DateInterval.Milliseconds => span.TotalMilliseconds,
-      DateInterval.Ticks => Convert.ToDouble(span.Ticks),
+      DateInterval.Ticks => span.Ticks,
       _ => throw new InvalidOperationException($"{nameof(interval)} is not supported."),
     };
 
-    var result = (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
-    return result;
+    return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
   }
 
   private static TimeSpan TimeSpanToNumber(DateInterval interval, T val)
   {
-    var value = (double)Convert.ChangeType(val, typeof(double), CultureInfo.InvariantCulture);
+    var value = Convert.ToDouble(val, CultureInfo.InvariantCulture);
 
     return interval switch
     {
-      DateInterval.Days => value <= TimeSpan.MaxValue.TotalDays
+      DateInterval.Days => InRange(value, TimeSpan.MinValue.TotalDays, TimeSpan.MaxValue.TotalDays)
         ? TimeSpan.FromDays(value)
-        : throw new ArgumentOutOfRangeException(
-          nameof(val),
-          value,
-          $"Maximum amount of {interval} supported is {TimeSpan.MaxValue.TotalDays}"),
-      DateInterval.Hours => value <= TimeSpan.MaxValue.TotalHours
+        : throw OutOfRange(interval, value, TimeSpan.MinValue.TotalDays, TimeSpan.MaxValue.TotalDays),
+      DateInterval.Hours => InRange(value, TimeSpan.MinValue.TotalHours, TimeSpan.MaxValue.TotalHours)
         ? TimeSpan.FromHours(value)
-        : throw new ArgumentOutOfRangeException(
-          nameof(val),
-          value,
-          $"Maximum amount of {interval} supported is {TimeSpan.MaxValue.TotalHours}"),
-      DateInterval.Minutes => value <= TimeSpan.MaxValue.TotalMinutes
+        : throw OutOfRange(interval, value, TimeSpan.MinValue.TotalHours, TimeSpan.MaxValue.TotalHours),
+      DateInterval.Minutes => InRange(value, TimeSpan.MinValue.TotalMinutes, TimeSpan.MaxValue.TotalMinutes)
         ? TimeSpan.FromMinutes(value)
-        : throw new ArgumentOutOfRangeException(
-          nameof(val),
-          value,
-          $"Maximum amount of {interval} supported is {TimeSpan.MaxValue.TotalMinutes}"),
-      DateInterval.Seconds => value <= TimeSpan.MaxValue.TotalSeconds
+        : throw OutOfRange(interval, value, TimeSpan.MinValue.TotalMinutes, TimeSpan.MaxValue.TotalMinutes),
+      DateInterval.Seconds => InRange(value, TimeSpan.MinValue.TotalSeconds, TimeSpan.MaxValue.TotalSeconds)
         ? TimeSpan.FromSeconds(value)
-        : throw new ArgumentOutOfRangeException(
-          nameof(val),
-          value,
-          $"Maximum amount of {interval} supported is {TimeSpan.MaxValue.TotalSeconds}"),
-      DateInterval.Milliseconds => value <= TimeSpan.MaxValue.TotalMilliseconds
+        : throw OutOfRange(interval, value, TimeSpan.MinValue.TotalSeconds, TimeSpan.MaxValue.TotalSeconds),
+      DateInterval.Milliseconds => InRange(value, TimeSpan.MinValue.TotalMilliseconds, TimeSpan.MaxValue.TotalMilliseconds)
         ? TimeSpan.FromMilliseconds(value)
-        : throw new ArgumentOutOfRangeException(
-          nameof(val),
-          value,
-          $"Maximum amount of {interval} supported is {TimeSpan.MaxValue.TotalMilliseconds}"),
-      DateInterval.Ticks => value <= TimeSpan.MaxValue.Ticks
-        ? TimeSpan.FromTicks(Convert.ToInt64(value))
-        : throw new ArgumentOutOfRangeException(
-          nameof(val),
-          value,
-          $"Maximum amount of {interval} supported is {TimeSpan.MaxValue.Ticks}"),
+        : throw OutOfRange(interval, value, TimeSpan.MinValue.TotalMilliseconds, TimeSpan.MaxValue.TotalMilliseconds),
+
+      // The bounds are compared as double but the conversion reads the original value, so an integral T keeps every tick.
+      DateInterval.Ticks => value is >= long.MinValue and < long.MaxValue
+        ? TimeSpan.FromTicks(Convert.ToInt64(val, CultureInfo.InvariantCulture))
+        : throw OutOfRange(interval, value, TimeSpan.MinValue.Ticks, TimeSpan.MaxValue.Ticks),
       _ => throw new InvalidOperationException($"{nameof(interval)} is not supported."),
     };
   }
+
+  private static bool InRange(double value, double minimum, double maximum)
+    => value >= minimum && value <= maximum;
+
+  private static ArgumentOutOfRangeException OutOfRange(DateInterval interval, double value, double minimum, double maximum)
+    => new(
+      "val",
+      value,
+      $"Supported amount of {interval} ranges from {minimum} to {maximum}");
 }
 
 /// <summary>
@@ -104,7 +100,7 @@ public class TimeSpanToDoubleConverter(DateInterval interval, ConverterMappingHi
 /// <summary>
 /// Converts <seealso cref="TimeSpan"/> to and from <see cref="long"/> using a specified <seealso cref="DateInterval"/>.
 /// </summary>
-/// <param name="interval">The interval used in the numeric double representation.</param>
+/// <param name="interval">The interval used in the numeric long representation.</param>
 /// <param name="mappingHints">
 /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
 /// facets for the converted data.
@@ -115,12 +111,11 @@ public class TimeSpanToLongConverter(DateInterval interval, ConverterMappingHint
 /// <summary>
 /// Converts <seealso cref="TimeSpan"/> to and from <see cref="int"/> using a specified <seealso cref="DateInterval"/>.
 /// </summary>
-/// <remarks>Care required when using this converter for <seealso cref="DateInterval.Minutes"/> and smaller denominations.</remarks>
-/// <param name="interval">The interval used in the numeric double representation.</param>
+/// <remarks>Care required when using this converter for <seealso cref="DateInterval.Minutes"/> and smaller denominations, since conversion to <see cref="int"/> throws an <see cref="OverflowException"/> once the interval count exceeds <see cref="int.MaxValue"/>.</remarks>
+/// <param name="interval">The interval used in the numeric int representation.</param>
 /// <param name="mappingHints">
 /// Hints that can be used by the <see cref="ITypeMappingSource" /> to create data types with appropriate
 /// facets for the converted data.
 /// </param>
-/// <exception cref="OverflowException"><seealso cref="DateInterval"/> requested exceeds the max value of <see cref="int"/>.</exception>
 public class TimeSpanToIntConverter(DateInterval interval, ConverterMappingHints? mappingHints = null)
   : TimeSpanToNumberConverter<int>(interval, mappingHints);

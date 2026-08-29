@@ -1,11 +1,11 @@
 ﻿// ReSharper disable RedundantTypeDeclarationBody
 
-#pragma warning disable SA1402
+#pragma warning disable SA1402 // File may only contain a single type
 namespace Kritikos.Configuration.Persistence.Contracts;
 
 using Kritikos.Configuration.Persistence.Extensions;
 
-#pragma warning disable CA1040
+#pragma warning disable CA1040 // Avoid empty interfaces
 /// <summary>
 /// A simple interface to mark entities that are concurrently updated.
 /// </summary>
@@ -21,7 +21,6 @@ public interface IConcurrent
 /// the UseXminAsConcurrencyToken().
 /// </remarks>
 [Obsolete($"Use {nameof(IPostgreSqlConcurrent)} instead.", false)]
-
 public interface IPostgreSqlShadowConcurrent : IConcurrent
 {
 }

@@ -94,7 +94,7 @@ public static class ModelBuilderExtensions
   /// <summary>
   /// Allows configuring all instances inheriting a base class simultaneously.
   /// </summary>
-  /// <typeparam name="T"><see langword="interface"/> to configure.</typeparam>
+  /// <typeparam name="T">Base <see langword="class"/> to configure.</typeparam>
   /// <param name="modelBuilder"><seealso cref="ModelBuilder"/> instance to configure.</param>
   /// <param name="buildAction">The configuration action to be invoked for all instances inheriting <typeparamref name="T"/>.</param>
   /// <returns>The same <paramref name="modelBuilder"/> instance so that multiple calls can be chained.</returns>

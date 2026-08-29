@@ -40,7 +40,7 @@ public static class EntityTypeBuilderExtensions
   /// <typeparam name="TEntity">The <see cref="IJoinEntity{TLeft,TRight}"/> to configure.</typeparam>
   /// <typeparam name="TLeft">The first <see cref="IEntity{TKey}"/> that is part of the many-to-many relationship key.</typeparam>
   /// <typeparam name="TRight">The second <see cref="IEntity{TKey}"/> that is part of the many-to-many relationship key.</typeparam>
-  /// <exception cref="ArgumentNullException"><paramref name="entity"/> is null.</exception>
+  /// <exception cref="ArgumentNullException"><paramref name="entity"/>, <paramref name="left"/> or <paramref name="right"/> is null.</exception>
   public static void ManyToManyWithJoinEntity<TEntity, TLeft, TRight>(
     this EntityTypeBuilder<TEntity> entity,
     Expression<Func<TEntity, TLeft?>> left,
@@ -54,6 +54,9 @@ public static class EntityTypeBuilderExtensions
     where TRight : class, IEntity
   {
     ArgumentNullException.ThrowIfNull(entity);
+    ArgumentNullException.ThrowIfNull(left);
+    ArgumentNullException.ThrowIfNull(right);
+
     var leftKeyBuilder = entity.HasOne(left);
     leftKey = string.IsNullOrWhiteSpace(leftKey)
       ? $"{typeof(TLeft).Name}Id"
@@ -87,7 +90,7 @@ public static class EntityTypeBuilderExtensions
   /// <typeparam name="TJoin">The <see cref="IJoinEntity{TLeft,TRight}"/> backing the relationship.</typeparam>
   /// <typeparam name="TLeft">The first <see cref="IEntity"/> that is part of the many-to-many relationship.</typeparam>
   /// <typeparam name="TRight">The second <see cref="IEntity"/> that is part of the many-to-many relationship.</typeparam>
-  /// <exception cref="ArgumentNullException"><paramref name="entity"/> is null.</exception>
+  /// <exception cref="ArgumentNullException"><paramref name="entity"/> or <paramref name="expression"/> is null.</exception>
   public static void ManyToManyWithSkipNavigation<TJoin, TLeft, TRight>(
     this EntityTypeBuilder<TLeft> entity,
     Expression<Func<TLeft, IEnumerable<TRight>?>> expression,
@@ -97,6 +100,8 @@ public static class EntityTypeBuilderExtensions
     where TRight : class, IEntity
   {
     ArgumentNullException.ThrowIfNull(entity);
+    ArgumentNullException.ThrowIfNull(expression);
+
     var builder = entity.HasMany(expression);
     var keyBuilder = reverse == null
       ? builder.WithMany()

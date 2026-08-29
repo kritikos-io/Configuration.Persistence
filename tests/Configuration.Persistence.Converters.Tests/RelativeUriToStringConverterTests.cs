@@ -6,7 +6,7 @@ using Kritikos.Configuration.Persistence.Converters.Net;
 
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-public class RelativeUriTests
+public class RelativeUriToStringConverterTests
 {
   private const string AbsoluteUri = "https://github.com/kritikos-io";
   private const string Base = "https://github.com";
@@ -36,4 +36,19 @@ public class RelativeUriTests
     var uri = converter.ConvertFromProvider(repo) as Uri;
     await Assert.That(uri?.ToString()).IsEqualTo(absolute);
   }
+
+  [Test]
+  public async Task ConvertFromProvider_StringThatIsNotAValidUri_ReturnsBlankFallback()
+  {
+    var converter = new RelativeUriToStringConverter(new Uri(Base), MappingHints);
+
+    var uri = converter.ConvertFromProvider("https://") as Uri;
+
+    await Assert.That(uri?.ToString()).IsEqualTo("about:blank");
+  }
+
+  [Test]
+  public async Task Constructor_NullBaseUri_ThrowsArgumentNullException()
+    => await Assert.That(() => new RelativeUriToStringConverter(null!, MappingHints))
+      .Throws<ArgumentNullException>();
 }

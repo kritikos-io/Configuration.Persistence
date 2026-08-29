@@ -9,7 +9,7 @@ using Kritikos.Samples.CityCensus;
 using Microsoft.EntityFrameworkCore;
 
 [ClassDataSource<SampleDbContextFixture>(Shared = SharedType.PerClass)]
-public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
+public class ReadOnlyDbSaveChangesInterceptorTests(SampleDbContextFixture fixture)
 {
   private readonly SampleDbContextFixture fixture = fixture;
 
@@ -28,6 +28,21 @@ public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
   }
 
   [Test]
+  public async Task SaveChanges_AddedEntities_AreNotPersisted(CancellationToken cancellationToken)
+  {
+    await using var ctx = await fixture.GetContextAsync("readonly_sync", new ReadOnlyDbSaveChangesInterceptor());
+    await ctx.Database.MigrateAsync(cancellationToken);
+
+    ctx.People.AddRange(CityDataFaker.People.Generate(10));
+    var affected = ctx.SaveChanges();
+
+    await Assert.That(affected).IsEqualTo(0);
+
+    await using var verification = await fixture.GetContextAsync("readonly_sync");
+    await Assert.That(await verification.People.ToListAsync(cancellationToken)).IsEmpty();
+  }
+
+  [Test]
   public async Task SaveChangesAsync_ModifiedExistingEntities_LeavesStoredValuesUnchanged(CancellationToken cancellationToken)
   {
     var people = CityDataFaker.People.Generate(30);
@@ -40,23 +55,22 @@ public class ReadOnlyInterceptorTests(SampleDbContextFixture fixture)
     await using var readOnly =
       await fixture.GetContextAsync("readonly", new ReadOnlyDbSaveChangesInterceptor());
 
-    var newPeople = await ctx.People.ToListAsync(cancellationToken);
-    foreach (var person in newPeople)
+    var tracked = await readOnly.People.ToListAsync(cancellationToken);
+    await Assert.That(tracked).IsNotEmpty();
+
+    foreach (var person in tracked)
     {
       person.FirstName = string.Empty;
       person.LastName = string.Empty;
     }
 
-    foreach (var person in newPeople)
-    {
-      await Assert.That(person.FirstName).IsEmpty();
-      await Assert.That(person.LastName).IsEmpty();
-    }
-
     await readOnly.SaveChangesAsync(cancellationToken);
-    newPeople = await readOnly.People.ToListAsync(cancellationToken);
 
-    foreach (var person in newPeople)
+    await using var verification = await fixture.GetContextAsync("readonly");
+    var stored = await verification.People.ToListAsync(cancellationToken);
+    await Assert.That(stored).IsNotEmpty();
+
+    foreach (var person in stored)
     {
       await Assert.That(person.FirstName).IsNotEmpty();
       await Assert.That(person.LastName).IsNotEmpty();

@@ -1,7 +1,6 @@
 namespace Kritikos.Configuration.Persistence.Interceptors.SaveChanges;
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,23 +16,34 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 /// Populates audit values for <see cref="IAuditable{T}"/>, <see cref="ICreateAuditable{T}"/> and <see cref="IUpdateAuditable{T}"/> entities.
 /// </summary>
 /// <typeparam name="T">Type of audit field.</typeparam>
-/// <param name="auditorProvider">The <see cref="IAuditorProvider{T}"/> to use in order to retrieve the principal responsible for the changes.</param>
-public class AuditSaveChangesInterceptor<T>(IAuditorProvider<T> auditorProvider)
-  : SaveChangesInterceptor
+public class AuditSaveChangesInterceptor<T> : SaveChangesInterceptor
   where T : IComparable, IComparable<T>, IEquatable<T>
 {
-  private readonly IAuditorProvider<T> auditorProvider = auditorProvider;
+  private readonly IAuditorProvider<T> auditorProvider;
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="AuditSaveChangesInterceptor{T}"/> class.
+  /// </summary>
+  /// <param name="auditorProvider">The <see cref="IAuditorProvider{T}"/> to use in order to retrieve the principal responsible for the changes.</param>
+  /// <exception cref="ArgumentNullException"><paramref name="auditorProvider"/> is null.</exception>
+  public AuditSaveChangesInterceptor(IAuditorProvider<T> auditorProvider)
+  {
+    ArgumentNullException.ThrowIfNull(auditorProvider);
+
+    this.auditorProvider = auditorProvider;
+  }
 
   /// <inheritdoc />
-  [ExcludeFromCodeCoverage] // Handled in async method
   public override InterceptionResult<int> SavingChanges(
     DbContextEventData eventData,
     InterceptionResult<int> result)
   {
     ArgumentNullException.ThrowIfNull(eventData);
 
-    var auditor = auditorProvider.GetAuditor() ?? auditorProvider.GetFallbackAuditor();
-    StampEntities(eventData.Context!.ChangeTracker, auditor);
+    if (eventData.Context is { } context)
+    {
+      StampEntities(context.ChangeTracker, GetAuditor());
+    }
 
     return base.SavingChanges(eventData, result);
   }
@@ -46,8 +56,10 @@ public class AuditSaveChangesInterceptor<T>(IAuditorProvider<T> auditorProvider)
   {
     ArgumentNullException.ThrowIfNull(eventData);
 
-    var auditor = auditorProvider.GetAuditor() ?? auditorProvider.GetFallbackAuditor();
-    StampEntities(eventData.Context!.ChangeTracker, auditor);
+    if (eventData.Context is { } context)
+    {
+      StampEntities(context.ChangeTracker, GetAuditor());
+    }
 
     return base.SavingChangesAsync(eventData, result, cancellationToken);
   }
@@ -68,4 +80,7 @@ public class AuditSaveChangesInterceptor<T>(IAuditorProvider<T> auditorProvider)
       x.Entity.UpdatedBy = auditor;
     }
   }
+
+  private T GetAuditor()
+    => auditorProvider.GetAuditor() ?? auditorProvider.GetFallbackAuditor();
 }

@@ -11,8 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\samples\Samples.CityCensus\Samples.CityCensus.csproj"/>
-    <ProjectReference Include="..\Configuration.Persistence.TestKit\Configuration.Persistence.TestKit.csproj"/>
+    <ProjectReference Include="..\Configuration.Persistence.TestKit\Configuration.Persistence.TestKit.csproj" />
   </ItemGroup>
 
 </Project>

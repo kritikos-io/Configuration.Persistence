@@ -3,15 +3,13 @@ namespace Kritikos.Configuration.Persistence.Contracts.Base;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
 /// <summary>
-/// Base model for Dtos to allow comparsions after updating from the server.
+/// Base model for Dtos to allow comparisons after updating from the server.
 /// </summary>
 /// <typeparam name="TKey">Type of primary identity.</typeparam>
-[ExcludeFromCodeCoverage]
 public abstract class Model<TKey> : IEntity<TKey>, IEquatable<Model<TKey>>
   where TKey : IComparable<TKey>, IEquatable<TKey>
 {

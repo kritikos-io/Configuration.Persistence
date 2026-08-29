@@ -23,7 +23,7 @@ public abstract class TimeSpanToNumberConverterTests
     _ => throw new InvalidOperationException($"{nameof(interval)} not supported!"),
   };
 
-  protected static readonly Func<TimeSpan, DateInterval, double> FromTimespan = (value, interval) => interval switch
+  protected static readonly Func<TimeSpan, DateInterval, double> FromTimeSpan = (value, interval) => interval switch
   {
     DateInterval.Days => value.TotalDays,
     DateInterval.Hours => value.TotalHours,
