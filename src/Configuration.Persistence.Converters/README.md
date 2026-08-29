@@ -93,4 +93,7 @@ builder.Entity<Request>()
 > [!WARNING]
 > `EnumToDescriptionStringConverter<TEnum>` never rejects stored text. Any value matching no member reads back as `default(TEnum)` rather than throwing, so an unmatched row is indistinguishable from one legitimately holding the default. A value outside the enum is written as its numeric text and therefore does not survive a round trip.
 
+> [!CAUTION]
+> `basePath` is a prefix the filesystem converters resolve against, not a boundary they enforce. Paths outside the root are stored with leading `..` segments, and one on another volume keeps its own root, so reading either back deliberately produces a path the base does not contain. A row an attacker can write is therefore a row that can name any file the process can open. Validate such values in your own code; do not treat the converter as a sandbox.
+
 [ef-converters]: https://learn.microsoft.com/en-us/ef/core/modeling/value-conversions

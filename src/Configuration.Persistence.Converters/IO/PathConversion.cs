@@ -45,6 +45,9 @@ internal static class PathConversion
   /// <param name="storedPath">The path as read from the database.</param>
   /// <param name="separator">Character used as directory separator in the persistence layer.</param>
   /// <returns>The path in the form used by the local file system.</returns>
+  /// <remarks>
+  /// <paramref name="basePath"/> is a prefix, not a boundary. A stored path holding <c>..</c> segments resolves above the root, and an absolute one replaces it outright, both of which round trip values <see cref="ToStorage"/> legitimately produces for entries outside the root or on another volume.
+  /// </remarks>
   public static string FromStorage(FileSystemInfo? basePath, string storedPath, char separator)
     => (basePath == null
         ? storedPath
