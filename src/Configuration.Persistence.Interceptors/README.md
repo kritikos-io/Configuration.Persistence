@@ -80,6 +80,17 @@ options.AddInterceptors(
   new AuditTrailSaveChangesInterceptor<AuditRecord, AppDbContext>(recordUnchangedProperties: false));
 ```
 
+`TimestampSaveChangesInterceptor`, `SoftDeleteSaveChangesInterceptor` and `AuditTrailSaveChangesInterceptor<TAuditRecord, TContext>` each accept an optional `TimeProvider`, defaulting to `TimeProvider.System`. Passing the same instance to all three keeps an audit record and the entity it describes on a single instant, and lets tests drive the clock instead of asserting on ranges, whether through `FakeTimeProvider` from [`Microsoft.Extensions.TimeProvider.Testing`][time-testing] or a `TimeProvider` of your own.
+
+```csharp
+var clock = new FakeTimeProvider();
+
+options.AddInterceptors(
+  new TimestampSaveChangesInterceptor(clock),
+  new SoftDeleteSaveChangesInterceptor(clock),
+  new AuditTrailSaveChangesInterceptor<AuditRecord, AppDbContext>(timeProvider: clock));
+```
+
 ## Caveats
 
 > [!IMPORTANT]
@@ -95,4 +106,6 @@ options.AddInterceptors(
 > `SoftDeleteSaveChangesInterceptor` converts the delete on the entity it is handed, not on its dependents. Relationships configured to cascade still delete children outright unless those children are soft-deletable and loaded into the change tracker.
 
 > [!NOTE]
-> Timestamps are written in UTC by the application, so they record the moment `SaveChanges` ran on the application server rather than database clock time.
+> Timestamps are written in UTC by the application, so they record the moment `SaveChanges` ran on the application server rather than database clock time. Every entity touched by one save shares a single instant, because the clock is read once per save rather than once per entity.
+
+[time-testing]: https://www.nuget.org/packages/Microsoft.Extensions.TimeProvider.Testing

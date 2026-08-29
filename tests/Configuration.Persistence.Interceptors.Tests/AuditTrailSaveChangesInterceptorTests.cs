@@ -195,6 +195,27 @@ public class AuditTrailSaveChangesInterceptorTests(SampleDbContextFixture fixtur
     await Assert.That(await second.AuditRecords.CountAsync(cancellationToken)).IsEqualTo(TotalCounties);
   }
 
+  [Test]
+  public async Task SaveChangesAsync_ClockSharedWithTimestamping_MatchesTheTimestampOfTheAuditedEntity(
+    CancellationToken cancellationToken)
+  {
+    var clock = new FixedTimeProvider(new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero));
+    await using var ctx = await fixture.GetContextAsync(
+      "auditTrail_clock",
+      new TimestampSaveChangesInterceptor(clock),
+      new AuditTrailSaveChangesInterceptor<AuditRecord, CityCensusTrailDbContext>(timeProvider: clock));
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var counties = CityDataFaker.Counties.Generate(TotalCounties);
+    ctx.Counties.AddRange(counties);
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    var records = await ctx.AuditRecords.ToListAsync(cancellationToken);
+    await Assert.That(records.Count).IsEqualTo(TotalCounties);
+    await Assert.That(records.All(x => x.CreatedAt == clock.UtcNow.UtcDateTime)).IsTrue();
+    await Assert.That(counties.All(x => x.CreatedAt == clock.UtcNow.UtcDateTime)).IsTrue();
+  }
+
   private static Dictionary<string, JsonElement> Deserialize(string json)
     => JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json) ?? [];
 }

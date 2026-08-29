@@ -14,8 +14,12 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 /// <summary>
 /// Populates timestamp values for <see cref="ITimestamped"/>, <see cref="ICreateTimestamped"/> and <see cref="IUpdateTimestamped"/> entities.
 /// </summary>
-public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
+/// <param name="timeProvider">The <see cref="TimeProvider"/> supplying the timestamp, defaulting to <see cref="TimeProvider.System"/>.</param>
+/// <remarks>Every entity stamped by one save shares a single instant, read once per save.</remarks>
+public class TimestampSaveChangesInterceptor(TimeProvider? timeProvider = null) : SaveChangesInterceptor
 {
+  private readonly TimeProvider timeProvider = timeProvider ?? TimeProvider.System;
+
   /// <inheritdoc />
   public override InterceptionResult<int> SavingChanges(
     DbContextEventData eventData,
@@ -25,7 +29,7 @@ public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
 
     if (eventData.Context is { } context)
     {
-      StampEntries(context.ChangeTracker);
+      StampEntries(context.ChangeTracker, timeProvider.GetUtcNow().UtcDateTime);
     }
 
     return base.SavingChanges(eventData, result);
@@ -41,16 +45,14 @@ public class TimestampSaveChangesInterceptor : SaveChangesInterceptor
 
     if (eventData.Context is { } context)
     {
-      StampEntries(context.ChangeTracker);
+      StampEntries(context.ChangeTracker, timeProvider.GetUtcNow().UtcDateTime);
     }
 
     return base.SavingChangesAsync(eventData, result, cancellationToken);
   }
 
-  private static void StampEntries(ChangeTracker tracker)
+  private static void StampEntries(ChangeTracker tracker, DateTime now)
   {
-    var now = DateTime.UtcNow;
-
     var created = tracker.Entries<ICreateTimestamped>()
       .Where(x => x.State == EntityState.Added)
       .ToList();

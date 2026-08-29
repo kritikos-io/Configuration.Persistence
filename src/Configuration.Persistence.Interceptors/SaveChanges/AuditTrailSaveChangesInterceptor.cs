@@ -31,6 +31,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 {
   private readonly bool recordUnchangedProperties;
   private readonly JsonSerializerOptions serializerOptions;
+  private readonly TimeProvider timeProvider;
   private readonly TContext? context;
 
   private TContext? pendingContext;
@@ -41,8 +42,12 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   /// </summary>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
   /// <param name="serializerOptions">Custom options for <see cref="JsonSerializer"/> to handle specific cases during auditing.</param>
+  /// <param name="timeProvider">The <see cref="TimeProvider"/> supplying <see cref="AuditRecord.CreatedAt"/>, defaulting to <see cref="TimeProvider.System"/>.</param>
   /// <exception cref="NotSupportedException"><typeparamref name="TAuditRecord"/> extends <see cref="ITraceableAudit"/>.</exception>
-  public AuditTrailSaveChangesInterceptor(bool recordUnchangedProperties = true, JsonSerializerOptions? serializerOptions = null)
+  public AuditTrailSaveChangesInterceptor(
+    bool recordUnchangedProperties = true,
+    JsonSerializerOptions? serializerOptions = null,
+    TimeProvider? timeProvider = null)
   {
     if (typeof(ITraceableAudit).IsAssignableFrom(typeof(TAuditRecord)))
     {
@@ -51,6 +56,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     this.recordUnchangedProperties = recordUnchangedProperties;
     this.serializerOptions = serializerOptions ?? JsonSerializerOptions.Default;
+    this.timeProvider = timeProvider ?? TimeProvider.System;
   }
 
   /// <summary>
@@ -59,10 +65,15 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
   /// <param name="context">The <see cref="DbContext"/> to save <see cref="AuditRecord"/> to.</param>
   /// <param name="recordUnchangedProperties">If true, records only delta changes between states, otherwise records the complete current and previous state.</param>
   /// <param name="serializerOptions">Custom options for <see cref="JsonSerializer"/> to handle specific cases during auditing.</param>
+  /// <param name="timeProvider">The <see cref="TimeProvider"/> supplying <see cref="AuditRecord.CreatedAt"/>, defaulting to <see cref="TimeProvider.System"/>.</param>
   /// <exception cref="ArgumentNullException"><paramref name="context"/> is null.</exception>
   /// <exception cref="NotSupportedException"><typeparamref name="TAuditRecord"/> extends <see cref="ITraceableAudit"/>.</exception>
-  public AuditTrailSaveChangesInterceptor(TContext context, bool recordUnchangedProperties = true, JsonSerializerOptions? serializerOptions = null)
-    : this(recordUnchangedProperties, serializerOptions)
+  public AuditTrailSaveChangesInterceptor(
+    TContext context,
+    bool recordUnchangedProperties = true,
+    JsonSerializerOptions? serializerOptions = null,
+    TimeProvider? timeProvider = null)
+    : this(recordUnchangedProperties, serializerOptions, timeProvider)
   {
     ArgumentNullException.ThrowIfNull(context);
 
@@ -171,6 +182,8 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
   private void CreateAuditEntries(List<EntityEntry<ITraceableAudit>> entries, TContext auditContext)
   {
+    // Stamped once so the trail of a save shares an instant, including the entries held back for store generated keys.
+    var now = timeProvider.GetUtcNow().UtcDateTime;
     var auditEntries = new List<AuditEntry>(entries.Count);
     foreach (var entry in entries)
     {
@@ -178,7 +191,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
         ?? throw new InvalidOperationException(
           $"{entry.Metadata.DisplayName()} is not mapped to a table and cannot be audited.");
 
-      var audit = new AuditEntry { TableName = table, State = entry.State };
+      var audit = new AuditEntry { TableName = table, State = entry.State, CreatedAt = now };
       auditEntries.Add(audit);
       foreach (var property in entry.Properties)
       {
@@ -258,6 +271,8 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
 
     public EntityState State { get; init; }
 
+    public DateTime CreatedAt { get; init; }
+
     public Dictionary<string, object> KeyValues { get; } = [];
 
     public Dictionary<string, object> OldValues { get; } = [];
@@ -269,7 +284,7 @@ public class AuditTrailSaveChangesInterceptor<TAuditRecord, TContext> : SaveChan
     public TAuditRecord ToAuditRecord(JsonSerializerOptions serializerOptions)
       => new()
       {
-        CreatedAt = DateTime.UtcNow,
+        CreatedAt = CreatedAt,
         Table = TableName,
         Key = JsonSerializer.Serialize(KeyValues, serializerOptions),
         OldValues = OldValues.Count != 0

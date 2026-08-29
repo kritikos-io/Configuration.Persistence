@@ -77,4 +77,28 @@ public class SoftDeleteSaveChangesInterceptorTests(SampleDbContextFixture fixtur
     await Assert.That(async () => await interceptor.SavingChangesAsync(null!, default))
       .Throws<ArgumentNullException>();
   }
+
+  [Test]
+  public async Task SaveChangesAsync_CustomTimeProvider_StampsTheSuppliedInstant(CancellationToken cancellationToken)
+  {
+    var clock = new FixedTimeProvider(new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero));
+    await using var context =
+      await fixture.GetContextAsync("softDelete_clock", new SoftDeleteSaveChangesInterceptor(clock));
+    await context.Database.MigrateAsync(cancellationToken);
+    var people = CityDataFaker.People.Generate(TotalPeople);
+    context.People.AddRange(people);
+
+    await context.SaveChangesAsync(cancellationToken);
+    context.People.RemoveRange(people.Take(DeletedPeople));
+    await context.SaveChangesAsync(cancellationToken);
+
+    var deleted = await context.People.IgnoreQueryFilters()
+      .Where(p => p.IsDeleted)
+      .ToListAsync(cancellationToken);
+    await Assert.That(deleted.Count).IsEqualTo(DeletedPeople);
+    foreach (var person in deleted)
+    {
+      await Assert.That(person.DeletedAt).IsEqualTo(clock.UtcNow.UtcDateTime);
+    }
+  }
 }

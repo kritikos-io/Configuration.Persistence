@@ -92,4 +92,36 @@ public class TimestampSaveChangesInterceptorTests(SampleDbContextFixture fixture
     await Assert.That(async () => await interceptor.SavingChangesAsync(null!, default))
       .Throws<ArgumentNullException>();
   }
+
+  [Test]
+  public async Task SaveChangesAsync_CustomTimeProvider_StampsTheSuppliedInstant(CancellationToken cancellationToken)
+  {
+    var clock = new FixedTimeProvider(new DateTimeOffset(2020, 1, 2, 3, 4, 5, TimeSpan.Zero));
+    await using var ctx = await fixture.GetContextAsync("createdAtClock", new TimestampSaveChangesInterceptor(clock));
+    await ctx.Database.MigrateAsync(cancellationToken);
+    var counties = CityDataFaker.Counties.Generate(10);
+    ctx.AddRange(counties);
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    foreach (var county in counties)
+    {
+      await Assert.That(county.CreatedAt).IsEqualTo(clock.UtcNow.UtcDateTime);
+      await Assert.That(county.UpdatedAt).IsEqualTo(clock.UtcNow.UtcDateTime);
+    }
+
+    clock.UtcNow = clock.UtcNow.AddHours(1);
+    foreach (var county in counties)
+    {
+      county.Name = "REDACTED";
+    }
+
+    await ctx.SaveChangesAsync(cancellationToken);
+
+    foreach (var county in counties)
+    {
+      await Assert.That(county.UpdatedAt).IsEqualTo(clock.UtcNow.UtcDateTime);
+      await Assert.That(county.CreatedAt).IsEqualTo(clock.UtcNow.AddHours(-1).UtcDateTime);
+    }
+  }
 }
