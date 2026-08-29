@@ -62,7 +62,7 @@ public class Person : IEntity<long>, ITimestamped, IAuditable<Guid>, ISoftDeleta
 }
 ```
 
-`Model<TKey>` is an abstract base for DTOs that need identity-based equality, which keeps comparisons meaningful after a round trip to the server.
+`Model<TKey>` is an abstract base for DTOs that need identity-based equality, which keeps comparisons meaningful after a round trip to the server. `Equals`, `GetHashCode` and the `==` and `!=` operators all answer on `Id` alone.
 
 ```csharp
 public class PersonDto : Model<long>
@@ -88,3 +88,6 @@ public class PersonCorporation : IJoinEntity<Person, long, Corporation, Guid>
 
 > [!NOTE]
 > `TKey` is constrained to `IComparable<TKey>` and `IEquatable<TKey>`, which admits the usual `int`, `long` and `Guid` keys but rules out composite keys. Configure those manually.
+
+> [!WARNING]
+> Identity is the only discriminator `Model<TKey>` compares on, so two DTOs of different derived types sharing a key are equal, and `==` reports them as such. Override `Equals(Model<TKey>?)` where a type check belongs in the comparison.

@@ -16,6 +16,26 @@ public abstract class Model<TKey> : IEntity<TKey>, IEquatable<Model<TKey>>
   /// <inheritdoc />
   public TKey Id { get; set; } = default!;
 
+  /// <summary>
+  /// Determines whether two models share an identity.
+  /// </summary>
+  /// <param name="left">The model on the left of the operator.</param>
+  /// <param name="right">The model on the right of the operator.</param>
+  /// <returns><see langword="true"/> if both are null or both carry the same <see cref="Id"/>, otherwise <see langword="false"/>.</returns>
+  public static bool operator ==(Model<TKey>? left, Model<TKey>? right)
+    => left is null
+      ? right is null
+      : left.Equals(right);
+
+  /// <summary>
+  /// Determines whether two models differ in identity.
+  /// </summary>
+  /// <param name="left">The model on the left of the operator.</param>
+  /// <param name="right">The model on the right of the operator.</param>
+  /// <returns><see langword="true"/> if exactly one is null or they carry different <see cref="Id"/> values, otherwise <see langword="false"/>.</returns>
+  public static bool operator !=(Model<TKey>? left, Model<TKey>? right)
+    => !(left == right);
+
   /// <inheritdoc />
   public virtual bool Equals(Model<TKey>? other)
     => other is not null

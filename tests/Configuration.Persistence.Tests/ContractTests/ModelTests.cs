@@ -76,6 +76,47 @@ public class ModelTests
 
     await Assert.That(left.GetHashCode()).IsEqualTo(right.GetHashCode());
   }
+
+  [Test]
+  public async Task EqualityOperator_SameIdentity_IsTrue()
+  {
+    var left = new SampleModel { Id = 7 };
+    var right = new SampleModel { Id = 7 };
+
+    await Assert.That(left == right).IsTrue();
+    await Assert.That(left != right).IsFalse();
+  }
+
+  [Test]
+  public async Task EqualityOperator_DifferentIdentity_IsFalse()
+  {
+    var left = new SampleModel { Id = 7 };
+    var right = new SampleModel { Id = 8 };
+
+    await Assert.That(left == right).IsFalse();
+    await Assert.That(left != right).IsTrue();
+  }
+
+  [Test]
+  public async Task EqualityOperator_BothNull_IsTrue()
+  {
+    SampleModel? left = null;
+    SampleModel? right = null;
+
+    await Assert.That(left == right).IsTrue();
+    await Assert.That(left != right).IsFalse();
+  }
+
+  [Test]
+  public async Task EqualityOperator_OneNull_IsFalse()
+  {
+    var model = new SampleModel { Id = 1 };
+    SampleModel? missing = null;
+
+    await Assert.That(model == missing).IsFalse();
+    await Assert.That(missing == model).IsFalse();
+    await Assert.That(model != missing).IsTrue();
+  }
 }
 
 public class SampleModel : Model<int>;
