@@ -60,6 +60,10 @@ namespace Kritikos.Samples.CityCensus.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.PrimitiveCollection<string>("Redacted")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Table")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -158,7 +162,8 @@ namespace Kritikos.Samples.CityCensus.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasAnnotation("Kritikos:ExcludedFromAuditTrail", true);
 
                     b.Property<string>("FirstName")
                         .IsRequired()

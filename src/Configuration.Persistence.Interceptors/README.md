@@ -78,6 +78,27 @@ options.AddInterceptors(
   new AuditTrailSaveChangesInterceptor<AuditRecord, AppDbContext>(recordUnchangedProperties: false));
 ```
 
+`recordUnchangedProperties` decides how much of an entity reaches the trail, not which parts of it. Properties whose values should not be duplicated into the trail, such as credentials or personally identifiable data, are marked on the model with `ExcludeFromAuditTrail` from the [`Kritikos.Configuration.Persistence`][persistence] package.
+
+```csharp
+modelBuilder.Entity<Person>()
+  .Property(e => e.Email)
+  .ExcludeFromAuditTrail();
+```
+
+Neither the old nor the new value reaches `OldValues` or `NewValues`. The name goes into `AuditRecord.Redacted` instead, so the trail still records that it changed.
+
+```jsonc
+// OldValues
+{ "FirstName": "Ada" }
+// NewValues
+{ "FirstName": "Grace" }
+// Redacted
+["Email"]
+```
+
+A property is only named on a save that actually changes it, so `recordUnchangedProperties` does not leave every entry claiming it moved. Primary keys ignore the exclusion, since a record that cannot be traced back to a row is worthless.
+
 `TimestampSaveChangesInterceptor`, `SoftDeleteSaveChangesInterceptor` and `AuditTrailSaveChangesInterceptor<TAuditRecord, TContext>` each accept an optional `TimeProvider`, defaulting to `TimeProvider.System`. Passing the same instance to all three keeps an audit record and the entity it describes on a single instant, and lets tests drive the clock instead of asserting on ranges, whether through `FakeTimeProvider` from [`Microsoft.Extensions.TimeProvider.Testing`][time-testing] or a `TimeProvider` of your own.
 
 ```csharp
@@ -116,4 +137,12 @@ options.AddInterceptors(
 > [!NOTE]
 > Timestamps are written in UTC by the application, so they record the moment `SaveChanges` ran on the application server rather than database clock time. Every entity touched by one save shares a single instant, because the clock is read once per save rather than once per entity.
 
+> [!NOTE]
+> `Redacted` is one list rather than one per side, since `Modification` already says which side an omission applies to: `NewValues` on an insert, `OldValues` on a delete, and both on an update. It maps to a JSON column, so `Redacted.Contains(name)` translates to SQL and a trail can be searched for every record that touched a given property.
+
+> [!IMPORTANT]
+> Excluding a property keeps it out of `AuditRecord` and nowhere else. The value still travels through Entity Framework's command log and through whatever the application serialises itself, so a field that must not leak needs guarding at those points too, for instance with [data redaction][redaction].
+
 [time-testing]: https://www.nuget.org/packages/Microsoft.Extensions.TimeProvider.Testing
+[persistence]: https://www.nuget.org/packages/Kritikos.Configuration.Persistence
+[redaction]: https://learn.microsoft.com/dotnet/core/extensions/data-redaction

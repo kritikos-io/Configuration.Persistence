@@ -1,6 +1,7 @@
 namespace Kritikos.Configuration.Persistence.Entities;
 
 using System;
+using System.Collections.Generic;
 
 using Kritikos.Configuration.Persistence.Contracts.Behavioral;
 
@@ -45,6 +46,12 @@ public class AuditRecord : IEntity<long>, ICreateTimestamped, ICreateAuditable<G
   /// Gets the serialized property values after the change.
   /// </summary>
   public string NewValues { get; init; } = string.Empty;
+
+  /// <summary>
+  /// Gets the names of the properties that took part in the change without their values being recorded.
+  /// </summary>
+  /// <remarks><see cref="Modification"/> determines which side an omission applies to, so a name refers to <see cref="NewValues"/> on an insert, to <see cref="OldValues"/> on a delete, and to both on an update. Primary keys never appear.</remarks>
+  public IList<string> Redacted { get; init; } = [];
 
   /// <summary>
   /// Configures the audit record entity on the supplied model.

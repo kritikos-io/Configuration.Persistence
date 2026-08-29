@@ -59,6 +59,11 @@ public class CityCensusTrailDbContext : DbContext, IAuditTrailDbContext<AuditRec
 
     modelBuilder.ApplySoftDeletableFilters();
 
+    // Personally identifiable, so the trail records that the address changed without disclosing either one.
+    modelBuilder.Entity<Person>()
+        .Property(e => e.Email)
+        .ExcludeFromAuditTrail();
+
     modelBuilder.EntitiesImplementing<IOrdered<Guid>>(
         entity =>
         {
